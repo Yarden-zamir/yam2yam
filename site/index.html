@@ -199,7 +199,15 @@ a.daylink:hover{color:var(--lake)}
 .wxhour{margin-top:8px}
 .wxhour canvas{width:100%;height:190px;display:block;background:var(--ground);border:1px solid var(--line);touch-action:none;cursor:crosshair}
 .wxread{font:12px "IBM Plex Mono",monospace;color:var(--ink);min-height:18px;margin-top:4px}
-.wxlegend{font-size:12px;color:var(--muted);margin-top:4px}
+.wxlegend{font-size:12px;color:var(--muted);margin-top:6px}
+.wxslider{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:4px 0 8px;font-size:13.5px}
+.wxslider input[type=range]{flex:1 1 180px;min-width:140px;accent-color:var(--mark)}
+.wxslider output{font-weight:600}
+.wxrec{font-size:12.5px;color:var(--muted)}
+.wxhour canvas{height:300px}
+.wxevents{margin-top:6px;font-size:13.5px}
+.wxev{padding:3px 8px;margin:3px 0;border-inline-start:3px solid var(--line);background:var(--panel)}
+.wxev.storm{border-color:var(--mark)} .wxev.rain{border-color:var(--lake)} .wxev.wind{border-color:var(--warn)} .wxev.exp{font-weight:600} .wxev.ok{color:var(--muted)}
 .stage.done .d{color:var(--muted)} .stage.done .d::before{opacity:.35}
 .stage.done h3{opacity:.6}
 .stage.done:not(.open) .stats,.stage.done:not(.open) .wx,.stage.done:not(.open) p,.stage.done:not(.open) .snapbox{display:none}
