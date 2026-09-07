@@ -317,7 +317,7 @@
   var T = {
     en: { night: 'night spot', finish: 'finish', high: 'high point', rain: 'rain', prob: 'chance', gusts: 'gusts', fl: 'freezing level', uv: 'UV', sun: 'sun',
       feels: 'feels', fetched: 'Open-Meteo · fetched', ago: 'ago', stale: 'stale', offline: 'offline copy', refresh: 'Refresh', range: 'Forecast not yet available for this date (16-day horizon). Reload closer to the day.',
-      err: 'Weather unavailable right now.', hourly: 'Hour by hour', hide: 'Hide hours', walk: 'planned walking', leave: 'Leave the pass by', stormHours: 'storm risk', early: 'start at first light and clear the high point before', wait: 'storms from the start of the day: consider waiting it out or a low route', legend: 'top: your altitude through the day, thick where exposed above the treeline or at a pass · red: storm risk where you are · blue: rain where you are · orange: heat · strip: share of ECMWF ensemble members with storm conditions at the high point · bottom: temperature at your position, bars rain mm per hour · dotted: sunrise, sunset', lead: 'days out', lowconf: 'low confidence beyond 4 days', start: 'Start', arrive: 'arrive', exposed: 'exposed hours in risk', recommend: 'Recommended start', events: 'What you meet on the way', noevents: 'No storm, heavy rain or strong wind on your line for this start.', members: 'of ensemble members', reach: 'you reach', at: 'at', ensLoading: 'ensemble…', afterSunset: 'after sunset', afterTent: 'inside the tent window', temp: 'temp', highT: 'high point', nightT: 'night spot',
+      err: 'Weather unavailable right now.', hourly: 'Hour by hour', hide: 'Hide hours', walk: 'planned walking', leave: 'Leave the pass by', stormHours: 'storm risk', early: 'start at first light and clear the high point before', wait: 'storms from the start of the day: consider waiting it out or a low route', legend: 'top: your altitude through the day, thick where exposed above the treeline or at a pass · red: storm risk where you are · blue: rain where you are · orange: heat · strip: share of ECMWF ensemble members with storm conditions at the high point · bottom: temperature at your position, bars rain mm per hour · dotted: sunrise, sunset', lead: 'days out', lowconf: 'low confidence beyond 4 days', source: 'source', rule: 'Storm = thunderstorm code, or CAPE ≥ 400 J/kg with lifted index ≤ −2 and rain chance ≥ 20 %. Source links open the same numbers on Open-Meteo.', start: 'Start', arrive: 'arrive', exposed: 'exposed hours in risk', recommend: 'Recommended start', events: 'What you meet on the way', noevents: 'No storm, heavy rain or strong wind on your line for this start.', members: 'of ensemble members', reach: 'you reach', at: 'at', ensLoading: 'ensemble…', afterSunset: 'after sunset', afterTent: 'inside the tent window', temp: 'temp', highT: 'high point', nightT: 'night spot',
       w: { storm: 'Thunderstorm risk at the high point', rain: 'Rain likely', snow: 'Snow or freezing on the high point',
         wind: 'Strong gusts on the ridge', frost: 'Frost at the bivouac', heat: 'Heat on the low ground: start early, 3 L water', fog: 'Fog: navigation care on boulder fields', uv: 'Very high UV', cold: 'Cold night', late: 'Planned arrival after sunset' },
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' },
@@ -325,7 +325,7 @@
     },
     he: { night: 'לינה', finish: 'סיום', high: 'נקודה גבוהה', rain: 'גשם', prob: 'סיכוי', gusts: 'משבים', fl: 'גובה קיפאון', uv: 'UV', sun: 'שמש',
       feels: 'מורגש', fetched: 'Open-Meteo · נמשך', ago: 'לפני', stale: 'לא עדכני', offline: 'עותק אופליין', refresh: 'רענן', range: 'עדיין אין תחזית לתאריך הזה (טווח של 16 יום). טענו שוב קרוב ליום.',
-      err: 'מזג האוויר לא זמין כרגע.', hourly: 'שעה אחר שעה', hide: 'הסתר שעות', walk: 'הליכה מתוכננת', leave: 'לרדת מהמעבר עד', stormHours: 'סיכון לסופות', early: 'לצאת עם אור ראשון ולעבור את הנקודה הגבוהה לפני', wait: 'סופות מתחילת היום: לשקול להמתין או מסלול נמוך', legend: 'למעלה: הגובה שלכם לאורך היום, עבה איפה שחשופים מעל קו העצים או במעבר · אדום: סיכון סופה איפה שאתם · כחול: גשם איפה שאתם · כתום: חום · הפס: חלק חברי האנסמבל של ECMWF עם תנאי סופה בנקודה הגבוהה · למטה: טמפרטורה במיקום שלכם, עמודות גשם מ\"מ לשעה · מקווקו: זריחה, שקיעה', lead: 'ימים קדימה', lowconf: 'ודאות נמוכה מעבר ל-4 ימים', start: 'יציאה', arrive: 'הגעה', exposed: 'שעות חשופות בסיכון', recommend: 'יציאה מומלצת', events: 'מה תפגשו בדרך', noevents: 'אין סופה, גשם כבד או רוח חזקה על הקו שלכם ליציאה הזו.', members: 'מחברי האנסמבל', reach: 'מגיעים ל', at: 'ב', ensLoading: 'אנסמבל…', afterSunset: 'אחרי השקיעה', afterTent: 'בתוך חלון האוהל', temp: 'טמפ\'', highT: 'נקודה גבוהה', nightT: 'לינה',
+      err: 'מזג האוויר לא זמין כרגע.', hourly: 'שעה אחר שעה', hide: 'הסתר שעות', walk: 'הליכה מתוכננת', leave: 'לרדת מהמעבר עד', stormHours: 'סיכון לסופות', early: 'לצאת עם אור ראשון ולעבור את הנקודה הגבוהה לפני', wait: 'סופות מתחילת היום: לשקול להמתין או מסלול נמוך', legend: 'למעלה: הגובה שלכם לאורך היום, עבה איפה שחשופים מעל קו העצים או במעבר · אדום: סיכון סופה איפה שאתם · כחול: גשם איפה שאתם · כתום: חום · הפס: חלק חברי האנסמבל של ECMWF עם תנאי סופה בנקודה הגבוהה · למטה: טמפרטורה במיקום שלכם, עמודות גשם מ\"מ לשעה · מקווקו: זריחה, שקיעה', lead: 'ימים קדימה', lowconf: 'ודאות נמוכה מעבר ל-4 ימים', source: 'מקור', rule: 'סופה = קוד סופת רעמים, או CAPE ≥ 400 J/kg עם lifted index ≤ −2 וסיכוי גשם ≥ 20%. קישורי המקור פותחים את אותם מספרים ב-Open-Meteo.', start: 'יציאה', arrive: 'הגעה', exposed: 'שעות חשופות בסיכון', recommend: 'יציאה מומלצת', events: 'מה תפגשו בדרך', noevents: 'אין סופה, גשם כבד או רוח חזקה על הקו שלכם ליציאה הזו.', members: 'מחברי האנסמבל', reach: 'מגיעים ל', at: 'ב', ensLoading: 'אנסמבל…', afterSunset: 'אחרי השקיעה', afterTent: 'בתוך חלון האוהל', temp: 'טמפ\'', highT: 'נקודה גבוהה', nightT: 'לינה',
       w: { storm: 'סיכון לסופות רעמים בנקודה הגבוהה', rain: 'גשם צפוי', snow: 'שלג או קיפאון בנקודה הגבוהה',
         wind: 'משבי רוח חזקים על הרכס', frost: 'כפור בלינה', heat: 'חום בגובה הנמוך: לצאת מוקדם, 3 ליטר מים', fog: 'ערפל: זהירות בניווט בשדות הבולדרים', uv: 'קרינה גבוהה מאוד', cold: 'לילה קר', late: 'הגעה מתוכננת אחרי השקיעה' },
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' },
@@ -334,7 +334,11 @@
   };
   /* per-trek wording: trek.json "strings": {"en": {"w": {"heat": "..."}, "snap": {...}}, "he": {...}} overrides any key */
   (function () { var o = (window.TREK && window.TREK.strings) || {}; Object.keys(o).forEach(function (lang) { if (!T[lang]) return; Object.keys(o[lang]).forEach(function (grp) { if (typeof o[lang][grp] === 'object' && T[lang][grp]) Object.assign(T[lang][grp], o[lang][grp]); else T[lang][grp] = o[lang][grp]; }); }); })();
-  var HOURLY = 'temperature_2m,precipitation,precipitation_probability,weather_code,wind_gusts_10m,cape,freezing_level_height,cloud_cover';
+  var HOURLY = 'temperature_2m,precipitation,precipitation_probability,weather_code,wind_gusts_10m,cape,lifted_index,freezing_level_height,cloud_cover';
+  /* Storm rule: a thunderstorm weather code, or convective energy that can actually be released: CAPE ≥ 400 J/kg
+     with lifted index ≤ −2 (unstable) and rain chance ≥ 20 %. CAPE alone is normal under a summer cap and means nothing. */
+  function stormAt(loc, i) { var code = hv(loc, 'weather_code', i) || 0, cape = hv(loc, 'cape', i) || 0, li = hv(loc, 'lifted_index', i), prob = hv(loc, 'precipitation_probability', i) || 0; return code >= 95 || (cape >= 400 && li != null && li <= -2 && prob >= 20); }
+  function sourceUrl(p, date) { return 'https://open-meteo.com/en/docs#latitude=' + p.lat.toFixed(4) + '&longitude=' + p.lon.toFixed(4) + '&elevation=' + Math.round(p.ele) + '&hourly=temperature_2m,precipitation,precipitation_probability,weather_code,wind_gusts_10m,cape,lifted_index&timezone=' + encodeURIComponent((window.TREK && window.TREK.timezone) || 'auto') + '&start_date=' + date + '&end_date=' + date + (window.TREK && window.TREK.weatherModel ? '&models=' + window.TREK.weatherModel : ''); }
   var DAILY = 'weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_min,precipitation_sum,precipitation_probability_max,snowfall_sum,wind_gusts_10m_max,uv_index_max,sunrise,sunset';
   function hav(a, b) { var R = 6371000, dLat = (b.lat - a.lat) * Math.PI / 180, dLon = (b.lon - a.lon) * Math.PI / 180, s = Math.sin(dLat / 2), t = Math.sin(dLon / 2); return 2 * R * Math.asin(Math.sqrt(s * s + Math.cos(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * t * t)); }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
@@ -443,13 +447,13 @@
   var ENS = 'https://ensemble-api.open-meteo.com/v1/ensemble';
   function fetchEnsemble(points, startDate, endDate) {
     var u = ENS + '?latitude=' + points.map(function (p) { return p.lat.toFixed(4); }).join(',') + '&longitude=' + points.map(function (p) { return p.lon.toFixed(4); }).join(',')
-      + '&elevation=' + points.map(function (p) { return Math.round(p.ele); }).join(',') + '&hourly=cape,precipitation&models=ecmwf_ifs025&timezone=' + encodeURIComponent((window.TREK && window.TREK.timezone) || 'auto') + '&start_date=' + startDate + '&end_date=' + endDate;
+      + '&elevation=' + points.map(function (p) { return Math.round(p.ele); }).join(',') + '&hourly=cape,precipitation,weather_code&models=ecmwf_ifs025&timezone=' + encodeURIComponent((window.TREK && window.TREK.timezone) || 'auto') + '&start_date=' + startDate + '&end_date=' + endDate;
     return getJson(u).then(function (locs) {
       /* keep only the share of members with storm conditions per hour: small enough to cache */
       return locs.map(function (loc) {
         var keys = Object.keys(loc.hourly).filter(function (k) { return k.indexOf('cape') === 0; }), n = keys.length, frac = [];
         loc.hourly.time.forEach(function (t, i) {
-          var hit = 0; keys.forEach(function (k) { var suf = k.slice(4), c = loc.hourly[k][i], p = (loc.hourly['precipitation' + suf] || [])[i]; if ((c != null && c >= 400) || (p != null && p >= 2)) hit++; });
+          var hit = 0; keys.forEach(function (k) { var suf = k.slice(4), c = loc.hourly[k][i], p = (loc.hourly['precipitation' + suf] || [])[i], w = (loc.hourly['weather_code' + suf] || [])[i]; if ((w != null && w >= 95) || (c != null && c >= 400 && p != null && p >= 1)) hit++; });
           frac.push(n ? hit / n : 0);
         });
         return { time: loc.hourly.time, frac: frac, members: n };
@@ -462,16 +466,16 @@
     var fl = null, cape = 0, storm = [];
     hours(loc, date).forEach(function (x) {
       if (x.h >= 6 && x.h <= 18) { var v = hv(loc, 'freezing_level_height', x.i); if (v != null && (fl == null || v < fl)) fl = v; }
-      var c = hv(loc, 'cape', x.i) || 0, code = hv(loc, 'weather_code', x.i) || 0;
+      var c = hv(loc, 'cape', x.i) || 0;
       if (x.h >= 9 && x.h <= 21 && c > cape) cape = c;
-      if ((c >= 400 || code >= 95) && x.h >= 8 && x.h <= 21) storm.push(x.h);
+      if (stormAt(loc, x.i) && x.h >= 8 && x.h <= 21) storm.push(x.h);
     });
     return { fl: fl, cape: cape, storm: storm };
   }
   function warnings(L, day, N, Hh, iN, iH, card) {
     var w = [], dN = N.daily, dH = Hh && Hh.daily, hs = hourStats(Hh || N, dN.time[iN]);
     var codes = [dN.weather_code[iN], dH ? dH.weather_code[iH] : 0];
-    if (codes.some(function (c) { return c >= 95; }) || hs.cape >= 400) {
+    if (codes.some(function (c) { return c >= 95; }) || hs.storm.length) {
       var ps0 = plannedStart(day.n) || 8, first = hs.storm.length ? hs.storm[0] : null, lastH = hs.storm.length ? hs.storm[hs.storm.length - 1] : null;
       var extra = first != null ? ' ' + first + ':00–' + (lastH + 1) + ':00' : '';
       var advice = first == null ? '' : first - 1 >= ps0 + 2 ? ' · ' + L.leave + ' ' + (first - 1) + ':00' : first - 1 >= 6 ? ' · ' + L.early + ' ' + (first - 1) + ':00' : ' · ' + L.wait;
@@ -500,7 +504,7 @@
       var pos = posAt(tl, startH, h), ns = nearestSample(samples, locs, sIdx, pos.pt.d), loc = ns.loc, hi = hourIndex(loc, date, h);
       var row = { h: h, ele: pos.pt.ele, d: pos.pt.d, done: pos.done, before: pos.before, name: ns.dd < 700 ? ns.s.name : null, exposed: exposed(day, pos.pt.ele, ns.dd < 700 ? ns.s : null) };
       if (hi >= 0) { row.temp = hv(loc, 'temperature_2m', hi); row.rain = hv(loc, 'precipitation', hi) || 0; row.prob = hv(loc, 'precipitation_probability', hi) || 0; row.gust = hv(loc, 'wind_gusts_10m', hi) || 0; row.cape = hv(loc, 'cape', hi) || 0; row.code = hv(loc, 'weather_code', hi) || 0; }
-      row.storm = row.code >= 95 || row.cape >= 400; row.walking = !pos.before && !pos.done;
+      row.storm = hi >= 0 && stormAt(loc, hi); row.li = hi >= 0 ? hv(loc, 'lifted_index', hi) : null; row.src = ns.s; row.walking = !pos.before && !pos.done;
       rows.push(row);
     }
     var arrive = startH + tl.total, risk = 0, events = [];
@@ -509,7 +513,7 @@
       var heatLimit = (window.TREK && window.TREK.heatLimit) || 32;
       var bad = (r.storm ? 'storm' : r.rain >= 3 ? 'rain' : r.gust >= 60 ? 'wind' : (r.temp != null && r.temp >= heatLimit) ? 'heat' : null);
       if (bad && (r.exposed || bad === 'heat')) risk++;
-      if (bad) events.push({ h: r.h, kind: bad, where: r.name, ele: r.ele, exposed: r.exposed, gust: r.gust, rain: r.rain, temp: r.temp });
+      if (bad) events.push({ h: r.h, kind: bad, where: r.name, ele: r.ele, exposed: r.exposed, gust: r.gust, rain: r.rain, temp: r.temp, cape: r.cape, li: r.li, prob: r.prob, code: r.code, src: r.src });
     });
     return { rows: rows, arrive: arrive, risk: risk, events: events, sunset: sunset, tl: tl };
   }
@@ -568,7 +572,9 @@
   }
   function eventText(L, e) {
     var what = e.kind === 'storm' ? L.w.storm.split(':')[0] : e.kind === 'rain' ? L.rain + ' ' + e.rain.toFixed(0) + ' mm/h' : e.kind === 'heat' ? L.w.heat.split(':')[0] + ' ' + Math.round(e.temp) + ' °C' : L.gusts + ' ' + Math.round(e.gust) + ' km/h';
-    return fmtH(e.h) + ' · ' + (e.where ? L.reach + ' ' + e.where + ' ' : '') + Math.round(e.ele) + ' m · ' + what + (e.exposed ? ' ⚠' : '');
+    var vals = e.kind === 'storm' ? ' (CAPE ' + Math.round(e.cape) + ', LI ' + (e.li == null ? '?' : e.li.toFixed(1)) + ', ' + L.rain + ' ' + e.prob + ' %, code ' + e.code + ')' : '';
+    var src = e.src && e.date ? ' <a class="wxsrc" target="_blank" rel="noopener" href="' + sourceUrl(e.src, e.date) + '">' + L.source + '</a>' : '';
+    return fmtH(e.h) + ' · ' + (e.where ? L.reach + ' ' + e.where + ' ' : '') + Math.round(e.ele) + ' m · ' + what + vals + (e.exposed ? ' ⚠' : '') + src;
   }
   /* ---- card render ---- */
   function render(el, lang, day, N, Hh, meta, card) {
@@ -587,11 +593,11 @@
     rows.push('<span><span class="wxk">' + L.sun + '</span> ' + dN.sunrise[iN].slice(11) + '–' + dN.sunset[iN].slice(11) + '</span>');
     var html = '<div class="wxrow">' + rows.join('') + '</div>';
     var ws = warnings(L, day, N, Hh, iN, iH, card);
-    if (ws.length) html += '<div>' + ws.map(function (x) { return '<span class="wxwarn ' + x[1] + '">' + L.w[x[0]] + x[2] + '</span>'; }).join('') + '</div>';
+    if (ws.length) html += '<div>' + ws.map(function (x) { return '<span class="wxwarn ' + x[1] + '">' + L.w[x[0]] + x[2] + ' <a class="wxsrc" target="_blank" rel="noopener" href="' + sourceUrl(day.high || day.night, date) + '">' + L.source + '</a></span>'; }).join('') + '</div>';
     var age = Math.round((Date.now() - meta.t) / 60000), ageTxt = age < 60 ? age + ' min' : Math.round(age / 60) + ' h';
     var leadDays = Math.round((new Date(date + 'T12:00:00').getTime() - Date.now()) / 864e5), leadTxt = leadDays > 4 ? ' · ' + leadDays + ' ' + L.lead + ', ' + L.lowconf : '';
     html += '<div class="wxmeta"><span class="wxfresh' + (age >= 360 ? ' old' : '') + '">' + L.fetched + (window.TREK && window.TREK.weatherModelLabel ? ' · ' + window.TREK.weatherModelLabel : '') + ' ' + meta.when + ' (' + ageTxt + ' ' + L.ago + (age >= 360 ? ', ' + L.stale : '') + (meta.stale ? ', ' + L.offline : '') + ')' + leadTxt + '</span> <button type="button" class="wxbtn" data-wx="refresh">' + L.refresh + '</button>' + (Hh ? ' <button type="button" class="wxbtn" data-wx="hourly">' + L.hourly + ' ▾</button>' : '') + '</div>';
-    html += '<div class="wxhour" hidden><div class="wxslider"><label><span class="wxk">' + L.start + '</span> <output></output></label><input type="range" min="5.5" max="10" step="0.5"><span class="wxrec"></span></div><canvas></canvas><div class="wxread"></div><div class="wxevents"></div><div class="wxlegend">' + L.legend + '</div></div>';
+    html += '<div class="wxhour" hidden><div class="wxslider"><label><span class="wxk">' + L.start + '</span> <output></output></label><input type="range" min="5.5" max="10" step="0.5"><span class="wxrec"></span></div><canvas></canvas><div class="wxread"></div><div class="wxevents"></div><div class="wxlegend">' + L.legend + ' · ' + L.rule + '</div></div>';
     el.innerHTML = html;
     var hourBox = el.querySelector('.wxhour'), canvas = hourBox.querySelector('canvas'), btn = el.querySelector('[data-wx="hourly"]');
     if (!btn) { hourBox.remove(); return; }
@@ -602,7 +608,7 @@
       var sim = simulate(day, card, N, samples, sIdx, ctx.locs, date, s);
       out.textContent = fmtH(s) + ' → ' + L.arrive + ' ' + fmtH(sim.arrive) + (sim.arrive > sim.sunset ? ' (' + L.afterSunset + ')' : '') + ' · ' + sim.risk + ' ' + L.exposed;
       drawDay(canvas, L, day, sim, ens, date, N);
-      evBox.innerHTML = sim.events.length ? '<div class="wxk">' + L.events + '</div>' + sim.events.slice(0, 6).map(function (e) { return '<div class="wxev ' + e.kind + (e.exposed ? ' exp' : '') + '">' + eventText(L, e) + '</div>'; }).join('') : '<div class="wxev ok">' + L.noevents + '</div>';
+      evBox.innerHTML = sim.events.length ? '<div class="wxk">' + L.events + '</div>' + sim.events.slice(0, 6).map(function (e) { e.date = date; return '<div class="wxev ' + e.kind + (e.exposed ? ' exp' : '') + '">' + eventText(L, e) + '</div>'; }).join('') : '<div class="wxev ok">' + L.noevents + '</div>';
       read.textContent = (ens ? ens.members + ' ' + L.members + ' · ' : '') + ((window.TREK && window.TREK.weatherModelLabel) || 'Open-Meteo');
     }
     slider.value = startH; slider.addEventListener('input', function () { show(+slider.value); });
