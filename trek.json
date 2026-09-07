@@ -2,12 +2,12 @@
   "slug": "yam2yam",
   "name": "Sea to Sea Dossier",
   "shortName": "Yam el Yam",
-  "description": "Four-day tent plan for the Sea to Sea trail (Yam el Yam) from Achziv on the Mediterranean to the Sea of Galilee, 16 to 19 October 2026.",
-  "gpxDescription": "Sea to Sea (Yam el Yam), Achziv to the Kinneret, 16-19 October 2026. Route from OpenStreetMap contributors (ODbL).",
+  "description": "Four-day tent plan for the Sea to Sea trail (Yam el Yam) from Achziv on the Mediterranean to the Sea of Galilee, 10 to 13 September 2026.",
+  "gpxDescription": "Sea to Sea (Yam el Yam), Achziv to the Kinneret, 10-13 September 2026. Route from OpenStreetMap contributors (ODbL).",
   "hostname": "yam2yam.yarden-zamir.com",
   "gpx": "site/route.gpx",
   "timezone": "Asia/Jerusalem",
-  "plannedStart": 7,
+  "plannedStart": 6,
   "languages": [
     "en",
     "he"
@@ -61,25 +61,25 @@
   },
   "waypoints": [
     {
-      "name": "NIGHT 0 · Thu 15 Oct · Achziv: INPA campsite in Achziv National Park, paid, showers, no dogs; free alternative the eucalyptus grove behind the Yad LeYad memorial 800 m north",
+      "name": "NIGHT 0 · Wed 9 Sep · Achziv: INPA campsite in Achziv National Park, paid, showers, no dogs; free alternative the eucalyptus grove behind the Yad LeYad memorial 800 m north",
       "lat": 33.04379,
       "lon": 35.1007,
       "type": "Night"
     },
     {
-      "name": "NIGHT 1 · Fri 16 Oct · Abirim: free night camp with a tap and a bin at the village entrance, no toilets, 546 m",
+      "name": "NIGHT 1 · Thu 10 Sep · Abirim: free night camp with a tap and a bin at the village entrance, no toilets, 546 m",
       "lat": 33.04296,
       "lon": 35.28684,
       "type": "Night"
     },
     {
-      "name": "NIGHT 2 · Sat 17 Oct · Horbat Hammama: INPA free night camp, tap, toilets, fires in the marked spots, 886 m, cold nights",
+      "name": "NIGHT 2 · Fri 11 Sep · Horbat Hammama: INPA free night camp, tap, toilets, fires in the marked spots, 886 m, the coolest night",
       "lat": 33.0091,
       "lon": 35.39375,
       "type": "Night"
     },
     {
-      "name": "NIGHT 3 · Sun 18 Oct · Nahal Amud night camp: INPA paid camp at the upper reserve entrance, book online, check-in 15:00-19:00, taps, toilets, 530 m",
+      "name": "NIGHT 3 · Sat 12 Sep · Nahal Amud night camp: INPA paid camp at the upper reserve entrance, book online, check-in 15:00-19:00, taps, toilets, 530 m",
       "lat": 32.97314,
       "lon": 35.46253,
       "type": "Night"
@@ -91,7 +91,7 @@
       "type": "Night"
     },
     {
-      "name": "FINISH · Mon 19 Oct · Ginosar, Kinneret shore: -211 m, bus 59 from the Ginosar stop on road 90",
+      "name": "FINISH · Sun 13 Sep · Ginosar, Kinneret shore: -211 m, Rosh Hashana: no bus 59 from the Ginosar stop until the holiday ends about 19:15",
       "lat": 32.85484,
       "lon": 35.53224,
       "type": "Flag"
