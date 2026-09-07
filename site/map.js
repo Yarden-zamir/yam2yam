@@ -317,7 +317,7 @@
   var T = {
     en: { night: 'night spot', finish: 'finish', high: 'high point', rain: 'rain', prob: 'chance', gusts: 'gusts', fl: 'freezing level', uv: 'UV', sun: 'sun',
       feels: 'feels', fetched: 'Open-Meteo · fetched', ago: 'ago', stale: 'stale', offline: 'offline copy', refresh: 'Refresh', range: 'Forecast not yet available for this date (16-day horizon). Reload closer to the day.',
-      err: 'Weather unavailable right now.', hourly: 'Hour by hour', hide: 'Hide hours', walk: 'planned walking', leave: 'Leave the pass by', stormHours: 'storm risk', early: 'start at first light and clear the high point before', wait: 'storms from the start of the day: consider waiting it out or a low route', legend: 'top: your altitude through the day, thick where exposed above the treeline or at a pass · red: storm risk where you are · blue: rain where you are · strip: share of ECMWF ensemble members with storm conditions at the high point · bottom: temperature at your position, bars rain mm per hour · dotted: sunrise, sunset', lead: 'days out', lowconf: 'low confidence beyond 4 days', start: 'Start', arrive: 'arrive', exposed: 'exposed hours in risk', recommend: 'Recommended start', events: 'What you meet on the way', noevents: 'No storm, heavy rain or strong wind on your line for this start.', members: 'of ensemble members', reach: 'you reach', at: 'at', ensLoading: 'ensemble…', afterSunset: 'after sunset', afterTent: 'inside the tent window', temp: 'temp', highT: 'high point', nightT: 'night spot',
+      err: 'Weather unavailable right now.', hourly: 'Hour by hour', hide: 'Hide hours', walk: 'planned walking', leave: 'Leave the pass by', stormHours: 'storm risk', early: 'start at first light and clear the high point before', wait: 'storms from the start of the day: consider waiting it out or a low route', legend: 'top: your altitude through the day, thick where exposed above the treeline or at a pass · red: storm risk where you are · blue: rain where you are · orange: heat · strip: share of ECMWF ensemble members with storm conditions at the high point · bottom: temperature at your position, bars rain mm per hour · dotted: sunrise, sunset', lead: 'days out', lowconf: 'low confidence beyond 4 days', start: 'Start', arrive: 'arrive', exposed: 'exposed hours in risk', recommend: 'Recommended start', events: 'What you meet on the way', noevents: 'No storm, heavy rain or strong wind on your line for this start.', members: 'of ensemble members', reach: 'you reach', at: 'at', ensLoading: 'ensemble…', afterSunset: 'after sunset', afterTent: 'inside the tent window', temp: 'temp', highT: 'high point', nightT: 'night spot',
       w: { storm: 'Thunderstorm risk at the high point', rain: 'Rain likely', snow: 'Snow or freezing on the high point',
         wind: 'Strong gusts on the ridge', frost: 'Frost at the bivouac', heat: 'Heat on the low ground: start early, 3 L water', fog: 'Fog: navigation care on boulder fields', uv: 'Very high UV', cold: 'Cold night', late: 'Planned arrival after sunset' },
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' },
@@ -325,7 +325,7 @@
     },
     he: { night: 'לינה', finish: 'סיום', high: 'נקודה גבוהה', rain: 'גשם', prob: 'סיכוי', gusts: 'משבים', fl: 'גובה קיפאון', uv: 'UV', sun: 'שמש',
       feels: 'מורגש', fetched: 'Open-Meteo · נמשך', ago: 'לפני', stale: 'לא עדכני', offline: 'עותק אופליין', refresh: 'רענן', range: 'עדיין אין תחזית לתאריך הזה (טווח של 16 יום). טענו שוב קרוב ליום.',
-      err: 'מזג האוויר לא זמין כרגע.', hourly: 'שעה אחר שעה', hide: 'הסתר שעות', walk: 'הליכה מתוכננת', leave: 'לרדת מהמעבר עד', stormHours: 'סיכון לסופות', early: 'לצאת עם אור ראשון ולעבור את הנקודה הגבוהה לפני', wait: 'סופות מתחילת היום: לשקול להמתין או מסלול נמוך', legend: 'למעלה: הגובה שלכם לאורך היום, עבה איפה שחשופים מעל קו העצים או במעבר · אדום: סיכון סופה איפה שאתם · כחול: גשם איפה שאתם · הפס: חלק חברי האנסמבל של ECMWF עם תנאי סופה בנקודה הגבוהה · למטה: טמפרטורה במיקום שלכם, עמודות גשם מ\"מ לשעה · מקווקו: זריחה, שקיעה', lead: 'ימים קדימה', lowconf: 'ודאות נמוכה מעבר ל-4 ימים', start: 'יציאה', arrive: 'הגעה', exposed: 'שעות חשופות בסיכון', recommend: 'יציאה מומלצת', events: 'מה תפגשו בדרך', noevents: 'אין סופה, גשם כבד או רוח חזקה על הקו שלכם ליציאה הזו.', members: 'מחברי האנסמבל', reach: 'מגיעים ל', at: 'ב', ensLoading: 'אנסמבל…', afterSunset: 'אחרי השקיעה', afterTent: 'בתוך חלון האוהל', temp: 'טמפ\'', highT: 'נקודה גבוהה', nightT: 'לינה',
+      err: 'מזג האוויר לא זמין כרגע.', hourly: 'שעה אחר שעה', hide: 'הסתר שעות', walk: 'הליכה מתוכננת', leave: 'לרדת מהמעבר עד', stormHours: 'סיכון לסופות', early: 'לצאת עם אור ראשון ולעבור את הנקודה הגבוהה לפני', wait: 'סופות מתחילת היום: לשקול להמתין או מסלול נמוך', legend: 'למעלה: הגובה שלכם לאורך היום, עבה איפה שחשופים מעל קו העצים או במעבר · אדום: סיכון סופה איפה שאתם · כחול: גשם איפה שאתם · כתום: חום · הפס: חלק חברי האנסמבל של ECMWF עם תנאי סופה בנקודה הגבוהה · למטה: טמפרטורה במיקום שלכם, עמודות גשם מ\"מ לשעה · מקווקו: זריחה, שקיעה', lead: 'ימים קדימה', lowconf: 'ודאות נמוכה מעבר ל-4 ימים', start: 'יציאה', arrive: 'הגעה', exposed: 'שעות חשופות בסיכון', recommend: 'יציאה מומלצת', events: 'מה תפגשו בדרך', noevents: 'אין סופה, גשם כבד או רוח חזקה על הקו שלכם ליציאה הזו.', members: 'מחברי האנסמבל', reach: 'מגיעים ל', at: 'ב', ensLoading: 'אנסמבל…', afterSunset: 'אחרי השקיעה', afterTent: 'בתוך חלון האוהל', temp: 'טמפ\'', highT: 'נקודה גבוהה', nightT: 'לינה',
       w: { storm: 'סיכון לסופות רעמים בנקודה הגבוהה', rain: 'גשם צפוי', snow: 'שלג או קיפאון בנקודה הגבוהה',
         wind: 'משבי רוח חזקים על הרכס', frost: 'כפור בלינה', heat: 'חום בגובה הנמוך: לצאת מוקדם, 3 ליטר מים', fog: 'ערפל: זהירות בניווט בשדות הבולדרים', uv: 'קרינה גבוהה מאוד', cold: 'לילה קר', late: 'הגעה מתוכננת אחרי השקיעה' },
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' },
@@ -498,9 +498,10 @@
     var arrive = startH + tl.total, risk = 0, events = [];
     rows.forEach(function (r) {
       if (!r.walking) return;
-      var bad = (r.storm ? 'storm' : r.rain >= 3 ? 'rain' : r.gust >= 60 ? 'wind' : null);
-      if (bad && r.exposed) risk++;
-      if (bad) events.push({ h: r.h, kind: bad, where: r.name, ele: r.ele, exposed: r.exposed, gust: r.gust, rain: r.rain });
+      var heatLimit = (window.TREK && window.TREK.heatLimit) || 32;
+      var bad = (r.storm ? 'storm' : r.rain >= 3 ? 'rain' : r.gust >= 60 ? 'wind' : (r.temp != null && r.temp >= heatLimit) ? 'heat' : null);
+      if (bad && (r.exposed || bad === 'heat')) risk++;
+      if (bad) events.push({ h: r.h, kind: bad, where: r.name, ele: r.ele, exposed: r.exposed, gust: r.gust, rain: r.rain, temp: r.temp });
     });
     return { rows: rows, arrive: arrive, risk: risk, events: events, sunset: sunset, tl: tl };
   }
@@ -528,7 +529,8 @@
     c2.clearRect(0, 0, W, H);
     /* risk shading on both panels, at your position; faint outside walking hours */
     sim.rows.forEach(function (r) {
-      var xa = x(r.h - .5), xb = x(r.h + .5), col = r.storm ? mark : (r.rain >= 3 ? lake : (r.gust >= 60 ? sign : null));
+      var heatLimit = (window.TREK && window.TREK.heatLimit) || 32;
+      var xa = x(r.h - .5), xb = x(r.h + .5), col = r.storm ? mark : (r.rain >= 3 ? lake : (r.gust >= 60 ? sign : (r.temp != null && r.temp >= heatLimit ? '#E07A2F' : null)));
       if (!col) return; c2.fillStyle = col; c2.globalAlpha = r.walking ? .22 : .07; c2.fillRect(xa, topT, xb - xa, topB - topT); c2.fillRect(xa, botT, xb - xa, botB - botT); c2.globalAlpha = 1;
     });
     /* walking window bar */
@@ -557,7 +559,7 @@
     c2.beginPath(); var started = false; sim.rows.forEach(function (r) { if (r.temp == null) return; if (!started) { c2.moveTo(x(r.h), yT(r.temp)); started = true; } else c2.lineTo(x(r.h), yT(r.temp)); }); c2.strokeStyle = ink; c2.lineWidth = 1.6; c2.stroke(); c2.lineWidth = 1;
   }
   function eventText(L, e) {
-    var what = e.kind === 'storm' ? L.w.storm.split(':')[0] : e.kind === 'rain' ? L.rain + ' ' + e.rain.toFixed(0) + ' mm/h' : L.gusts + ' ' + Math.round(e.gust) + ' km/h';
+    var what = e.kind === 'storm' ? L.w.storm.split(':')[0] : e.kind === 'rain' ? L.rain + ' ' + e.rain.toFixed(0) + ' mm/h' : e.kind === 'heat' ? L.w.heat.split(':')[0] + ' ' + Math.round(e.temp) + ' °C' : L.gusts + ' ' + Math.round(e.gust) + ' km/h';
     return fmtH(e.h) + ' · ' + (e.where ? L.reach + ' ' + e.where + ' ' : '') + Math.round(e.ele) + ' m · ' + what + (e.exposed ? ' ⚠' : '');
   }
   /* ---- card render ---- */
