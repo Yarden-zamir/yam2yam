@@ -176,7 +176,7 @@
     canvas.addEventListener('mousemove', hover); canvas.addEventListener('touchstart', hover, { passive: false }); canvas.addEventListener('touchmove', hover, { passive: false });
     canvas.addEventListener('mouseleave', function () { drawProfile(null); if (hoverMarker) { map.removeLayer(hoverMarker); hoverMarker = null; } });
     var stats = container.querySelector('.profstats');
-    stats.textContent = T.total + ' ' + (route.length / 1000).toFixed(1) + ' ' + T.km + ' · ' + T.ascent + ' ' + Math.round(route.ascent) + ' ' + T.m + ' · ' + T.descent + ' ' + Math.round(route.descent) + ' ' + T.m + ((TREK.elevation) ? ' · ' + TREK.elevation : '');
+    stats.textContent = T.total + ' ' + (route.length / 1000).toFixed(1) + ' ' + T.km + ' · ' + T.ascent + ' ' + Math.round(route.ascent) + ' ' + T.m + ' · ' + T.descent + ' ' + Math.round(route.descent) + ' ' + T.m + (TREK.elevation ? ' · ' + TREK.elevation : '');
     drawProfile(null);
     window.addEventListener('resize', function () { drawProfile(null); });
 
@@ -317,21 +317,23 @@
   var T = {
     en: { night: 'night spot', finish: 'finish', high: 'high point', rain: 'rain', prob: 'chance', gusts: 'gusts', fl: 'freezing level', uv: 'UV', sun: 'sun',
       feels: 'feels', fetched: 'Open-Meteo · fetched', ago: 'ago', stale: 'stale', offline: 'offline copy', refresh: 'Refresh', range: 'Forecast not yet available for this date (16-day horizon). Reload closer to the day.',
-      err: 'Weather unavailable right now.', hourly: 'Hour by hour', hide: 'Hide hours', walk: 'planned walking', leave: 'Leave the pass by', temp: 'temp', highT: 'high point', nightT: 'night spot',
-      w: { storm: 'Thunderstorm risk: be off the passes by early afternoon', rain: 'Rain likely', snow: 'Snow or freezing on the high point',
+      err: 'Weather unavailable right now.', hourly: 'Hour by hour', hide: 'Hide hours', walk: 'planned walking', leave: 'Leave the pass by', stormHours: 'storm risk', early: 'start at first light and clear the high point before', wait: 'storms from the start of the day: consider waiting it out or a low route', legend: 'solid: high point · dashed: night spot · bars: rain mm per hour · red: storm hours · yellow: planned walking, sunrise and sunset', lead: 'days out', lowconf: 'low confidence beyond 4 days', temp: 'temp', highT: 'high point', nightT: 'night spot',
+      w: { storm: 'Thunderstorm risk at the high point', rain: 'Rain likely', snow: 'Snow or freezing on the high point',
         wind: 'Strong gusts on the ridge', frost: 'Frost at the bivouac', heat: 'Heat on the low ground: start early, 3 L water', fog: 'Fog: navigation care on boulder fields', uv: 'Very high UV', cold: 'Cold night', late: 'Planned arrival after sunset' },
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' },
       snap: { far: 'You are {km} km from the route. Snapshot not applied.', at: 'You are at km {km} of the route', walked: 'walked today', left: 'left to', ascent: 'ascent left', pace: 'pace', measured: 'measured', planned: 'planned', eta: 'ETA', sunset: 'sunset', tent: 'tent window opens 19:00', done: 'done', show: 'show', undo: 'not done', noGeo: 'Location is not available in this browser.', taken: 'Snapshot', manual: 'picked on map', pick: 'Tap the map where you are.', off: 'off route by', before: 'Trek not started: you are near the start.', after: 'Past the finish: well done.' }
     },
     he: { night: 'לינה', finish: 'סיום', high: 'נקודה גבוהה', rain: 'גשם', prob: 'סיכוי', gusts: 'משבים', fl: 'גובה קיפאון', uv: 'UV', sun: 'שמש',
       feels: 'מורגש', fetched: 'Open-Meteo · נמשך', ago: 'לפני', stale: 'לא עדכני', offline: 'עותק אופליין', refresh: 'רענן', range: 'עדיין אין תחזית לתאריך הזה (טווח של 16 יום). טענו שוב קרוב ליום.',
-      err: 'מזג האוויר לא זמין כרגע.', hourly: 'שעה אחר שעה', hide: 'הסתר שעות', walk: 'הליכה מתוכננת', leave: 'לרדת מהמעבר עד', temp: 'טמפ\'', highT: 'נקודה גבוהה', nightT: 'לינה',
-      w: { storm: 'סיכון לסופות רעמים: לרדת מהמעברים עד תחילת אחר הצהריים', rain: 'גשם צפוי', snow: 'שלג או קיפאון בנקודה הגבוהה',
+      err: 'מזג האוויר לא זמין כרגע.', hourly: 'שעה אחר שעה', hide: 'הסתר שעות', walk: 'הליכה מתוכננת', leave: 'לרדת מהמעבר עד', stormHours: 'סיכון לסופות', early: 'לצאת עם אור ראשון ולעבור את הנקודה הגבוהה לפני', wait: 'סופות מתחילת היום: לשקול להמתין או מסלול נמוך', legend: 'קו מלא: נקודה גבוהה · מקווקו: לינה · עמודות: גשם מ"מ לשעה · אדום: שעות סופה · צהוב: הליכה מתוכננת, זריחה ושקיעה', lead: 'ימים קדימה', lowconf: 'ודאות נמוכה מעבר ל-4 ימים', temp: 'טמפ\'', highT: 'נקודה גבוהה', nightT: 'לינה',
+      w: { storm: 'סיכון לסופות רעמים בנקודה הגבוהה', rain: 'גשם צפוי', snow: 'שלג או קיפאון בנקודה הגבוהה',
         wind: 'משבי רוח חזקים על הרכס', frost: 'כפור בלינה', heat: 'חום בגובה הנמוך: לצאת מוקדם, 3 ליטר מים', fog: 'ערפל: זהירות בניווט בשדות הבולדרים', uv: 'קרינה גבוהה מאוד', cold: 'לילה קר', late: 'הגעה מתוכננת אחרי השקיעה' },
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' },
       snap: { far: 'אתם במרחק {km} ק"מ מהמסלול. צילום המצב לא הוחל.', at: 'אתם בק"מ {km} של המסלול', walked: 'הלכתם היום', left: 'נשאר עד', ascent: 'עלייה שנותרה', pace: 'קצב', measured: 'נמדד', planned: 'מתוכנן', eta: 'הגעה משוערת', sunset: 'שקיעה', tent: 'מותר להקים מ-19:00', done: 'הושלם', show: 'הצג', undo: 'לא הושלם', noGeo: 'מיקום לא זמין בדפדפן הזה.', taken: 'צילום מצב', manual: 'נבחר במפה', pick: 'לחצו על המפה איפה שאתם.', off: 'מחוץ למסלול ב', before: 'הטרק עוד לא התחיל: אתם ליד ההתחלה.', after: 'אחרי הסיום: כל הכבוד.' }
     }
   };
+  /* per-trek wording: trek.json "strings": {"en": {"w": {"heat": "..."}, "snap": {...}}, "he": {...}} overrides any key */
+  (function () { var o = (window.TREK && window.TREK.strings) || {}; Object.keys(o).forEach(function (lang) { if (!T[lang]) return; Object.keys(o[lang]).forEach(function (grp) { if (typeof o[lang][grp] === 'object' && T[lang][grp]) Object.assign(T[lang][grp], o[lang][grp]); else T[lang][grp] = o[lang][grp]; }); }); })();
   var HOURLY = 'temperature_2m,precipitation,precipitation_probability,weather_code,wind_gusts_10m,cape,freezing_level_height,cloud_cover';
   var DAILY = 'weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_min,precipitation_sum,precipitation_probability_max,snowfall_sum,wind_gusts_10m_max,uv_index_max,sunrise,sunset';
   function hav(a, b) { var R = 6371000, dLat = (b.lat - a.lat) * Math.PI / 180, dLon = (b.lon - a.lon) * Math.PI / 180, s = Math.sin(dLat / 2), t = Math.sin(dLon / 2); return 2 * R * Math.asin(Math.sqrt(s * s + Math.cos(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * t * t)); }
@@ -369,11 +371,32 @@
   function plannedStart(n) { return n === 0 ? null : ((window.TREK && window.TREK.plannedStart) || 8); }
 
   /* ---- forecast ---- */
-  function fetchForecast(points, startDate, endDate) {
-    var q = API + '?latitude=' + points.map(function (p) { return p.lat.toFixed(4); }).join(',') + '&longitude=' + points.map(function (p) { return p.lon.toFixed(4); }).join(',')
+  /* Forecast. trek.json "weatherModel" picks an Open-Meteo model (for example meteofrance_seamless for
+     the Alps, whose AROME/ARPEGE runs only reach about 4 days); values it leaves null are filled from
+     the default best_match blend, so the whole trek always has numbers. */
+  function omUrl(points, startDate, endDate, model) {
+    return API + '?latitude=' + points.map(function (p) { return p.lat.toFixed(4); }).join(',') + '&longitude=' + points.map(function (p) { return p.lon.toFixed(4); }).join(',')
       + '&elevation=' + points.map(function (p) { return Math.round(p.ele); }).join(',') + '&daily=' + DAILY + '&hourly=' + HOURLY
-      + '&timezone=' + encodeURIComponent((window.TREK && window.TREK.timezone) || 'auto') + '&wind_speed_unit=kmh&start_date=' + startDate + '&end_date=' + endDate;
-    return fetch(q).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }).then(function (j) { return Array.isArray(j) ? j : [j]; });
+      + '&timezone=' + encodeURIComponent((window.TREK && window.TREK.timezone) || 'auto') + '&wind_speed_unit=kmh&start_date=' + startDate + '&end_date=' + endDate + (model ? '&models=' + model : '');
+  }
+  function getJson(u) { return fetch(u).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }).then(function (j) { return Array.isArray(j) ? j : [j]; }); }
+  function fillNulls(primary, fallback) {
+    primary.forEach(function (loc, k) {
+      var fb = fallback[k]; if (!fb) return;
+      ['daily', 'hourly'].forEach(function (grp) {
+        Object.keys(loc[grp]).forEach(function (key) {
+          if (key === 'time' || !fb[grp][key]) return;
+          loc[grp][key] = loc[grp][key].map(function (v, i) { return v == null ? fb[grp][key][i] : v; });
+        });
+      });
+    });
+    return primary;
+  }
+  function fetchForecast(points, startDate, endDate) {
+    var model = window.TREK && window.TREK.weatherModel;
+    if (!model || model === 'best_match') return getJson(omUrl(points, startDate, endDate, null));
+    return Promise.all([getJson(omUrl(points, startDate, endDate, model)), getJson(omUrl(points, startDate, endDate, null))])
+      .then(function (r) { return fillNulls(r[0], r[1]); });
   }
   function hours(loc, date) { var out = []; loc.hourly.time.forEach(function (t, i) { if (t.indexOf(date) === 0) out.push({ h: +t.slice(11, 13), i: i }); }); return out; }
   function hv(loc, key, i) { var v = loc.hourly[key]; return v ? v[i] : null; }
@@ -390,7 +413,12 @@
   function warnings(L, day, N, Hh, iN, iH, card) {
     var w = [], dN = N.daily, dH = Hh && Hh.daily, hs = hourStats(Hh || N, dN.time[iN]);
     var codes = [dN.weather_code[iN], dH ? dH.weather_code[iH] : 0];
-    if (codes.some(function (c) { return c >= 95; }) || hs.cape >= 400) w.push(['storm', 'bad', hs.storm.length ? ' (' + L.leave + ' ' + Math.max(8, hs.storm[0] - 1) + ':00)' : '']);
+    if (codes.some(function (c) { return c >= 95; }) || hs.cape >= 400) {
+      var ps0 = plannedStart(day.n) || 8, first = hs.storm.length ? hs.storm[0] : null, lastH = hs.storm.length ? hs.storm[hs.storm.length - 1] : null;
+      var extra = first != null ? ' ' + first + ':00–' + (lastH + 1) + ':00' : '';
+      var advice = first == null ? '' : first - 1 >= ps0 + 2 ? ' · ' + L.leave + ' ' + (first - 1) + ':00' : first - 1 >= 6 ? ' · ' + L.early + ' ' + (first - 1) + ':00' : ' · ' + L.wait;
+      w.push(['storm', 'bad', extra + advice]);
+    }
     var rain = Math.max(dN.precipitation_sum[iN], dH ? dH.precipitation_sum[iH] : 0), prob = Math.max(dN.precipitation_probability_max[iN] || 0, dH ? dH.precipitation_probability_max[iH] || 0 : 0);
     if (rain >= 8 || prob >= 60) w.push(['rain', rain >= 15 ? 'bad' : '', '']);
     if (dH && (dH.snowfall_sum[iH] > 0 || (hs.fl != null && hs.fl < day.high.ele + 300))) w.push(['snow', 'bad', '']);
@@ -431,6 +459,8 @@
     for (var t = tmin; t <= tmax; t += 5) { ctx.textAlign = 'right'; ctx.fillText(t + '°', L0 - 4, y(t) + 3); }
     /* sun */
     var iN = N.daily.time.indexOf(date); if (iN >= 0) { [N.daily.sunrise[iN], N.daily.sunset[iN]].forEach(function (s) { var hh = +s.slice(11, 13) + (+s.slice(14, 16)) / 60; ctx.strokeStyle = sign; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(x(hh), T0); ctx.lineTo(x(hh), H - B0); ctx.stroke(); ctx.setLineDash([]); }); }
+    /* rain axis on the right */
+    ctx.fillStyle = muted; ctx.textAlign = 'left'; ctx.fillText(pmax.toFixed(0) + ' mm', W - R0 + 4, yp(pmax) + 4); ctx.fillText('0', W - R0 + 4, H - B0);
     /* rain bars */
     hs.forEach(function (o) { var p = hv(src, 'precipitation', o.i) || 0; if (o.h < h0 || o.h > h1 || p <= 0) return; ctx.fillStyle = lake; ctx.globalAlpha = .55; ctx.fillRect(x(o.h) - 4, yp(p), 8, H - B0 - yp(p)); ctx.globalAlpha = 1; });
     /* temperature lines: high point solid, night spot dashed */
@@ -465,8 +495,9 @@
     var ws = warnings(L, day, N, Hh, iN, iH, card);
     if (ws.length) html += '<div>' + ws.map(function (x) { return '<span class="wxwarn ' + x[1] + '">' + L.w[x[0]] + x[2] + '</span>'; }).join('') + '</div>';
     var age = Math.round((Date.now() - meta.t) / 60000), ageTxt = age < 60 ? age + ' min' : Math.round(age / 60) + ' h';
-    html += '<div class="wxmeta"><span class="wxfresh' + (age >= 360 ? ' old' : '') + '">' + L.fetched + ' ' + meta.when + ' (' + ageTxt + ' ' + L.ago + (age >= 360 ? ', ' + L.stale : '') + (meta.stale ? ', ' + L.offline : '') + ')</span> <button type="button" class="wxbtn" data-wx="refresh">' + L.refresh + '</button> <button type="button" class="wxbtn" data-wx="hourly">' + L.hourly + ' ▾</button></div>';
-    html += '<div class="wxhour" hidden><canvas></canvas><div class="wxread"></div></div>';
+    var leadDays = Math.round((new Date(date + 'T12:00:00').getTime() - Date.now()) / 864e5), leadTxt = leadDays > 4 ? ' · ' + leadDays + ' ' + L.lead + ', ' + L.lowconf : '';
+    html += '<div class="wxmeta"><span class="wxfresh' + (age >= 360 ? ' old' : '') + '">' + L.fetched + (window.TREK && window.TREK.weatherModelLabel ? ' · ' + window.TREK.weatherModelLabel : '') + ' ' + meta.when + ' (' + ageTxt + ' ' + L.ago + (age >= 360 ? ', ' + L.stale : '') + (meta.stale ? ', ' + L.offline : '') + ')' + leadTxt + '</span> <button type="button" class="wxbtn" data-wx="refresh">' + L.refresh + '</button> <button type="button" class="wxbtn" data-wx="hourly">' + L.hourly + ' ▾</button></div>';
+    html += '<div class="wxhour" hidden><canvas></canvas><div class="wxread"></div><div class="wxlegend">' + L.legend + '</div></div>';
     el.innerHTML = html;
     var hourBox = el.querySelector('.wxhour'), canvas = hourBox.querySelector('canvas'), btn = el.querySelector('[data-wx="hourly"]');
     function draw(hx) { drawHourly(canvas, L, day, N, Hh, date, card, hx); }
