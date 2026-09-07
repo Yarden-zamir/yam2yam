@@ -1,0 +1,20 @@
+<script>
+(function(){
+  var btn=document.getElementById('langbtn'),en=document.getElementById('en'),he=document.getElementById('he');
+  function apply(l){
+    var isHe=l==='he';
+    en.hidden=isHe; he.hidden=!isHe;
+    btn.textContent=isHe?'English':'עברית';
+    btn.setAttribute('lang',isHe?'en':'he');
+    document.documentElement.setAttribute('dir',isHe?'rtl':'ltr');
+    try{localStorage.setItem('trek-lang',l)}catch(e){}
+  }
+  var saved='en';
+  try{saved=localStorage.getItem('trek-lang')||'en'}catch(e){}
+  apply(saved);
+  btn.addEventListener('click',function(){apply(en.hidden?'en':'he')});
+
+})();
+</script>
+<script src="/vendor/leaflet.min.js"></script>
+<script src="/map.js" defer></script>

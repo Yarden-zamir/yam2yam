@@ -1,0 +1,7 @@
+{% if environment == "prod" -%}
+yam2yam.yarden-zamir.com
+{%- else -%}
+pr.{{ environment.removeprefix("pr-") }}.yam2yam.yarden-zamir.com
+{%- endif %} {
+    reverse_proxy unix//{{ paths.default_socket }}
+}

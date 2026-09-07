@@ -1,0 +1,252 @@
+{
+  "slug": "yam2yam",
+  "name": "Sea to Sea Dossier",
+  "shortName": "Yam el Yam",
+  "description": "Four-day tent plan for the Sea to Sea trail (Yam el Yam) from Achziv on the Mediterranean to the Sea of Galilee, 16 to 19 October 2026.",
+  "gpxDescription": "Sea to Sea (Yam el Yam), Achziv to the Kinneret, 16-19 October 2026. Route from OpenStreetMap contributors (ODbL).",
+  "hostname": "yam2yam.yarden-zamir.com",
+  "gpx": "site/route.gpx",
+  "timezone": "Asia/Jerusalem",
+  "plannedStart": 7,
+  "languages": [
+    "en",
+    "he"
+  ],
+  "elevationDataset": "srtm30m",
+  "places": {
+    "Achziv National Park campsite": "NIGHT 0",
+    "Achziv": "NIGHT 0",
+    "Betzet beach": "INFO · Betzet beach",
+    "Yad LeYad": "INFO · Yad LeYad",
+    "Nahariya": "TRANSPORT · Achziv",
+    "Ein Hardalit": "Ein Hardalit",
+    "Montfort": "INFO · Montfort",
+    "Goren Park": "CAMPSITE · Goren",
+    "Ein Tamir": "INFO · Ein Tamir",
+    "Ein Ziv": "Ein Ziv",
+    "Abirim": "NIGHT 1",
+    "Elkosh bridge": "ESCAPE · Elkosh",
+    "Ein Hotam": "Ein Hotam",
+    "Hurfeish": "ESCAPE · Hurfeish",
+    "Horbat Hammama": "NIGHT 2",
+    "Har Meron field school": "INFO · Har Meron field school",
+    "Har Meron": "PASS · Har Meron",
+    "Meron summit": "PASS · Har Meron",
+    "Pitul Meron": "CAMPSITE · Pitul Meron",
+    "Meron Center": "ESCAPE · Meron",
+    "Nahal Amud night camp": "NIGHT 3",
+    "Ein Yakim": "Ein Yakim",
+    "Sechvi pools": "INFO · Sechvi pools",
+    "Ein Koves": "INFO · Ein Koves",
+    "Safed industrial zone": "ESCAPE · Safed",
+    "lower Nahal Amud camp": "CAMPSITE · Nahal Amud lower",
+    "Hukok": "ESCAPE · Hukok",
+    "Ginosar": "FINISH",
+    "Kinneret": "FINISH",
+    "Nahal Kziv": "Ein Hardalit",
+    "Nahal Amud": "INFO · Sechvi pools",
+    "חוף בצת": "INFO · Betzet beach",
+    "יד לי\"ד": "INFO · Yad LeYad",
+    "נהריה": "TRANSPORT · Achziv",
+    "גשר אלקוש": "ESCAPE · Elkosh",
+    "חורפיש": "ESCAPE · Hurfeish",
+    "בית ספר שדה הר מירון": "INFO · Har Meron field school",
+    "פסגת מירון": "PASS · Har Meron",
+    "מירון מרכז": "ESCAPE · Meron",
+    "אזור התעשייה צפת": "ESCAPE · Safed",
+    "חוקוק": "ESCAPE · Hukok",
+    "כנרת": "FINISH",
+    "נחל כזיב": "Ein Hardalit",
+    "נחל עמוד": "INFO · Sechvi pools"
+  },
+  "waypoints": [
+    {
+      "name": "NIGHT 0 · Thu 15 Oct · Achziv: INPA campsite in Achziv National Park, paid, showers, no dogs; free alternative the eucalyptus grove behind the Yad LeYad memorial 800 m north",
+      "lat": 33.04379,
+      "lon": 35.1007,
+      "type": "Night"
+    },
+    {
+      "name": "NIGHT 1 · Fri 16 Oct · Abirim: free night camp with a tap and a bin at the village entrance, no toilets, 546 m",
+      "lat": 33.04296,
+      "lon": 35.28684,
+      "type": "Night"
+    },
+    {
+      "name": "NIGHT 2 · Sat 17 Oct · Horbat Hammama: INPA free night camp, tap, toilets, fires in the marked spots, 886 m, cold nights",
+      "lat": 33.0091,
+      "lon": 35.39375,
+      "type": "Night"
+    },
+    {
+      "name": "NIGHT 3 · Sun 18 Oct · Nahal Amud night camp: INPA paid camp at the upper reserve entrance, book online, check-in 15:00-19:00, taps, toilets, 530 m",
+      "lat": 32.97314,
+      "lon": 35.46253,
+      "type": "Night"
+    },
+    {
+      "name": "NIGHT 3 option B · Pitul Meron: free night camp with tables and a tap by road 866, 2.6 km before the reserve gate",
+      "lat": 32.97905,
+      "lon": 35.44236,
+      "type": "Night"
+    },
+    {
+      "name": "FINISH · Mon 19 Oct · Ginosar, Kinneret shore: -211 m, bus 59 from the Ginosar stop on road 90",
+      "lat": 32.85484,
+      "lon": 35.53224,
+      "type": "Flag"
+    },
+    {
+      "name": "PASS · Har Meron 1204 m - highest point of the trail; the line crosses the summit plateau, the peak loop is 15 min off it; tap at the summit car park",
+      "lat": 32.99778,
+      "lon": 35.41373,
+      "type": "Summit"
+    },
+    {
+      "name": "INFO · Betzet beach - free camping alternative north of the national park, no facilities",
+      "lat": 33.06874,
+      "lon": 35.1057,
+      "type": "Info"
+    },
+    {
+      "name": "INFO · Yad LeYad memorial - tap at the entrance; eucalyptus grove behind it used by Sea to Sea hikers",
+      "lat": 33.05089,
+      "lon": 35.10398,
+      "type": "Info"
+    },
+    {
+      "name": "INFO · Montfort castle - Crusader ruin above the stream; steps and a short scramble up, do not sleep here (reserve)",
+      "lat": 33.0444,
+      "lon": 35.22656,
+      "type": "Info"
+    },
+    {
+      "name": "INFO · Ein Tamir - spring in a long cut tunnel; headtorch, waist-deep water at the end; last reliable stream water before the climb to Abirim",
+      "lat": 33.04145,
+      "lon": 35.25009,
+      "type": "Info"
+    },
+    {
+      "name": "INFO · Har Meron field school - paid camp with kitchen, showers and toilets, 250 m from Horbat Hammama",
+      "lat": 33.01075,
+      "lon": 35.38984,
+      "type": "Info"
+    },
+    {
+      "name": "INFO · Sechvi pools - upper Nahal Amud canyon: ladders, pins and handholds for 6 km; exit the reserve trails by 16:00; no drinking from the stream",
+      "lat": 32.96984,
+      "lon": 35.47519,
+      "type": "Info"
+    },
+    {
+      "name": "INFO · Ein Koves - spring by the middle section; reports say not a usable camp, no tap",
+      "lat": 32.9503,
+      "lon": 35.48096,
+      "type": "Info"
+    },
+    {
+      "name": "ESCAPE · Manot-Avdon junction - bus stops on road 89 at km 5",
+      "lat": 33.04171,
+      "lon": 35.14776,
+      "type": "Escape"
+    },
+    {
+      "name": "ESCAPE · Elkosh junction - bus stops on road 89, fuel station shop 200 m, km 29",
+      "lat": 33.02294,
+      "lon": 35.32581,
+      "type": "Escape"
+    },
+    {
+      "name": "ESCAPE · Hurfeish - Druze village 1.5 km north of the line, fuel station shop and cafes, km 34",
+      "lat": 33.01737,
+      "lon": 35.34696,
+      "type": "Escape"
+    },
+    {
+      "name": "ESCAPE · Meron Center bus stop - road 866, 500 m from Pitul Meron, km 49",
+      "lat": 32.98412,
+      "lon": 35.4412,
+      "type": "Escape"
+    },
+    {
+      "name": "ESCAPE · Safed industrial zone - bus stops on road 8900 above the flour mill, km 54",
+      "lat": 32.96338,
+      "lon": 35.48161,
+      "type": "Escape"
+    },
+    {
+      "name": "ESCAPE · Kibbutz Hukok bus stop - 600 m off the line, km 66",
+      "lat": 32.87941,
+      "lon": 35.49644,
+      "type": "Escape"
+    },
+    {
+      "name": "TRANSPORT · Achziv National Park bus stop - Nateev Express 22 from Nahariya station",
+      "lat": 33.04944,
+      "lon": 35.10359,
+      "type": "Transport"
+    },
+    {
+      "name": "TRANSPORT · Ginosar bus stop - road 90, Superbus 59 to Tiberias, 700 m from the finish",
+      "lat": 32.84937,
+      "lon": 35.51923,
+      "type": "Transport"
+    },
+    {
+      "name": "TRANSPORT · Hukok junction bus stop - road 90, line 59 to Tiberias, 1.4 km north of the finish",
+      "lat": 32.86616,
+      "lon": 35.53077,
+      "type": "Transport"
+    }
+  ],
+  "route": {
+    "osm_relations": [
+      {
+        "id": 2860967,
+        "label": "Sea to Sea · Achziv → Kinneret"
+      }
+    ],
+    "start": [
+      33.0506,
+      35.103
+    ]
+  },
+  "enrich": {
+    "water_radius_m": 300
+  },
+  "sectionMaps": [
+    {
+      "key": "overview",
+      "bbox": [
+        32.83,
+        33.07,
+        35.08,
+        35.56
+      ],
+      "zoom": 11,
+      "title": "Sea to Sea overview"
+    },
+    {
+      "key": "west",
+      "bbox": [
+        32.99,
+        33.07,
+        35.09,
+        35.41
+      ],
+      "zoom": 13,
+      "title": "Days 1-2 · Achziv to Meron"
+    },
+    {
+      "key": "east",
+      "bbox": [
+        32.84,
+        33.03,
+        35.38,
+        35.55
+      ],
+      "zoom": 13,
+      "title": "Days 3-4 · Meron to the Kinneret"
+    }
+  ]
+}

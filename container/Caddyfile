@@ -1,0 +1,27 @@
+{
+	auto_https off
+	admin off
+}
+
+http:// {
+	bind unix/{$KITSHN_DEFAULT_SOCKET}|0666
+	root * /srv
+	encode zstd gzip {
+		match {
+			header Content-Type text/*
+			header Content-Type application/json*
+			header Content-Type application/javascript*
+			header Content-Type application/xml*
+			header Content-Type application/gpx+xml*
+			header Content-Type application/manifest+json*
+			header Content-Type image/svg+xml*
+		}
+	}
+	@sw path /sw.js
+	header @sw Cache-Control "no-cache"
+	@gpx path *.gpx
+	header /maps/* Cache-Control "public, max-age=604800"
+	header @gpx Content-Type application/gpx+xml
+	header @gpx Content-Disposition attachment
+	file_server
+}
