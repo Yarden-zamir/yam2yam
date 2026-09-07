@@ -31,6 +31,7 @@ OUT = ROOT / "site" / "maps"
 OUT.mkdir(parents=True, exist_ok=True)
 CACHE = ROOT / ".tiles"
 CACHE.mkdir(exist_ok=True)
+ACCENT = tuple(int(TREK.get("accent", "#C8322B").lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
 S = requests.Session()
 S.headers.update(UA)
 
@@ -102,7 +103,7 @@ for sm in TREK["sectionMaps"]:
         pts = [px(a, b) for a, b in ln]
         if len(pts) > 1:
             d.line(pts, fill=(255, 255, 255), width=7)
-            d.line(pts, fill=(200, 50, 43), width=4)
+            d.line(pts, fill=ACCENT, width=4)
     f, fs = font(20 if z >= 13 else 15), font(15 if z >= 13 else 12)
     for nm, la, lo in places:
         x, y = px(la, lo)

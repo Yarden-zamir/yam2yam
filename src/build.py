@@ -101,6 +101,27 @@ def section_maps(html: str) -> str:
     return re.sub(r"\{\{MAP:([a-z0-9_-]+)(?:\|([^}]*))?\}\}", img, html)
 
 
+def _hex(c: str) -> tuple[int, int, int]:
+    c = c.lstrip("#")
+    return int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16)
+
+
+def _mix(c: str, towards: tuple[int, int, int], k: float) -> str:
+    r, g, bl = _hex(c)
+    return "#%02X%02X%02X" % tuple(round(v + (t - v) * k) for v, t in zip((r, g, bl), towards))
+
+
+def theme_style() -> str:
+    """trek.json "accent" (the trail's marking colour) recolours the blaze, day markers, warnings and route."""
+    accent = TREK.get("accent")
+    if not accent:
+        return ""
+    light_soft, dark_soft, dark_accent = _mix(accent, (255, 255, 255), .84), _mix(accent, (22, 27, 27), .72), _mix(accent, (255, 255, 255), .22)
+    return (f"<style>:root{{--mark:{accent};--mark-soft:{light_soft}}}"
+            f"@media (prefers-color-scheme: dark){{:root:not([data-theme=\"light\"]){{--mark:{dark_accent};--mark-soft:{dark_soft}}}}}"
+            f":root[data-theme=\"dark\"]{{--mark:{dark_accent};--mark-soft:{dark_soft}}}</style>\n")
+
+
 def config_script() -> str:
     cfg = {
         "slug": TREK["slug"],
@@ -108,6 +129,13 @@ def config_script() -> str:
         "timezone": TREK.get("timezone", "auto"),
         "plannedStart": TREK.get("plannedStart", 8),
         "tentWindow": TREK.get("tentWindow"),
+        "strings": TREK.get("strings", {}),
+        "weatherModel": TREK.get("weatherModel"),
+        "weatherModelLabel": TREK.get("weatherModelLabel"),
+        "treeline": TREK.get("treeline"),
+        "heatLimit": TREK.get("heatLimit"),
+        "exposed": TREK.get("exposed", []),
+        "accent": TREK.get("accent"),
         "elevation": {"eudem25m": "EU-DEM 25 m", "srtm30m": "SRTM 30 m", "aster30m": "ASTER 30 m"}.get(TREK.get("elevationDataset", "srtm30m"), TREK.get("elevationDataset")),
     }
     return "<script>window.TREK=" + json.dumps(cfg, ensure_ascii=False) + ";</script>\n"
@@ -118,6 +146,7 @@ head = (SRC / "head.html").read_text().replace("{{NAME}}", TREK["name"])
 page = (
     SHELL_HEAD.format(lang=TREK.get("languages", ["en"])[0], description=TREK["description"].replace('"', "&quot;"))
     + head
+    + theme_style()
     + config_script()
     + "</head>\n<body>\n"
     + body
@@ -133,7 +162,7 @@ manifest = {
     "start_url": "/",
     "display": "standalone",
     "background_color": "#F0F1EE",
-    "theme_color": "#C8322B",
+    "theme_color": TREK.get("accent", "#C8322B"),
     "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}],
 }
 (SITE / "manifest.webmanifest").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")

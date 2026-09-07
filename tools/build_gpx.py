@@ -165,7 +165,7 @@ def main():
                 + "".join("<trkseg>" + "".join(f'<trkpt lat="{a:.6f}" lon="{b:.6f}"/>' for a, b in s) + "</trkseg>" for s in segs) + "</trk>")
 
     for name, segs in tracks:
-        x.append(trk(name, segs, "#C8322B"))
+        x.append(trk(name, segs, TREK.get("accent", "#C8322B")))
     bt = boundary_track()
     if bt:
         x.append(trk(bt[0], bt[1], bt[2]))
