@@ -156,6 +156,13 @@ page = (
 )
 (SITE / "index.html").write_text(page)
 
+# favicon: the trail's blaze in the accent colour (a two-band mark, as on the trail signs)
+_accent = TREK.get("accent", "#C8322B")
+(SITE / "icon.svg").write_text(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#F0F1EE"/>'
+    f'<rect x="12" y="20" width="40" height="12" fill="{_accent}"/><rect x="12" y="32" width="40" height="12" fill="#FFFFFF" stroke="#CCD3D0"/></svg>\n'
+)
+
 manifest = {
     "name": TREK["name"],
     "short_name": TREK.get("shortName", TREK["slug"].upper()),
