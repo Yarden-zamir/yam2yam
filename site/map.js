@@ -401,7 +401,15 @@
   }
 
   /* ---- planned times from the card: "8–9 h" chip; start 08:00 (day 1: 08:00 after breakfast) ---- */
-  function plannedHours(card) { var t = card.textContent, m = /(\d+)(?:[–-](\d+))?\s*h\b/.exec(t); return m ? +(m[2] || m[1]) : 7; }
+  /* Planned hours from the .stats chips only ("7–8 h" → 8; "4.5 h official, plan 5–6" → 6). Never from the prose. */
+  function plannedHours(card) {
+    var spans = card.querySelectorAll('.stats span'), got = null;
+    Array.prototype.forEach.call(spans, function (sp) {
+      var t = sp.textContent, p = /plan\s*(\d+(?:\.\d+)?)(?:[–-](\d+(?:\.\d+)?))?/.exec(t), h = /(\d+(?:\.\d+)?)(?:[–-](\d+(?:\.\d+)?))?\s*h\b/.exec(t);
+      if (p) got = +(p[2] || p[1]); else if (h && got == null) got = +(h[2] || h[1]);
+    });
+    return got || 7;
+  }
   function plannedStart(n) { return n === 0 ? null : ((window.TREK && window.TREK.plannedStart) || 8); }
 
   /* ---- forecast ---- */
