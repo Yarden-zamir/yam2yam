@@ -9,7 +9,7 @@ tools write the rest of this folder. Copy source URLs into `content.yaml` links.
 |---|---|---|
 | `tools/find_route.py` | route into `trek.json` | the real OpenStreetMap relation, its true length, gaps in the chain, superroutes |
 | `tools/research.py` | `osm.md`, `osm.json`, `waypoints.proposed.json` | T-grades and hazards on the route's own ways, fords, protected areas (where the rules live), huts with hours and phones, water with drinking tags, bus stops and stations within reach, peaks for side trips, via ferrata nearby, shops and fuel |
-| `tools/calendar.py` | `calendar.md` | holidays and Shabbat on the dates, sunrise, sunset, dusk, daylight, moon, clock changes |
+| `tools/dates.py` | `calendar.md` | holidays and Shabbat on the dates, sunrise, sunset, dusk, daylight, moon, clock changes |
 | `tools/climate.py` | `climate.md` | ten years of reanalysis on these dates per night and pass: typical temperatures, rain, thunder, frost and heat frequencies; suggested start hour, heat limit and sleeping-bag rating |
 
 ## findings.md template

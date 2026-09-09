@@ -45,7 +45,7 @@ arrival = dt.date.fromisoformat(a.arrival) if a.arrival else start - dt.timedelt
 dates = [arrival] + [start + dt.timedelta(days=i) for i in range(a.days)]
 
 # ---- copy the template
-skip = {".git", ".tiles", "trek.example.json", "content.yaml", "site/index.html", "site/sw.js", "site/manifest.webmanifest", "Caddyfile.j2", "site/maps", "checks"}
+skip = {".git", ".tiles", "trek.example.json", "content.yaml", "site/index.html", "site/sw.js", "site/manifest.webmanifest", "Caddyfile.j2", "site/maps", "checks", "skills", "research/osm", "research/waypoints", "research/calendar", "research/climate"}
 for p in TEMPLATE.rglob("*"):
     rel = p.relative_to(TEMPLATE)
     if any(str(rel).startswith(s) for s in skip) or p.is_dir():
@@ -90,7 +90,7 @@ for lang in langs:
 
 # ---- README intro
 readme = (dest / "README.md").read_text()
-head_end = readme.index("## How it fits together")
+head_end = readme.index("## The two files you write")
 readme = f"# {a.name}\n\n{a.name}, {a.days} days, {start:%-d %B} to {dates[-1]:%-d %B %Y}. Live at https://{a.hostname}.\nBuilt with the trek-site-template; see `skills/trek-dossier/SKILL.md` for the workflow.\n\n" + readme[head_end:]
 readme = readme.replace("## Per-trek README\n\nKeep this file's structure; replace the heading and the first paragraph with the trek, its dates\nand the live URL, and drop this section.\n\n", "")
 (dest / "README.md").write_text(readme)
@@ -111,7 +111,7 @@ print(f"""
 scaffolded {dest}
 
 next:
-  1. research (tools/find_route.py, tools/research.py, tools/calendar.py, tools/climate.py) and fill trek.json route + waypoints
+  1. research (tools/find_route.py, tools/research.py, tools/dates.py, tools/climate.py) and fill trek.json route + waypoints
   2. uv run tools/build_gpx.py && uv run tools/elevation.py && uv run tools/derive.py && uv run tools/maps.py
   3. write content.yaml (every language), then uv run tools/all.py --from build
   4. git push -u origin main   (deploys), then uv run tools/check.py --url https://{a.hostname}/
