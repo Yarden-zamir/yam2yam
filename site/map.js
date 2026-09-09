@@ -411,6 +411,7 @@
   /* ---- planned times from the card: "8–9 h" chip; start 08:00 (day 1: 08:00 after breakfast) ---- */
   /* Planned hours from the .stats chips only ("7–8 h" → 8; "4.5 h official, plan 5–6" → 6). Never from the prose. */
   function plannedHours(card) {
+    if (card.getAttribute('data-hours')) return +card.getAttribute('data-hours');
     var spans = card.querySelectorAll('.stats span'), got = null;
     Array.prototype.forEach.call(spans, function (sp) {
       var t = sp.textContent, p = /plan\s*(\d+(?:\.\d+)?)(?:[–-](\d+(?:\.\d+)?))?/.exec(t), h = /(\d+(?:\.\d+)?)(?:[–-](\d+(?:\.\d+)?))?\s*h\b/.exec(t);

@@ -83,12 +83,14 @@ if proc.poll() is None:
     proc.kill()
 dom = (tmp / "dom.html").read_text(errors="replace")
 m = re.search(r"<title>(\{.*?\})</title>", dom, re.S)
-if server:
-    server.shutdown()
 if not m:
     sys.exit("check: no result title in the rendered DOM (page did not finish); DOM at " + str(tmp / "dom.html"))
-res = json.loads(m.group(1).replace("&quot;", '"').replace("&amp;", "&"))
 fails = []
+res = json.loads(m.group(1).replace("&quot;", '"').replace("&amp;", "&"))
+# content completeness: skeleton placeholders that were never replaced
+placeholders = [p for p in ("START → END", "NNN", "N–N h", "…", "YYYY-MM-DD", "TRAIL · REGION", "Who, when, where") if p in html]
+if placeholders:
+    fails.append("skeleton placeholders still in the page: " + ", ".join(placeholders))
 if res.get("exc"):
     fails.append("probe exception: " + res["exc"])
 log = [x for x in res.get("log", []) if "ServiceWorker" not in x]  # the probe runs from a file URL, where SW registration is refused
@@ -115,7 +117,35 @@ if res.get("canvas", 0) >= 100 and not res.get("slider"):
     fails.append("start-time slider did not update the day simulation")
 if res.get("canvas", 0) < 100 and not beyond_horizon:
     fails.append("hourly chart canvas not drawn")
+shots = ROOT / "checks"
+shots.mkdir(exist_ok=True)
+shot_probe = """<script>(function w(){ if(!document.querySelector('.stage[data-day="1"] [data-wx="hourly"]')) return setTimeout(w,300);
+  var vis=document.querySelector('.wrap[lang]:not([hidden])'); var c=vis.querySelector('.stage[data-day="2"]')||vis.querySelector('.stage[data-day="1"]');
+  vis.querySelectorAll('header,h2,.note,.planbar,.scroll,.two,details,.langbar,.stage').forEach(function(e){ if(e!==c && !e.classList.contains('mapbox')) e.style.display='none'; });
+  document.querySelectorAll('.wrap[lang][hidden]').forEach(function(e){e.style.display='none'});
+  c.querySelector('[data-wx="hourly"]').click();
+})();</script>"""
+shot_page = html.replace("<head>", "<head>" + shot_probe, 1)
+if server:  # local mode only: serve the shot page from the site folder so it loads like the real page
+    shot_file = ROOT / "site" / "__shot.html"
+    shot_file.write_text(shot_page)
+    try:
+        for name, size in (("phone-day-and-map", "500,1800"),):
+            p2 = subprocess.Popen([CHROME, "--headless", "--disable-gpu", "--no-sandbox", f"--user-data-dir={profile}-shot", "--virtual-time-budget=45000",
+                                   f"--window-size={size}", "--hide-scrollbars", f"--screenshot={shots / (name + '.png')}", url.rstrip("/") + "/__shot.html"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            for _ in range(75):
+                if p2.poll() is not None:
+                    break
+                time.sleep(1)
+            if p2.poll() is None:
+                p2.kill()
+            if (shots / (name + ".png")).exists():
+                print(f"screenshot: checks/{name}.png (look at it once before deploying)")
+    finally:
+        shot_file.unlink(missing_ok=True)
 print(json.dumps({k: v for k, v in res.items() if k != "log"}, ensure_ascii=False, indent=1))
+if server:
+    server.shutdown()
 if fails:
     print("\nFAILED:\n- " + "\n- ".join(fails))
     sys.exit(1)

@@ -249,5 +249,6 @@
       "title": "Days 3-4 · Meron to the Kinneret"
     }
   ],
-  "accent": "#7B3FA0"
+  "accent": "#7B3FA0",
+  "heatLimit": 30
 }

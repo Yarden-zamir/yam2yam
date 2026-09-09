@@ -41,3 +41,41 @@ def hav(a, b) -> float:
     la1, lo1, la2, lo2 = map(math.radians, (a[0], a[1], b[0], b[1]))
     h = math.sin((la2 - la1) / 2) ** 2 + math.cos(la1) * math.cos(la2) * math.sin((lo2 - lo1) / 2) ** 2
     return 2 * R * math.asin(math.sqrt(h))
+
+
+def walking_line(gpx_root):
+    """The route as one list of (lat, lon, ele, dist_m): ROUTE tracks in order, each track's segments
+    chained from the longest one through segments that connect within 500 m. Alternates and loops that
+    do not connect are dropped, as the app does, so distances match the page."""
+    ns = {"g": NS}
+    pts, d, prev = [], 0.0, None
+    for trk in gpx_root.findall("g:trk", ns):
+        if not (trk.findtext("g:name", default="", namespaces=ns)).startswith("ROUTE"):
+            continue
+        segs = []
+        for s in trk.findall("g:trkseg", ns):
+            seg = []
+            for p in s.findall("g:trkpt", ns):
+                e = p.find("g:ele", ns)
+                seg.append((float(p.get("lat")), float(p.get("lon")), float(e.text) if e is not None else None))
+            if seg:
+                segs.append(seg)
+        left = list(segs)
+        if prev is None and left:
+            left.sort(key=len, reverse=True)
+            seg = left.pop(0)
+            for q in seg:
+                if prev:
+                    d += hav(prev[:2], q[:2])
+                pts.append((q[0], q[1], q[2], d))
+                prev = q
+        while left:
+            gap, rev, seg = min([(hav(prev[:2], s[0][:2]), False, s) for s in left] + [(hav(prev[:2], s[-1][:2]), True, s) for s in left], key=lambda t: t[0])
+            if gap > 500:
+                break
+            left.remove(seg)
+            for q in (list(reversed(seg)) if rev else seg):
+                d += hav(prev[:2], q[:2])
+                pts.append((q[0], q[1], q[2], d))
+                prev = q
+    return pts

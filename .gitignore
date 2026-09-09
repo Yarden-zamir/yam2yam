@@ -2,3 +2,7 @@
 /Caddyfile
 .DS_Store
 .tiles/
+src/body.html
+research/osm.json
+research/waypoints.proposed.json
+checks/

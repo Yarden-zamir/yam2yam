@@ -1,5 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
+# dependencies = ["pyyaml"]
 # ///
 """Assemble the trek site from trek.json and src/.
 
@@ -10,6 +11,7 @@ Outputs: site/index.html, site/sw.js, site/manifest.webmanifest, Caddyfile.j2.
 import hashlib
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -141,6 +143,11 @@ def config_script() -> str:
     return "<script>window.TREK=" + json.dumps(cfg, ensure_ascii=False) + ";</script>\n"
 
 
+if (ROOT / "content.yaml").exists():
+    sys.path.insert(0, str(SRC))
+    from render import render  # noqa: E402
+
+    (SRC / "body.html").write_text(render(ROOT / "content.yaml", TREK))
 body = section_maps(link_places(label_tables((SRC / "body.html").read_text())))
 head = (SRC / "head.html").read_text().replace("{{NAME}}", TREK["name"])
 page = (

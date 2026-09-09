@@ -1,0 +1,442 @@
+en:
+  eyebrow: Sea to Sea · Yam el Yam · Upper Galilee · 10 – 13 September 2026
+  title: Sea to Sea Dossier
+  lede: Yarden and Ayelet sleep at Achziv on Wednesday 9 September, walk four days east from the Mediterranean over Har Meron to the Kinneret with a tent, and get home from Ginosar on Sunday 13 September, the second day of Rosh Hashana. Their stage split, the camp rules, the water, the heat, and the Nahal Amud gate times that shape day 3 and day 4.
+  facts:
+  - value: ≈72 km
+    label: Achziv → Ginosar
+  - value: ≈1,550 m
+    label: total ascent
+  - value: ≈1,750 m
+    label: total descent
+  - value: 1,204 m
+    label: high point, Har Meron
+  - value: 4 days
+    label: Thu 10 → Sun 13 Sep
+  - value: 4 L
+    label: water each for the Nahal Amud canyon
+  plan_title: The plan
+  plan_intro: 'The common four-day split, sleeping only in the official night camps because the whole line runs through nature reserves. Guidebook times plus about 20 %. Sunset is 18:52 at the start and 18:47 at the end, but the reserves close their trails an hour before it and September afternoons are hot, so walk at first light, 06:00, and be in camp by 15:00. Friday 11 to Sunday 13 September is Shabbat straight into Rosh Hashana: no buses from Friday noon until Sunday night, and full camps. The GPX in your Downloads folder carries these nights, the escapes and every OpenStreetMap tap and spring near the line.'
+  snapshot_hint: 'One position fix, no tracking: marks finished days done and fills in today''s distance, ascent left and arrival estimate. Long-press to pick your position on the map instead. Tap a day title to see it on the map.'
+  days:
+  - n: 0
+    date: '2026-09-09'
+    label: WED 9 SEP
+    title: Train to Nahariya → bus 22 → Achziv
+    stats:
+    - train to Nahariya, then 10 min by bus
+    - campsite check-in by dusk, 18:52
+    text:
+    - 'Israel Railways to Nahariya, the last station on the coast line; the bus station is across the road. Nateev Express line 22 runs to the Achziv National Park stop about every half hour. Sleep in the Achziv National Park campsite (INPA, paid, book online, showers, no dogs) or for free in the eucalyptus grove behind the Yad LeYad memorial, 800 m north, with a tap at the memorial entrance; Betzet beach further north is the other free option. Buy four days of food in Nahariya: the only shops on the line are the fuel station at Elkosh bridge and the village of Hurfeish on day 2.'
+  - n: 1
+    date: '2026-09-10'
+    label: THU 10 SEP
+    title: Achziv → Nahal Kziv → Montfort → Ein Tamir → Abirim
+    stats:
+    - ≈20 km
+    - +550 / −10 m
+    - 7–8 h
+    - free camp at Abirim, 546 m, tap, no toilets
+    text:
+    - 'Feet in the sea at 06:00, then east on farm tracks to the Nahal Kziv reserve at Ein Hardalit (km 8, shaded pools, a tap at the car park). The stream runs all year but INPA says do not drink it: fill at the Yad LeYad tap and at Ein Hardalit. The path climbs to Montfort, the Crusader castle on its spur (km 12, steps and a short scramble, no sleeping in the reserve), drops back to the water and follows it past the Dlavim pool to Ein Tamir (km 16), a spring at the end of a cut tunnel you can wade with a headtorch. Then the one climb of the day: 300 m up past Ein Ziv to the village of Abirim. The night camp is at the village entrance, with a tap and a bin and nothing else. Thursday is a normal day: buses still run on road 89 below the village if something goes wrong; from Friday noon they stop for the holiday weekend. <b>Behind schedule?</b> Goren Park (KKL, free, tap, toilets) sits above Montfort at km 14, 300 m off the line.'
+    hours: 8
+  - n: 2
+    date: '2026-09-11'
+    label: FRI 11 SEP
+    title: Abirim → Elkosh bridge → the springs → Hurfeish → Horbat Hammama
+    stats:
+    - ≈19 km
+    - +560 / −270 m
+    - 7–8 h
+    - INPA free camp at Horbat Hammama, 886 m, tap, toilets, fire spots
+    text:
+    - 'Rolling Galilee hills, no reserve gates. Down to Elkosh bridge on road 89 (km 29, fuel station shop 200 m, the popular unofficial camp there has no water), then up the wadi past a string of small springs: Ein Retet, Ein Tabaat, Ein Zevul and Ein Hotam (km 33, clear and pooled). Hurfeish (km 34) lies 1.5 km north of the line if you need a shop or a cafe; it is a Druze village, open on Friday and on Rosh Hashana. Buses on road 89 stop around 14:00 today for Shabbat and the holiday: from Elkosh bridge onward there is no bus until Sunday night. The afternoon climbs steadily to the foot of Har Meron. Horbat Hammama is the best camp on the trail: tables under the trees, a tap, toilets, and fires allowed in the marked spots. It is also the coolest night, 15–18 °C at 886 m in the open. The Har Meron field school next door has a paid camp with a kitchen and showers if the forecast turns.'
+    hours: 8
+  - n: 3
+    date: '2026-09-12'
+    label: SAT 12 SEP
+    title: Horbat Hammama → Har Meron → Pitul Meron → Nahal Amud night camp
+    stats:
+    - ≈13 km
+    - +340 / −600 m
+    - 5–6 h
+    - INPA paid camp, book online, check-in 15:00–19:00
+    text:
+    - 'The short day, on purpose: the Nahal Amud reserve admits walkers from Pitul Meron only between 08:00 and 14:30, and closes its trails at 16:00, so the canyon waits for the morning. 300 m of climb from camp to the summit plateau of Har Meron (1,204 m, the highest point west of the Jordan; the peak loop is 15 minutes off the line, tap at the summit car park), then a long descent through Meron''s oak forest past Ein Zeved and Ein Meron to Pitul Meron by road 866 (km 49, tables and a tap; Meron Center bus stop 500 m away). From there the trail enters the reserve and reaches the Nahal Amud night camp at the upper entrance in 2.6 km. Saturday is also the first day of Rosh Hashana: the reserve keeps its Saturday hours and the camp will be full, so book it as early as possible; it also sells the reserve ticket you need for day 4. Confirm the holiday gate hours on *3639 when you book. <b>Option B:</b> sleep free at Pitul Meron and enter the reserve at 08:00, which makes day 4 half an hour
+      longer.'
+    hours: 6
+  - n: 4
+    date: '2026-09-13'
+    label: SUN 13 SEP
+    title: Nahal Amud night camp → Sechvi pools → the lower canyon → Ginosar, the Kinneret
+    stats:
+    - ≈20 km
+    - +75 / −850 m
+    - 8–9 h
+    - finish at the shore, −211 m; bus 59 from Ginosar
+    text:
+    - 'The technical day. The reserve opens at 08:00, so this is the one late start. From the camp past Ein Yakim into the upper canyon: six kilometres of ladders, iron pins and handholds beside running water, past the Sechvi pools, to the old flour mill below the Safed industrial zone (km 54, the last bail-out with a bus). Fill 4 L each at the camp tap: INPA forbids drinking from the stream and there is no tap until the lower Nahal Amud camp (km 61, fenced, tap). Then the middle and lower sections, rocky and exposed, bolted in places, drying out as you drop below sea level past the Amud pillar and the caves, to the fish-farm gate and the shore at Ginosar. INPA closes the full canyon on hot days, on rainy days and the day after rain: call *3639 the evening before. Sunday 13 September is the second day of Rosh Hashana: no bus 59 from the Ginosar stop on road 90 until the holiday ends about 19:15, and a thin evening service after it. Arrange a lift or a taxi from Tiberias to Ginosar, or swim
+      at Hukok beach and take the late 59 to Tiberias, then Egged 430 to Haifa or 836 to Tel Aviv.'
+    hours: 9
+  plan_note: <b>Faster?</b> The three-day split sleeps at Abirim and Pitul Meron and finishes with a 23 km day through the canyon, which only works with the 08:00 gate and a fast pace. <b>Spare day?</b> Sleep a second night at the lower Nahal Amud camp and swim at Hukok beach (free camping on the grass, showers, shop, no fires).
+  maps_intro: 'This map is drawn live from the same GPX you download for OsmAnd, so the two never differ. Tap any line or dot for its note. The layers button toggles the track and each kind of waypoint. "Where am I" shows your position, the kilometre on the route and the distance to the next camp. "Save whole route offline" stores the map tiles in the browser; the page and the GPX are stored automatically, so the site keeps working without signal. Base map OpenTopoMap, a planning aid: carry the SPNI trail map 2, Upper Galilee 1:50,000, or the Israel Hiking Map app.'
+  section_maps:
+  - key: overview
+    caption: Whole route, north at top.
+  - key: west
+    caption: Days 1–2, Achziv to the foot of Har Meron.
+  - key: east
+    caption: Days 3–4, Har Meron and Nahal Amud to the Kinneret.
+  rules_title: Rules and water
+  rules:
+  - title: 'Reserves:'
+    text: almost the whole line is INPA nature reserve. Sleep only in the night camps. Trails are open from an hour after sunrise to an hour before sunset. No dogs on the trails, no fires outside the marked camp spots, stoves fine.
+  - title: 'Nahal Amud (upper section, paid):'
+    text: ticket and registration on parks.org.il. Entry from Pitul Meron 08:00–14:30 (Friday to 13:30), off the trails and the Sechvi pools by 16:00. No night walking. The reserve closes the long trail on hot days, on rain days and the day after rain. Check *3639 the evening before.
+  - title: 'Water:'
+    text: 'INPA says do not drink from Nahal Kziv or Nahal Amud. Taps: Yad LeYad, Ein Hardalit car park, Abirim, Horbat Hammama, Har Meron summit car park, Pitul Meron, the Nahal Amud camp, the lower Nahal Amud camp, Hukok beach. The dry stretch is the canyon: camp tap to the lower camp, 10 km, 4 L each in September. On a sharav day INPA closes the canyon anyway.'
+  refuges:
+    caption: Camps, water and where to pitch
+    columns:
+    - Place
+    - Alt.
+    - Status
+    - Tent
+    - Note
+    rows:
+    - - <a href="https://en.parks.org.il/camping/akhziv-campsite/">Achziv National Park campsite</a>
+      - 5 m
+      - INPA, paid, book online
+      - night 0
+      - 'showers, toilets, beach; free: Yad LeYad grove or Betzet beach'
+    - - Goren Park
+      - 220 m
+      - KKL, free, tel 04-9950102
+      - fallback day 1
+      - tap, toilets, above Montfort, 300 m off the line
+    - - Abirim
+      - 546 m
+      - free night camp
+      - night 1
+      - tap and a bin at the village entrance, no toilets
+    - - Elkosh bridge
+      - 500 m
+      - unofficial, popular
+      - fallback day 2
+      - no water; fuel station shop 200 m
+    - - <a href="https://www.tiuli.com/camping/338/%D7%97%D7%A8%D7%91%D7%AA-%D7%97%D7%9E%D7%9E%D7%94">Horbat Hammama</a>
+      - 886 m
+      - INPA, free, no booking
+      - night 2
+      - tap, toilets, fire spots; cold; Har Meron field school (paid, kitchen, showers) next door
+    - - Pitul Meron
+      - 655 m
+      - free night camp
+      - night 3 option B
+      - tables, tap, by road 866, bus stop 500 m
+    - - <a href="https://www.parks.org.il/camping/%D7%97%D7%A0%D7%99%D7%95%D7%9F-%D7%9C%D7%99%D7%9C%D7%94-%D7%A9%D7%9E%D7%95%D7%A8%D7%AA-%D7%98%D7%91%D7%A2-%D7%A0%D7%97%D7%9C-%D7%A2%D7%9E%D7%95%D7%93/">Nahal Amud night camp</a>
+      - 530 m
+      - INPA, paid (≈₪40–47 per adult), book online
+      - night 3
+      - check-in 15:00–19:00, out by 11:00; taps, toilets, electricity; sells the reserve ticket
+    - - lower Nahal Amud camp
+      - 5 m
+      - free, renovated 2025
+      - spare night
+      - tap, tent platforms, chemical toilets, fenced; by the road, noisy
+    - - <a href="https://ikinneret.org.il/beaches/%D7%97%D7%95%D7%A3-%D7%97%D7%95%D7%A7%D7%95%D7%A7-%D7%A6%D7%A4%D7%95%D7%9F/">Hukok north beach</a>
+      - −210 m
+      - declared beach, free on foot
+      - after the finish
+      - grass camping, showers, taps, shop; no fires or barbecues; 1.5 km north of the finish
+  tech_title: Technical
+  tech_intro: Nothing on the line needs a rope, but three parts are hands-on and the reports' injuries happen there. All of it is fine dry and none of it in rain.
+  tech:
+    caption: Technical sections and side trips
+    columns:
+    - Objective
+    - Where
+    - What it is
+    - Time
+    rows:
+    - - Montfort castle
+      - day 1, km 12
+      - Steep steps and a short rock scramble up the spur to the Crusader ruin, then a steep path back to the stream. Big packs feel it.
+      - on the line, +30 min
+    - - Ein Tamir tunnel
+      - day 1, km 16
+      - A cut spring tunnel you can wade to its end with a headtorch; the last metres are a swim. Optional, 20 minutes, leave the packs with a partner.
+      - optional, 20 min
+    - - Har Meron summit loop
+      - day 3, km 42
+      - Paved loop around the peak, 1,204 m, view from the Hermon to the Kinneret. The summit itself is a military site.
+      - +15 min
+    - - Upper Nahal Amud canyon
+      - day 4, km 52–54
+      - Six kilometres of ladders, iron pins and handholds beside the stream, past the Sechvi pools. Wet rock at the pools. Not for anyone afraid of heights; fine for scramblers.
+      - on the line, ≈3 h
+    - - Middle and lower Nahal Amud
+      - day 4, km 54–68
+      - Rocky, exposed, bolted steps in places, then the pillar and the prehistoric caves. Hot in the afternoon; INPA closes it on hot days and after rain.
+      - on the line, ≈4 h
+  practical:
+  - title: September
+    items:
+    - Coast and Kinneret 30–32 °C by day, 23–25 °C at night; Horbat Hammama at 886 m about 15–18 °C at night. A sharav pushes the coast past 35 °C and the mountains past 30 °C; INPA then closes the Nahal Amud long trail, and one September report gave up in 43 °C. Start at first light and rest through the early afternoon.
+    - 'Rain is rare before late September, but a first storm is possible. Rain means no Nahal Amud: the canyon floods, and the reserve bans it on the day and the day after.'
+    - Sunrise ≈06:18, sunset ≈18:50, civil dark ≈19:15. Israel is on summer time until 25 October.
+    - <b>Live forecast:</b> each day card shows the current Open-Meteo forecast for that day's camp and high point, refreshed on every load, with warnings derived for storms, rain, wind, cold, heat, fog and UV. Open-Meteo forecasts 16 days ahead, so the cards are live for these dates. The last forecast is kept for offline reading.
+    - <b>Official sources the evening before:</b> <a href="https://ims.gov.il/en/IMSwarnings">Israel Meteorological Service warnings</a>, <a href="https://www.parks.org.il/new/%D7%90%D7%96%D7%94%D7%A8%D7%AA-%D7%A9%D7%98%D7%A4%D7%95%D7%A0%D7%95%D7%AA/">INPA flood warnings</a>, and the INPA hotline *3639 for Nahal Amud.
+  - title: Transport
+    items:
+    - 'To the start: train to Nahariya, then Nateev Express 22 (about every 30 min, ≈₪6–9) to the Achziv National Park stop, or a 4 km walk up the coast.'
+    - 'From the finish: Superbus 59 from the Ginosar stop on road 90 to Tiberias (also stops at Hukok junction), then Egged 430 to Haifa or 836 to Tel Aviv (hourly, ≈2 h), 961/962 to Jerusalem.'
+    - 'Shabbat runs straight into Rosh Hashana (12–13 September): no buses from Friday 11 September about 14:00 until Sunday 13 September about 19:15. Days 2, 3 and 4 are inside it, so the only bail-out then is a taxi, and the finish needs a lift or the late Sunday buses. Thursday 10 September is a normal day.'
+    - 'Bail-outs with a bus: Manot-Avdon junction (km 5), Elkosh junction (km 29), Meron Center (km 49), Safed industrial zone (km 54), Kibbutz Hukok (km 66).'
+  practical_right:
+  - title: Gear
+    items:
+    - Sleeping system to 10 °C for Horbat Hammama; the other nights are warm.
+    - 4 L capacity each; a filter for the springs if a tap fails.
+    - Four days of food from Nahariya; shop stops at Elkosh bridge and Hurfeish.
+    - Headtorch for Ein Tamir and the camp evenings. Water shoes or sandals for the pools.
+    - 'Sun: hat, 50 SPF, the canyon and the Kinneret drop are exposed.'
+    - 'Offline maps: OsmAnd with this GPX, plus the Israel Hiking Map app.'
+    - Cash and a printed booking for the Nahal Amud camp and ticket.
+    - 'Emergency: 100 police (hikers call 100 and stay put; the Galil-Carmel rescue unit is dispatched), 101 ambulance, 102 fire, INPA *3639.'
+  links:
+    reports:
+    - <a href="https://shvilist.com/%D7%99%D7%9D-%D7%90%D7%9C-%D7%99%D7%9D/">Shvilist</a>, Hebrew, the stage table, the three- and four-day splits and the camp and water list this plan follows.
+    - '<a href="https://www.ynet.co.il/vacation/israeltrips/article/ry114spf72">ynet, five days sea to sea</a>, Hebrew, the fullest report: Montfort, the Meron climb, the canyon ladders.'
+    - <a href="https://hikingintheholyland.com/2020/06/16/yam-el-yam-day-1-nahal-kziv/">Hiking in the Holyland, day 1</a> (20.5 km, 9 h, +628 m) and <a href="https://hikingintheholyland.com/2020/06/23/yam-el-yam-day-3-nahal-amud-to-the-sea-of-galilee/">day 3</a> (23 km, 12 h from Pitul Meron, the fish-farm gate at the end).
+    - '<a href="http://www.outdoorsfather.com/2016/09/yam-le-yam-trail-northern-israel/">Outdoors Father</a>, September in 43 °C, abandoned the last 10 km: the heat case.'
+    - <a href="https://baliletayel.co.il/israeltrip/%D7%99%D7%9D-%D7%90%D7%9C-%D7%99%D7%9D-%D7%98%D7%99%D7%95%D7%9C-%D7%A9%D7%94%D7%95%D7%90-%D7%9E%D7%A1%D7%A2-%D7%9E%D7%A8%D7%AA%D7%A7-%D7%9E%D7%90%D7%9B%D7%96%D7%99%D7%91-%D7%9C%D7%9B%D7%A0%D7%A8/">Baliletayel</a>, Hebrew, on the upper canyon and on avoiding the holiday crowds.
+    - <a href="https://en.wikivoyage.org/wiki/Sea_to_Sea_(Yam_el_Yam)">Wikivoyage</a> and <a href="https://he.wikipedia.org/wiki/%D7%9E%D7%A1%D7%A2_%D7%9E%D7%99%D7%9D_%D7%90%D7%9C_%D7%99%D7%9D">Hebrew Wikipedia</a>, the trail's history and the old pipe bridge the current line avoids.
+    - <a href="https://www.travel-il.com/galilcamp">travel-il camp list</a>, Hebrew, community-maintained list of every camp on the line, with the 2025 renovation of the lower Nahal Amud camp.
+    reports_title: Trip reports and guides
+    official:
+    - <a href="https://www.parks.org.il/reserve-park/%D7%A9%D7%9E%D7%95%D7%A8%D7%AA-%D7%98%D7%91%D7%A2-%D7%A0%D7%97%D7%9C-%D7%9B%D7%96%D7%99%D7%91/">INPA Nahal Kziv</a>, <a href="https://www.parks.org.il/reserve-park/%D7%A9%D7%9E%D7%95%D7%A8%D7%AA-%D7%98%D7%91%D7%A2-%D7%94%D7%A8-%D7%9E%D7%99%D7%A8%D7%95%D7%9F/">INPA Har Meron</a>, <a href="https://www.parks.org.il/reserve-park/%D7%A9%D7%9E%D7%95%D7%A8%D7%AA-%D7%98%D7%91%D7%A2-%D7%A0%D7%97%D7%9C-%D7%A2%D7%9E%D7%95%D7%93/">INPA Nahal Amud</a> (hours, fees, 04-6999984), <a href="https://www.parks.org.il/new/amud/">INPA Sechvi pools safety page</a> (the Pitul Meron gate times).
+    - <a href="https://www.parks.org.il/%D7%97%D7%A0%D7%99%D7%95%D7%A0%D7%99-%D7%9C%D7%99%D7%9C%D7%94-%D7%9C%D7%9C%D7%90-%D7%AA%D7%A9%D7%9C%D7%95%D7%9D/">INPA free night camps</a>, <a href="https://www.parks.org.il/%D7%94%D7%96%D7%9E%D7%A0%D7%95%D7%AA-%D7%9C%D7%97%D7%A0%D7%99%D7%95%D7%A0%D7%99-%D7%9C%D7%99%D7%9C%D7%94/">INPA camp booking</a>, <a href="https://www.parks.org.il/new/dogs/">INPA dog policy</a>, <a href="https://www.kkl.org.il/recreation_areas_overnight_2022/">KKL overnight areas</a>.
+    - <a href="https://ims.gov.il/en/IMSwarnings">IMS warnings</a>, <a href="https://ims.gov.il/en/Forecasts">IMS forecast</a>, <a href="https://www.parks.org.il/new/%D7%90%D7%96%D7%94%D7%A8%D7%AA-%D7%A9%D7%98%D7%A4%D7%95%D7%A0%D7%95%D7%AA/">INPA flood rule</a>.
+    - <a href="https://israelhiking.osm.org.il/">Israel Hiking Map</a>, <a href="https://www.openstreetmap.org/relation/2860967">the OpenStreetMap relation this GPX is built from</a>, <a href="https://moovitapp.com/index/en/public_transit-%D7%90%D7%9B%D7%96%D7%99%D7%91_%D7%9E%D7%95%D7%9C%D7%A8-Israel-stop_13962-1">Moovit, Achziv stop</a>, <a href="https://busnearby.co.il/%D7%A7%D7%95%D7%95%D7%99%D7%9D/%D7%9E%D7%97%D7%A6%D7%95%D7%A8%20%D7%94%D7%92%D7%9C%D7%99%D7%9C%D7%99%D7%AA%20%D7%9C%D7%98%D7%91%D7%A8%D7%99%D7%94/%D7%A1%D7%95%D7%A4%D7%A8%D7%91%D7%95%D7%A1/59/%D7%9C%D7%9B%D7%99%D7%95%D7%95%D7%9F%20%D7%AA%D7%97%D7%A0%D7%94%20%D7%9E%D7%A8%D7%9B%D7%96%D7%99%D7%AA/15615/6059">bus 59 timetable</a>.
+    official_title: Official
+he:
+  eyebrow: ים אל ים · הגליל העליון · 10–13 בספטמבר 2026
+  title: ים אל ים עם אוהל
+  lede: ירדן ואיילת ישנים ב-Achziv ביום רביעי 9 בספטמבר, הולכים ארבעה ימים מזרחה מהים התיכון דרך Har Meron עד הכנרת עם אוהל, וחוזרים הביתה מ-Ginosar ביום ראשון 13 בספטמבר, היום השני של ראש השנה. החלוקה לימים, חוקי החניונים, המים, החום, ושעות השער של Nahal Amud שמכתיבות את יום 3 ויום 4.
+  facts:
+  - value: ≈72 ק"מ
+    label: Achziv עד Ginosar
+  - value: ≈1,550 מ'
+    label: עלייה מצטברת
+  - value: ≈1,750 מ'
+    label: ירידה מצטברת
+  - value: 1,204 מ'
+    label: הנקודה הגבוהה, Har Meron
+  - value: 4 ימים
+    label: חמישי 10 עד ראשון 13 בספטמבר
+  - value: 4 ליטר
+    label: מים לכל אחד לקניון Nahal Amud
+  plan_title: התוכנית
+  plan_intro: 'החלוקה המקובלת לארבעה ימים, עם לינה רק בחניוני הלילה המוסדרים, כי כמעט כל המסלול עובר בשמורות טבע. זמני המדריכים פלוס בערך 20 אחוז. השקיעה ב-18:52 בהתחלה ו-18:47 בסוף, אבל השמורות סוגרות את השבילים שעה לפני ואחר הצהריים בספטמבר חם, אז יוצאים עם אור ראשון, 06:00, ומגיעים לחניון עד 15:00. שישי 11 עד ראשון 13 בספטמבר זה שבת שנכנסת ישר לראש השנה: אין אוטובוסים משישי בצהריים עד ראשון בערב, והחניונים מלאים. קובץ ה-GPX בתיקיית ההורדות כולל את הלילות האלה, נקודות היציאה וכל ברז ומעיין מ-OpenStreetMap ליד הקו.'
+  snapshot_hint: 'קריאת מיקום אחת, בלי מעקב: מסמנת ימים שהסתיימו כהושלמו וממלאת את המרחק, העלייה שנותרה והערכת ההגעה להיום. לחיצה ארוכה בוחרת את המיקום במפה במקום GPS. לחצו על כותרת יום כדי לראות אותו במפה.'
+  days:
+  - n: 0
+    date: '2026-09-09'
+    label: רביעי 9.9
+    title: רכבת ל-Nahariya, אוטובוס 22, Achziv
+    stats:
+    - רכבת לנהריה, ואז 10 דקות באוטובוס
+    - להגיע לחניון עד החושך, 18:52
+    text:
+    - 'רכבת ישראל עד Nahariya, התחנה האחרונה בקו החוף; התחנה המרכזית ממול. קו 22 של נתיב אקספרס נוסע לתחנת גן לאומי אכזיב בערך כל חצי שעה. ישנים בחניון של גן לאומי Achziv (רט"ג, בתשלום, הזמנה באתר, מקלחות, בלי כלבים) או בחינם בחורשת האקליפטוס מאחורי אנדרטת Yad LeYad, 800 מטר צפונה, עם ברז בכניסה לאנדרטה; חוף בצת עוד צפונה הוא האופציה החינמית השנייה. קונים אוכל לארבעה ימים ב-Nahariya: החנויות היחידות על הקו הן תחנת הדלק ב-Elkosh bridge והכפר Hurfeish ביום 2.'
+  - n: 1
+    date: '2026-09-10'
+    label: חמישי 10.9
+    title: Achziv, Nahal Kziv, Montfort, Ein Tamir, Abirim
+    stats:
+    - ≈20 ק"מ
+    - +550 / −10 מ'
+    - 7–8 h
+    - חניון לילה חינמי ב-Abirim, 546 מ', ברז, בלי שירותים
+    text:
+    - 'רגליים בים ב-06:00, ואז מזרחה בדרכים חקלאיות עד הכניסה לשמורת Nahal Kziv ב-Ein Hardalit (ק"מ 8, בריכות מוצלות, ברז בחניון). הנחל זורם כל השנה אבל רט"ג אומרים לא לשתות ממנו: ממלאים בברז של Yad LeYad וב-Ein Hardalit. השביל מטפס ל-Montfort, המבצר הצלבני על השלוחה (ק"מ 12, מדרגות וטיפוס קצר, אסור לישון בשמורה), יורד חזרה למים ועוקב אחריהם דרך בריכת הדלבים עד Ein Tamir (ק"מ 16), מעיין בקצה נקבה חצובה שאפשר ללכת בה עם פנס. ואז העלייה היחידה של היום: 300 מטר למעלה דרך Ein Ziv עד הכפר Abirim. חניון הלילה בכניסה לכפר, עם ברז ופח ולא יותר. יום חמישי הוא יום רגיל: עדיין יש אוטובוסים בכביש 89 מתחת לכפר אם משהו משתבש; משישי בצהריים הם נעצרים לסוף השבוע של החג. <b>מאחרים?</b> פארק Goren (קק"ל, חינם, ברז, שירותים) יושב מעל Montfort בק"מ 14, 300 מטר מהקו.'
+    hours: 8
+  - n: 2
+    date: '2026-09-11'
+    label: שישי 11.9
+    title: Abirim, Elkosh bridge, המעיינות, Hurfeish, Horbat Hammama
+    stats:
+    - ≈19 ק"מ
+    - +560 / −270 מ'
+    - 7–8 h
+    - חניון רט"ג חינמי ב-Horbat Hammama, 886 מ', ברז, שירותים, מקומות מדורה
+    text:
+    - 'גבעות הגליל, בלי שערים של שמורות. יורדים ל-Elkosh bridge על כביש 89 (ק"מ 29, חנות בתחנת הדלק 200 מטר, בחניון הלא רשמי והפופולרי שם אין מים), ואז עולים בוואדי דרך שרשרת של מעיינות קטנים: עין רטט, עין טבעת, עין זבול ו-Ein Hotam (ק"מ 33, צלול עם בריכה). Hurfeish (ק"מ 34) נמצא 1.5 ק"מ צפונית לקו אם צריך חנות או בית קפה; זה כפר דרוזי, פתוח בשישי ובראש השנה. האוטובוסים בכביש 89 נעצרים היום בסביבות 14:00 לשבת ולחג: מ-Elkosh bridge והלאה אין אוטובוס עד ראשון בערב. אחר הצהריים מטפסים בהדרגה עד רגלי Har Meron. Horbat Hammama הוא החניון הכי טוב במסלול: שולחנות בין העצים, ברז, שירותים, ומותר להדליק מדורה במקומות המסומנים. זה גם הלילה הכי קריר, 15–18 מעלות ב-886 מטר בשטח פתוח. בבית ספר שדה Har Meron ליד יש חניון בתשלום עם מטבח ומקלחות אם התחזית מתהפכת.'
+    hours: 8
+  - n: 3
+    date: '2026-09-12'
+    label: שבת 12.9
+    title: Horbat Hammama, Har Meron, Pitul Meron, חניון הלילה Nahal Amud
+    stats:
+    - ≈13 ק"מ
+    - +340 / −600 מ'
+    - 5–6 h
+    - חניון רט"ג בתשלום, הזמנה באתר, קבלה 15:00–19:00
+    text:
+    - 'היום הקצר, בכוונה: שמורת Nahal Amud מכניסה מטיילים מ-Pitul Meron רק בין 08:00 ל-14:30, וסוגרת את השבילים ב-16:00, אז הקניון מחכה לבוקר. 300 מטר עלייה מהחניון לרמת הפסגה של Har Meron (1,204 מ'', הנקודה הגבוהה ממערב לירדן; שביל הפסגה הוא סטייה של 15 דקות, ברז בחניון הפסגה), ואז ירידה ארוכה ביער האלונים של מירון דרך עין זבד ועין מירון עד Pitul Meron ליד כביש 866 (ק"מ 49, שולחנות וברז; תחנת האוטובוס מירון מרכז 500 מטר משם). משם השביל נכנס לשמורה ומגיע לחניון הלילה Nahal Amud בכניסה העליונה אחרי 2.6 ק"מ. שבת היא גם היום הראשון של ראש השנה: השמורה עובדת בשעות של שבת והחניון יהיה מלא, אז מזמינים כמה שיותר מוקדם; שם גם קונים את הכרטיס לשמורה ליום 4. מאמתים את שעות השער בחג ב-*3639 כשמזמינים. <b>אופציה ב'':</b> ישנים בחינם ב-Pitul Meron ונכנסים לשמורה ב-08:00, וזה מאריך את יום 4 בחצי שעה.'
+    hours: 6
+  - n: 4
+    date: '2026-09-13'
+    label: ראשון 13.9
+    title: חניון הלילה Nahal Amud, בריכות שכווי, הקניון התחתון, Ginosar, הכנרת
+    stats:
+    - ≈20 ק"מ
+    - +75 / −850 מ'
+    - 8–9 h
+    - סיום בחוף, −211 מ'; אוטובוס 59 מ-Ginosar
+    text:
+    - 'היום הטכני. השמורה נפתחת ב-08:00, אז זו היציאה המאוחרת היחידה. מהחניון דרך Ein Yakim לתוך הקניון העליון: שישה קילומטרים של סולמות, יתדות ברזל ואחיזות לצד מים זורמים, דרך Sechvi pools, עד טחנת הקמח העתיקה מתחת לאזור התעשייה של צפת (ק"מ 54, נקודת היציאה האחרונה עם אוטובוס). ממלאים 4 ליטר לכל אחד בברז של החניון: רט"ג אוסרים לשתות מהנחל ואין ברז עד החניון התחתון של Nahal Amud (ק"מ 61, מגודר, ברז). אחר כך הקטעים האמצעי והתחתון, סלעיים וחשופים, עם יתדות במקומות, מתייבשים ככל שיורדים מתחת לפני הים דרך העמוד והמערות, עד שער בריכות הדגים והחוף ב-Ginosar. רט"ג סוגרים את הקניון המלא בימי שרב, בימי גשם וביום שאחרי גשם: מתקשרים ל-*3639 בערב הקודם. ראשון 13 בספטמבר הוא היום השני של ראש השנה: אין סופרבוס 59 מתחנת Ginosar על כביש 90 עד צאת החג בסביבות 19:15, ואחריו שירות ערב דליל. מסדרים הסעה או מונית מטבריה ל-Ginosar, או שוחים בחוף חוקוק ולוקחים את ה-59 המאוחר לטבריה, ומשם אגד 430 לחיפה או 836 לתל אביב.'
+    hours: 9
+  plan_note: <b>מהר יותר?</b> החלוקה לשלושה ימים ישנה ב-Abirim וב-Pitul Meron ומסיימת ביום של 23 ק"מ דרך הקניון, וזה עובד רק עם שער ה-08:00 וקצב מהיר. <b>יום פנוי?</b> ישנים לילה שני בחניון התחתון של Nahal Amud ושוחים בחוף חוקוק (קמפינג חינם על הדשא, מקלחות, קיוסק, בלי מדורות).
+  maps_intro: 'המפה מצוירת בזמן אמת מאותו קובץ GPX שאתם מורידים ל-OsmAnd, אז השניים לא יכולים להיות שונים. לחיצה על קו או נקודה מציגה את ההערה שלהם. כפתור השכבות מדליק ומכבה את המסלול וכל סוג של נקודת דרך. "איפה אני" מציג את המיקום שלכם, הקילומטר במסלול והמרחק לחניון הבא. "שמור את כל המסלול לאופליין" שומר את אריחי המפה בדפדפן; הדף וה-GPX נשמרים אוטומטית, אז האתר ממשיך לעבוד בלי קליטה. מפת הבסיס OpenTopoMap, לתכנון בלבד: קחו את מפת סימון השבילים 2, הגליל העליון 1:50,000, או את אפליקציית Israel Hiking Map.'
+  section_maps:
+  - key: overview
+    caption: כל המסלול, צפון למעלה.
+  - key: west
+    caption: ימים 1–2, Achziv עד רגלי Har Meron.
+  - key: east
+    caption: ימים 3–4, Har Meron ו-Nahal Amud עד הכנרת.
+  rules_title: חוקים ומים
+  rules:
+  - title: 'שמורות:'
+    text: כמעט כל הקו הוא שמורת טבע של רט"ג. ישנים רק בחניוני הלילה. השבילים פתוחים משעה אחרי הזריחה עד שעה לפני השקיעה. בלי כלבים בשבילים, בלי מדורות מחוץ למקומות המסומנים בחניונים, גזייה בסדר.
+  - title: 'Nahal Amud (הקטע העליון, בתשלום):'
+    text: כרטיס ורישום באתר רט"ג. כניסה מ-Pitul Meron בין 08:00 ל-14:30 (שישי עד 13:30), יציאה מהשבילים ומבריכות שכווי עד 16:00. אסור ללכת בלילה. השמורה סוגרת את המסלול הארוך בימי שרב, בימי גשם וביום שאחרי גשם. בודקים ב-*3639 בערב הקודם.
+  - title: 'מים:'
+    text: 'רט"ג אומרים לא לשתות מ-Nahal Kziv ומ-Nahal Amud. ברזים: Yad LeYad, חניון Ein Hardalit, Abirim, Horbat Hammama, חניון פסגת Har Meron, Pitul Meron, חניון הלילה Nahal Amud, החניון התחתון של Nahal Amud, חוף חוקוק. הקטע היבש הוא הקניון: מברז החניון עד החניון התחתון, 10 ק"מ, 4 ליטר לכל אחד בספטמבר. ביום שרב רט"ג סוגרים את הקניון בכל מקרה.'
+  refuges:
+    caption: חניונים, מים ואיפה מקימים אוהל
+    columns:
+    - מקום
+    - גובה
+    - סטטוס
+    - אוהל
+    - הערה
+    rows:
+    - - <a href="https://www.parks.org.il/camping/%D7%97%D7%A0%D7%99%D7%95%D7%9F-%D7%9C%D7%99%D7%9C%D7%94-%D7%92%D7%9F-%D7%9C%D7%90%D7%95%D7%9E%D7%99-%D7%90%D7%9B%D7%96%D7%99%D7%91/">חניון גן לאומי Achziv</a>
+      - 5 מ'
+      - רט"ג, בתשלום, הזמנה באתר
+      - לילה 0
+      - 'מקלחות, שירותים, חוף; בחינם: החורשה של Yad LeYad או חוף בצת'
+    - - פארק Goren
+      - 220 מ'
+      - קק"ל, חינם, טלפון 04-9950102
+      - גיבוי ליום 1
+      - ברז, שירותים, מעל Montfort, 300 מטר מהקו
+    - - Abirim
+      - 546 מ'
+      - חניון לילה חינמי
+      - לילה 1
+      - ברז ופח בכניסה לכפר, בלי שירותים
+    - - Elkosh bridge
+      - 500 מ'
+      - לא רשמי, פופולרי
+      - גיבוי ליום 2
+      - בלי מים; חנות בתחנת הדלק 200 מטר
+    - - <a href="https://www.tiuli.com/camping/338/%D7%97%D7%A8%D7%91%D7%AA-%D7%97%D7%9E%D7%9E%D7%94">Horbat Hammama</a>
+      - 886 מ'
+      - רט"ג, חינם, בלי הזמנה
+      - לילה 2
+      - ברז, שירותים, מקומות מדורה; קר; בית ספר שדה Har Meron (בתשלום, מטבח, מקלחות) ליד
+    - - Pitul Meron
+      - 655 מ'
+      - חניון לילה חינמי
+      - לילה 3 אופציה ב'
+      - שולחנות, ברז, ליד כביש 866, תחנת אוטובוס 500 מטר
+    - - <a href="https://www.parks.org.il/camping/%D7%97%D7%A0%D7%99%D7%95%D7%9F-%D7%9C%D7%99%D7%9C%D7%94-%D7%A9%D7%9E%D7%95%D7%A8%D7%AA-%D7%98%D7%91%D7%A2-%D7%A0%D7%97%D7%9C-%D7%A2%D7%9E%D7%95%D7%93/">חניון הלילה Nahal Amud</a>
+      - 530 מ'
+      - רט"ג, בתשלום (≈40–47 ₪ למבוגר), הזמנה באתר
+      - לילה 3
+      - קבלה 15:00–19:00, יציאה עד 11:00; ברזים, שירותים, חשמל; מוכרים שם את הכרטיס לשמורה
+    - - החניון התחתון של Nahal Amud
+      - 5 מ'
+      - חינם, שופץ ב-2025
+      - לילה נוסף
+      - ברז, משטחי אוהלים, שירותים כימיים, מגודר; צמוד לכביש, רועש
+    - - <a href="https://ikinneret.org.il/beaches/%D7%97%D7%95%D7%A3-%D7%97%D7%95%D7%A7%D7%95%D7%A7-%D7%A6%D7%A4%D7%95%D7%9F/">חוף חוקוק צפון</a>
+      - −210 מ'
+      - חוף מוכרז, חינם ברגל
+      - אחרי הסיום
+      - קמפינג על הדשא, מקלחות, ברזים, קיוסק; בלי מדורות ומנגלים; 1.5 ק"מ צפונית לסיום
+  tech_title: טכני
+  tech_intro: שום דבר על הקו לא דורש חבל, אבל שלושה קטעים הם עם ידיים ושם קורות הפציעות בדיווחים. הכול בסדר ביבש, וכלום לא בגשם.
+  tech:
+    caption: קטעים טכניים וסטיות
+    columns:
+    - יעד
+    - איפה
+    - מה זה
+    - זמן
+    rows:
+    - - מבצר Montfort
+      - יום 1, ק"מ 12
+      - מדרגות תלולות וטיפוס סלע קצר על השלוחה עד המבצר הצלבני, ואז שביל תלול חזרה לנחל. עם תיק גדול מרגישים את זה.
+      - על הקו, +30 דקות
+    - - הנקבה של Ein Tamir
+      - יום 1, ק"מ 16
+      - נקבה חצובה שאפשר ללכת בה עד הסוף עם פנס; המטרים האחרונים בשחייה. אופציונלי, 20 דקות, משאירים את התיקים עם בן זוג.
+      - אופציונלי, 20 דקות
+    - - שביל הפסגה Har Meron
+      - יום 3, ק"מ 42
+      - שביל סלול מסביב לפסגה, 1,204 מ', נוף מהחרמון עד הכנרת. הפסגה עצמה אתר צבאי.
+      - +15 דקות
+    - - הקניון העליון של Nahal Amud
+      - יום 4, ק"מ 52–54
+      - שישה קילומטרים של סולמות, יתדות ברזל ואחיזות לצד הנחל, דרך Sechvi pools. סלע רטוב ליד הבריכות. לא למי שמפחד מגבהים; בסדר למי שאוהב לטפס.
+      - על הקו, ≈3 שעות
+    - - Nahal Amud האמצעי והתחתון
+      - יום 4, ק"מ 54–68
+      - סלעי, חשוף, מדרגות עם יתדות במקומות, ואז העמוד והמערות הפרהיסטוריות. חם אחר הצהריים; רט"ג סוגרים בימי שרב ואחרי גשם.
+      - על הקו, ≈4 שעות
+  practical:
+  - title: ספטמבר
+    items:
+    - בחוף ובכנרת 30–32 מעלות ביום, 23–25 בלילה; ב-Horbat Hammama ב-886 מטר בערך 15–18 בלילה. שרב מביא את החוף מעל 35 ואת ההרים מעל 30; אז רט"ג סוגרים את המסלול הארוך של Nahal Amud, ודיווח אחד מספטמבר ויתר ב-43 מעלות. יוצאים עם אור ראשון ונחים בשעות הצהריים.
+    - 'גשם נדיר לפני סוף ספטמבר, אבל סופה ראשונה אפשרית. גשם אומר בלי Nahal Amud: הקניון מוצף, והשמורה אוסרת אותו ביום הגשם וביום שאחריו.'
+    - זריחה ≈06:18, שקיעה ≈18:50, חושך ≈19:15. שעון קיץ עד 25 באוקטובר.
+    - <b>תחזית חיה:</b> כל כרטיס יום מציג את התחזית הנוכחית של Open-Meteo לחניון ולנקודה הגבוהה של אותו יום, מתרעננת בכל טעינה, עם אזהרות שנגזרות לסופות, גשם, רוח, קור, חום, ערפל ו-UV. Open-Meteo חוזה 16 יום קדימה, אז הכרטיסים חיים לתאריכים האלה. התחזית האחרונה נשמרת לקריאה אופליין.
+    - <b>מקורות רשמיים לערב הקודם:</b> <a href="https://ims.gov.il/he/warnings">אזהרות השירות המטאורולוגי</a>, <a href="https://www.parks.org.il/new/%D7%90%D7%96%D7%94%D7%A8%D7%AA-%D7%A9%D7%98%D7%A4%D7%95%D7%A0%D7%95%D7%AA/">אזהרות שיטפונות של רט"ג</a>, ומוקד רט"ג *3639 ל-Nahal Amud.
+  - title: תחבורה
+    items:
+    - 'להתחלה: רכבת ל-Nahariya, ואז נתיב אקספרס 22 (בערך כל 30 דקות, ≈6–9 ₪) לתחנת גן לאומי אכזיב, או 4 ק"מ הליכה לאורך החוף.'
+    - 'מהסיום: סופרבוס 59 מתחנת Ginosar על כביש 90 לטבריה (עוצר גם בצומת חוקוק), ומשם אגד 430 לחיפה או 836 לתל אביב (כל שעה, ≈שעתיים), 961/962 לירושלים.'
+    - 'שבת נכנסת ישר לראש השנה (12–13 בספטמבר): אין אוטובוסים משישי 11 בספטמבר בסביבות 14:00 עד ראשון 13 בספטמבר בסביבות 19:15. ימים 2, 3 ו-4 בתוך זה, אז היציאה היחידה אז היא מונית, והסיום צריך הסעה או את האוטובוסים המאוחרים של ראשון. חמישי 10 בספטמבר הוא יום רגיל.'
+    - 'יציאות עם אוטובוס: צומת מנות-עבדון (ק"מ 5), צומת Elkosh (ק"מ 29), מירון מרכז (ק"מ 49), אזור התעשייה צפת (ק"מ 54), קיבוץ חוקוק (ק"מ 66).'
+  practical_right:
+  - title: ציוד
+    items:
+    - שק שינה ל-10 מעלות בשביל Horbat Hammama; שאר הלילות חמים.
+    - 4 ליטר נפח לכל אחד; פילטר למעיינות אם ברז לא עובד.
+    - אוכל לארבעה ימים מ-Nahariya; חנויות ב-Elkosh bridge וב-Hurfeish.
+    - פנס ראש ל-Ein Tamir ולערבים בחניון. נעלי מים או סנדלים לבריכות.
+    - 'שמש: כובע, מקדם 50, הקניון והירידה לכנרת חשופים.'
+    - 'מפות אופליין: OsmAnd עם ה-GPX הזה, פלוס אפליקציית Israel Hiking Map.'
+    - מזומן והזמנה מודפסת לחניון ולכרטיס של Nahal Amud.
+    - 'חירום: 100 משטרה (מטיילים מתקשרים 100 ונשארים במקום; יחידת החילוץ גליל-כרמל יוצאת), 101 מד"א, 102 כיבוי, רט"ג *3639.'
+  links:
+    reports:
+    - <a href="https://shvilist.com/%D7%99%D7%9D-%D7%90%D7%9C-%D7%99%D7%9D/">שביליסט</a>, טבלת הקטעים, החלוקות לשלושה ולארבעה ימים ורשימת החניונים והמים שהתוכנית הזאת עוקבת אחריה.
+    - '<a href="https://www.ynet.co.il/vacation/israeltrips/article/ry114spf72">ynet, חמישה ימים מים אל ים</a>, הדיווח הכי מלא: Montfort, העלייה למירון, הסולמות בקניון.'
+    - <a href="https://hikingintheholyland.com/2020/06/16/yam-el-yam-day-1-nahal-kziv/">Hiking in the Holyland, יום 1</a> (20.5 ק"מ, 9 שעות, +628 מ') ו<a href="https://hikingintheholyland.com/2020/06/23/yam-el-yam-day-3-nahal-amud-to-the-sea-of-galilee/">יום 3</a> (23 ק"מ, 12 שעות מ-Pitul Meron, שער בריכות הדגים בסוף).
+    - '<a href="http://www.outdoorsfather.com/2016/09/yam-le-yam-trail-northern-israel/">Outdoors Father</a>, ספטמבר ב-43 מעלות, ויתר על 10 הק"מ האחרונים: המקרה של החום.'
+    - <a href="https://baliletayel.co.il/israeltrip/%D7%99%D7%9D-%D7%90%D7%9C-%D7%99%D7%9D-%D7%98%D7%99%D7%95%D7%9C-%D7%A9%D7%94%D7%95%D7%90-%D7%9E%D7%A1%D7%A2-%D7%9E%D7%A8%D7%AA%D7%A7-%D7%9E%D7%90%D7%9B%D7%96%D7%99%D7%91-%D7%9C%D7%9B%D7%A0%D7%A8/">בלי לטייל</a>, על הקניון העליון ועל להימנע מהעומס של החגים.
+    - <a href="https://he.wikivoyage.org/wiki/%D7%9E%D7%A1%D7%A2_%D7%9E%D7%99%D7%9D_%D7%90%D7%9C_%D7%99%D7%9D">ויקימסע</a> ו<a href="https://he.wikipedia.org/wiki/%D7%9E%D7%A1%D7%A2_%D7%9E%D7%99%D7%9D_%D7%90%D7%9C_%D7%99%D7%9D">ויקיפדיה</a>, ההיסטוריה של השביל וגשר הצינור הישן שהקו הנוכחי עוקף.
+    - <a href="https://www.travel-il.com/galilcamp">רשימת החניונים של travel-il</a>, רשימה קהילתית של כל חניון על הקו, עם השיפוץ של החניון התחתון של Nahal Amud ב-2025.
+    reports_title: דיווחים ומדריכים
+    official:
+    - <a href="https://www.parks.org.il/reserve-park/%D7%A9%D7%9E%D7%95%D7%A8%D7%AA-%D7%98%D7%91%D7%A2-%D7%A0%D7%97%D7%9C-%D7%9B%D7%96%D7%99%D7%91/">רט"ג נחל כזיב</a>, <a href="https://www.parks.org.il/reserve-park/%D7%A9%D7%9E%D7%95%D7%A8%D7%AA-%D7%98%D7%91%D7%A2-%D7%94%D7%A8-%D7%9E%D7%99%D7%A8%D7%95%D7%9F/">רט"ג הר מירון</a>, <a href="https://www.parks.org.il/reserve-park/%D7%A9%D7%9E%D7%95%D7%A8%D7%AA-%D7%98%D7%91%D7%A2-%D7%A0%D7%97%D7%9C-%D7%A2%D7%9E%D7%95%D7%93/">רט"ג נחל עמוד</a> (שעות, מחירים, 04-6999984), <a href="https://www.parks.org.il/new/amud/">דף הבטיחות של בריכות שכווי</a> (שעות השער מ-Pitul Meron).
+    - <a href="https://www.parks.org.il/%D7%97%D7%A0%D7%99%D7%95%D7%A0%D7%99-%D7%9C%D7%99%D7%9C%D7%94-%D7%9C%D7%9C%D7%90-%D7%AA%D7%A9%D7%9C%D7%95%D7%9D/">חניוני לילה ללא תשלום של רט"ג</a>, <a href="https://www.parks.org.il/%D7%94%D7%96%D7%9E%D7%A0%D7%95%D7%AA-%D7%9C%D7%97%D7%A0%D7%99%D7%95%D7%A0%D7%99-%D7%9C%D7%99%D7%9C%D7%94/">הזמנת חניוני לילה</a>, <a href="https://www.parks.org.il/new/dogs/">מדיניות כלבים</a>, <a href="https://www.kkl.org.il/recreation_areas_overnight_2022/">חניוני לילה של קק"ל</a>.
+    - <a href="https://ims.gov.il/he/warnings">אזהרות השירות המטאורולוגי</a>, <a href="https://ims.gov.il/he/forecast">תחזית</a>, <a href="https://www.parks.org.il/new/%D7%90%D7%96%D7%94%D7%A8%D7%AA-%D7%A9%D7%98%D7%A4%D7%95%D7%A0%D7%95%D7%AA/">כלל השיטפונות של רט"ג</a>.
+    - <a href="https://israelhiking.osm.org.il/">Israel Hiking Map</a>, <a href="https://www.openstreetmap.org/relation/2860967">היחס ב-OpenStreetMap שממנו נבנה ה-GPX</a>, <a href="https://moovitapp.com/index/en/public_transit-%D7%90%D7%9B%D7%96%D7%99%D7%91_%D7%9E%D7%95%D7%9C%D7%A8-Israel-stop_13962-1">מוביט, תחנת אכזיב</a>, <a href="https://busnearby.co.il/%D7%A7%D7%95%D7%95%D7%99%D7%9D/%D7%9E%D7%97%D7%A6%D7%95%D7%A8%20%D7%94%D7%92%D7%9C%D7%99%D7%9C%D7%99%D7%AA%20%D7%9C%D7%98%D7%91%D7%A8%D7%99%D7%94/%D7%A1%D7%95%D7%A4%D7%A8%D7%91%D7%95%D7%A1/59/%D7%9C%D7%9B%D7%99%D7%95%D7%95%D7%9F%20%D7%AA%D7%97%D7%A0%D7%94%20%D7%9E%D7%A8%D7%9B%D7%96%D7%99%D7%AA/15615/6059">לוח זמנים קו 59</a>.
+    official_title: רשמי
