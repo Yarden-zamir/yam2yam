@@ -17,7 +17,7 @@ en:
     label: water each for the Nahal Amud canyon
   plan_title: The plan
   plan_intro: 'The common four-day split, sleeping only in the official night camps because the whole line runs through nature reserves. Guidebook times plus about 20 %. Sunset is 18:52 at the start and 18:47 at the end, but the reserves close their trails an hour before it and September afternoons are hot, so walk at first light, 06:00, and be in camp by 15:00. Friday 11 to Sunday 13 September is Shabbat straight into Rosh Hashana: no buses from Friday noon until Sunday night, and full camps. The GPX in your Downloads folder carries these nights, the escapes and every OpenStreetMap tap and spring near the line.'
-  snapshot_hint: 'One position fix, no tracking: marks finished days done and fills in today''s distance, ascent left and arrival estimate. Long-press to pick your position on the map instead. Tap a day title to see it on the map.'
+  snapshot_hint: 'The round button at the bottom left takes one position fix, no tracking: it shows you on the map and on the profile, marks finished days done and fills in today''s distance, ascent left and arrival estimate. Long-press it to pick your position on the map instead. Each day has Plan, Map and Weather tabs; tap a day title to open its map.'
   days:
   - n: 0
     date: '2026-09-09'
@@ -79,7 +79,7 @@ en:
       at Hukok beach and take the late 59 to Tiberias, then Egged 430 to Haifa or 836 to Tel Aviv.'
     hours: 9
   plan_note: <b>Faster?</b> The three-day split sleeps at Abirim and Pitul Meron and finishes with a 23 km day through the canyon, which only works with the 08:00 gate and a fast pace. <b>Spare day?</b> Sleep a second night at the lower Nahal Amud camp and swim at Hukok beach (free camping on the grass, showers, shop, no fires).
-  maps_intro: 'This map is drawn live from the same GPX you download for OsmAnd, so the two never differ. Tap any line or dot for its note. The layers button toggles the track and each kind of waypoint. "Where am I" shows your position, the kilometre on the route and the distance to the next camp. "Save whole route offline" stores the map tiles in the browser; the page and the GPX are stored automatically, so the site keeps working without signal. Base map OpenTopoMap, a planning aid: carry the SPNI trail map 2, Upper Galilee 1:50,000, or the Israel Hiking Map app.'
+  maps_intro: 'This map is drawn live from the same GPX you download for OsmAnd, so the two never differ. Each day''s Map tab shows its own stretch and profile; this is the whole route. Twist with two fingers or use the arrows to rotate; the compass resets north. Tap any line or dot for its note. The layers button toggles the track and each kind of waypoint. "Where am I" shows your position, the kilometre on the route and the distance to the next camp. "Save whole route offline" stores the map tiles in the browser; the page and the GPX are stored automatically, so the site keeps working without signal. Base map OpenTopoMap, a planning aid: carry the SPNI trail map 2, Upper Galilee 1:50,000, or the Israel Hiking Map app.'
   section_maps:
   - key: overview
     caption: Whole route, north at top.
@@ -239,7 +239,7 @@ he:
     label: מים לכל אחד לקניון Nahal Amud
   plan_title: התוכנית
   plan_intro: 'החלוקה המקובלת לארבעה ימים, עם לינה רק בחניוני הלילה המוסדרים, כי כמעט כל המסלול עובר בשמורות טבע. זמני המדריכים פלוס בערך 20 אחוז. השקיעה ב-18:52 בהתחלה ו-18:47 בסוף, אבל השמורות סוגרות את השבילים שעה לפני ואחר הצהריים בספטמבר חם, אז יוצאים עם אור ראשון, 06:00, ומגיעים לחניון עד 15:00. שישי 11 עד ראשון 13 בספטמבר זה שבת שנכנסת ישר לראש השנה: אין אוטובוסים משישי בצהריים עד ראשון בערב, והחניונים מלאים. קובץ ה-GPX בתיקיית ההורדות כולל את הלילות האלה, נקודות היציאה וכל ברז ומעיין מ-OpenStreetMap ליד הקו.'
-  snapshot_hint: 'קריאת מיקום אחת, בלי מעקב: מסמנת ימים שהסתיימו כהושלמו וממלאת את המרחק, העלייה שנותרה והערכת ההגעה להיום. לחיצה ארוכה בוחרת את המיקום במפה במקום GPS. לחצו על כותרת יום כדי לראות אותו במפה.'
+  snapshot_hint: 'הכפתור העגול בפינה השמאלית התחתונה קורא מיקום אחד, בלי מעקב: הוא מציג אתכם במפה ובפרופיל, מסמן ימים שהסתיימו כהושלמו וממלא את המרחק, העלייה שנותרה והערכת ההגעה להיום. לחיצה ארוכה עליו בוחרת את המיקום במפה במקום GPS. לכל יום יש לשוניות תוכנית, מפה ומזג אוויר; לחצו על כותרת יום כדי לפתוח את המפה שלו.'
   days:
   - n: 0
     date: '2026-09-09'
@@ -299,7 +299,7 @@ he:
     - 'היום הטכני. השמורה נפתחת ב-08:00, אז זו היציאה המאוחרת היחידה. מהחניון דרך Ein Yakim לתוך הקניון העליון: שישה קילומטרים של סולמות, יתדות ברזל ואחיזות לצד מים זורמים, דרך Sechvi pools, עד טחנת הקמח העתיקה מתחת לאזור התעשייה של צפת (ק"מ 54, נקודת היציאה האחרונה עם אוטובוס). ממלאים 4 ליטר לכל אחד בברז של החניון: רט"ג אוסרים לשתות מהנחל ואין ברז עד החניון התחתון של Nahal Amud (ק"מ 61, מגודר, ברז). אחר כך הקטעים האמצעי והתחתון, סלעיים וחשופים, עם יתדות במקומות, מתייבשים ככל שיורדים מתחת לפני הים דרך העמוד והמערות, עד שער בריכות הדגים והחוף ב-Ginosar. רט"ג סוגרים את הקניון המלא בימי שרב, בימי גשם וביום שאחרי גשם: מתקשרים ל-*3639 בערב הקודם. ראשון 13 בספטמבר הוא היום השני של ראש השנה: אין סופרבוס 59 מתחנת Ginosar על כביש 90 עד צאת החג בסביבות 19:15, ואחריו שירות ערב דליל. מסדרים הסעה או מונית מטבריה ל-Ginosar, או שוחים בחוף חוקוק ולוקחים את ה-59 המאוחר לטבריה, ומשם אגד 430 לחיפה או 836 לתל אביב.'
     hours: 9
   plan_note: <b>מהר יותר?</b> החלוקה לשלושה ימים ישנה ב-Abirim וב-Pitul Meron ומסיימת ביום של 23 ק"מ דרך הקניון, וזה עובד רק עם שער ה-08:00 וקצב מהיר. <b>יום פנוי?</b> ישנים לילה שני בחניון התחתון של Nahal Amud ושוחים בחוף חוקוק (קמפינג חינם על הדשא, מקלחות, קיוסק, בלי מדורות).
-  maps_intro: 'המפה מצוירת בזמן אמת מאותו קובץ GPX שאתם מורידים ל-OsmAnd, אז השניים לא יכולים להיות שונים. לחיצה על קו או נקודה מציגה את ההערה שלהם. כפתור השכבות מדליק ומכבה את המסלול וכל סוג של נקודת דרך. "איפה אני" מציג את המיקום שלכם, הקילומטר במסלול והמרחק לחניון הבא. "שמור את כל המסלול לאופליין" שומר את אריחי המפה בדפדפן; הדף וה-GPX נשמרים אוטומטית, אז האתר ממשיך לעבוד בלי קליטה. מפת הבסיס OpenTopoMap, לתכנון בלבד: קחו את מפת סימון השבילים 2, הגליל העליון 1:50,000, או את אפליקציית Israel Hiking Map.'
+  maps_intro: 'המפה מצוירת בזמן אמת מאותו קובץ GPX שאתם מורידים ל-OsmAnd, אז השניים לא יכולים להיות שונים. לשונית המפה של כל יום מציגה את הקטע והפרופיל שלו; כאן כל המסלול. סובבו בשתי אצבעות או עם החצים, והמצפן מחזיר לצפון. לחיצה על קו או נקודה מציגה את ההערה שלהם. כפתור השכבות מדליק ומכבה את המסלול וכל סוג של נקודת דרך. "איפה אני" מציג את המיקום שלכם, הקילומטר במסלול והמרחק לחניון הבא. "שמור את כל המסלול לאופליין" שומר את אריחי המפה בדפדפן; הדף וה-GPX נשמרים אוטומטית, אז האתר ממשיך לעבוד בלי קליטה. מפת הבסיס OpenTopoMap, לתכנון בלבד: קחו את מפת סימון השבילים 2, הגליל העליון 1:50,000, או את אפליקציית Israel Hiking Map.'
   section_maps:
   - key: overview
     caption: כל המסלול, צפון למעלה.

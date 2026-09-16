@@ -187,7 +187,7 @@ host = TREK["hostname"]
     + "\n{%- endif %} {\n    reverse_proxy unix//{{ paths.default_socket }}\n}\n"
 )
 
-precache = ["/", "/" + Path(TREK["gpx"]).name, "/map.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css",
+precache = ["/", "/" + Path(TREK["gpx"]).name, "/map.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css", "/vendor/leaflet-rotate.umd.min.js", "/vendor/leaflet-rotate.css",
             "/vendor/images/layers.png", "/vendor/images/layers-2x.png", "/manifest.webmanifest", "/icon.svg"]
 precache += sorted("/maps/" + p.name for p in (SITE / "maps").glob("*.webp")) if (SITE / "maps").exists() else []
 files = sorted(p for p in SITE.rglob("*") if p.is_file() and p.name != "sw.js")

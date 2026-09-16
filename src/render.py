@@ -14,15 +14,17 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 LANG_META = {
     "en": {"dir": "ltr", "button": "עברית", "toc": ["Plan", "Maps", "Rules & water", "Technical", "Practical", "Links"], "gpx": "GPX for OsmAnd ↓",
-           "snapshot": "Where am I", "snapshot_hint": "One position fix, no tracking: marks finished days done and fills in today's distance, ascent left and arrival estimate. Long-press to pick your position on the map instead. Tap a day title to see it on the map.",
+           "snapshot": "Where am I", "snapshot_hint": "The round button at the bottom left takes one position fix, no tracking: it shows you on the map and on the profile, marks finished days done and fills in today's distance, ascent left and arrival estimate. Long-press it to pick your position on the map instead. Each day has Plan, Map and Weather tabs; tap a day title to open its map.",
+           "tabs": ["Plan", "Map", "Weather"], "show_map": "Show the map here", "show_all": "Show the whole route here",
            "maps_h": "Maps and profile", "static_maps": "Annotated section maps, for printing or offline", "profile_cap": "Elevation profile from the GPX; the nights are marked.",
            "rules_h": "Rules and water", "tech_h": "Technical options", "practical_h": "Practical", "links_h": "Links", "reports_h": "Trip reports", "official_h": "Official",
-           "map_intro": "This map is drawn live from the same GPX you download for OsmAnd. Tap any line or dot for its note. The layers button toggles each track and kind of waypoint. \"Where am I\" shows your position and distance to the next night. \"Save whole route offline\" stores the map tiles; the page and GPX are stored automatically, so the site keeps working without signal."},
+           "map_intro": "This map is drawn live from the same GPX you download for OsmAnd. Each day's Map tab shows its own stretch and profile; this is the whole route. Tap any line or dot for its note. The layers button toggles each track and kind of waypoint; twist with two fingers or use the arrows to rotate, the compass resets north. The button at the bottom left shows your position on the map and the profile. \"Save whole route offline\" stores the map tiles; the page and GPX are stored automatically, so the site keeps working without signal."},
     "he": {"dir": "rtl", "button": "English", "toc": ["התוכנית", "מפות", "חוקים ומים", "טכני", "פרקטי", "קישורים"], "gpx": "GPX ל-OsmAnd ↓",
-           "snapshot": "איפה אני", "snapshot_hint": "קריאת מיקום אחת, בלי מעקב: מסמנת ימים שהסתיימו כהושלמו וממלאת את המרחק, העלייה שנותרה והערכת ההגעה להיום. לחיצה ארוכה בוחרת את המיקום במפה במקום GPS. לחצו על כותרת יום כדי לראות אותו במפה.",
+           "snapshot": "איפה אני", "snapshot_hint": "הכפתור העגול בפינה השמאלית התחתונה קורא מיקום אחד, בלי מעקב: הוא מציג אתכם במפה ובפרופיל, מסמן ימים שהסתיימו כהושלמו וממלא את המרחק, העלייה שנותרה והערכת ההגעה להיום. לחיצה ארוכה עליו בוחרת את המיקום במפה במקום GPS. לכל יום יש לשוניות תוכנית, מפה ומזג אוויר; לחצו על כותרת יום כדי לפתוח את המפה שלו.",
+           "tabs": ["תוכנית", "מפה", "מזג אוויר"], "show_map": "הצג את המפה כאן", "show_all": "הצג את כל המסלול כאן",
            "maps_h": "מפות ופרופיל", "static_maps": "מפות מקטעים עם סימונים, להדפסה או לאופליין", "profile_cap": "פרופיל גבהים מה-GPX; הלילות מסומנים.",
            "rules_h": "חוקים ומים", "tech_h": "אופציות טכניות", "practical_h": "פרקטי", "links_h": "קישורים", "reports_h": "דוחות טיולים", "official_h": "רשמי",
-           "map_intro": "המפה הזו מצוירת ישירות מאותו קובץ GPX שמורידים ל-OsmAnd. לחצו על כל קו או נקודה כדי לראות את ההערה. כפתור השכבות מדליק ומכבה כל מסלול וכל סוג נקודה. \"איפה אני\" מציג את המיקום שלכם ואת המרחק ללילה הבא. \"שמור את כל המסלול לאופליין\" שומר את אריחי המפה; הדף וה-GPX נשמרים אוטומטית, כך שהאתר ממשיך לעבוד בלי קליטה."},
+           "map_intro": "המפה הזו מצוירת ישירות מאותו קובץ GPX שמורידים ל-OsmAnd. לשונית המפה של כל יום מציגה את הקטע והפרופיל שלו; כאן כל המסלול. לחצו על כל קו או נקודה כדי לראות את ההערה. כפתור השכבות מדליק ומכבה כל מסלול וכל סוג נקודה; סובבו בשתי אצבעות או עם החצים, והמצפן מחזיר לצפון. הכפתור בפינה השמאלית התחתונה מציג את המיקום שלכם במפה ובפרופיל. \"שמור את כל המסלול לאופליין\" שומר את אריחי המפה; הדף וה-GPX נשמרים אוטומטית, כך שהאתר ממשיך לעבוד בלי קליטה."},
 }
 
 
@@ -69,7 +71,7 @@ def render_lang(lang: str, c: dict, trek: dict, prefix: str) -> str:
     o += ["  </div>", '  <nav class="toc" aria-label="Sections">' + "".join(f'<a href="#{prefix}{i}">{txt(t)}</a>' for i, t in zip(ids, L["toc"])) + f'<a href="{gpx}" download>{L["gpx"]}</a></nav>', "</header>", ""]
     # plan
     o += [h2(1, "plan", c.get("plan_title") or ("The plan" if lang == "en" else "התוכנית")), f"<p>{txt(c.get('plan_intro', ''))}</p>",
-          f'<p class="planbar"><button type="button" data-act="snapshot">{L["snapshot"]}</button> <span class="snapstatus">{txt(c.get("snapshot_hint") or L["snapshot_hint"])}</span></p>']
+          f'<p class="planbar"><span class="snapstatus">{txt(c.get("snapshot_hint") or L["snapshot_hint"])}</span></p>']
     for d in c["days"]:
         n = int(d["n"])
         hours = f' data-hours="{d["hours"]}"' if d.get("hours") else ""
@@ -77,17 +79,24 @@ def render_lang(lang: str, c: dict, trek: dict, prefix: str) -> str:
               f'  <div class="d"><a href="#map" data-focus="day:{n}">D{n}<small>{txt(d["label"])}</small></a></div>', "  <div>",
               f'    <h3><a href="#map" class="daylink" data-focus="day:{n}">{txt(d["title"])}</a></h3>',
               '    <div class="stats">' + "".join(f"<span>{txt(s)}</span>" for s in d.get("stats", [])) + "</div>",
-              '    <div class="wx" aria-live="polite"></div>']
+              '    <div class="tabs" role="tablist">' + "".join(
+                  f'<button type="button" role="tab" data-tab="{key}" class="{"on" if key == "plan" else ""}" aria-selected="{"true" if key == "plan" else "false"}">{txt(name)}'
+                  + ('<span class="badge" hidden></span>' if key == "wx" else "") + "</button>" for key, name in zip(("plan", "map", "wx"), L["tabs"])) + "</div>",
+              '    <div class="pane" data-pane="plan" role="tabpanel">']
         for p in (d.get("text") if isinstance(d.get("text"), list) else [d.get("text", "")]):
-            o.append(f"    <p>{txt(p)}</p>")
-        o += ["  </div>", "</div>"]
+            o.append(f"      <p>{txt(p)}</p>")
+        o += ["    </div>",
+              f'    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="{n}"><button type="button" class="mapclaim">{L["show_map"]}</button></div></div>',
+              '    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wx" aria-live="polite"></div></div>',
+              "  </div>", "</div>"]
     if c.get("plan_note"):
         o.append(f'<div class="note"><p>{txt(c["plan_note"])}</p></div>')
     # maps
     o += ["", h2(2, "maps", L["maps_h"]), f"<p>{txt(c.get('maps_intro') or L['map_intro'])}</p>",
+          f'<div class="maphost" data-host="all"><button type="button" class="mapclaim">{L["show_all"]}</button>',
           f'<div class="mapbox" data-map="{lang}">', '  <div class="livemap" role="application" aria-label="Map"></div>',
-          '  <div class="maptools"><button type="button" data-act="locate"></button><button type="button" data-act="saveroute"></button><span class="mapstatus"></span></div>',
-          '  <canvas class="profile" aria-label="Elevation profile"></canvas>', '  <p class="profstats"></p>', "</div>"]
+          '  <div class="maptools"><button type="button" data-act="saveroute"></button><span class="mapstatus"></span></div>',
+          '  <canvas class="profile" aria-label="Elevation profile"></canvas>', '  <p class="profstats"></p>', "</div></div>"]
     sm = c.get("section_maps") or [{"key": s["key"], "caption": s.get("title", s["key"])} for s in trek.get("sectionMaps", [])]
     if sm:
         o += ['<details class="staticmaps">', f'  <summary>{L["static_maps"]}</summary>']
@@ -139,7 +148,11 @@ def render_lang(lang: str, c: dict, trek: dict, prefix: str) -> str:
 def render(content_path: Path, trek: dict) -> str:
     c = yaml.safe_load(content_path.read_text())
     first = trek["languages"][0]
-    parts = [f'<div class="langbar"><button id="langbtn" type="button">{LANG_META[first]["button"]}</button></div>', ""]
+    labels = " ".join(f'data-label-{lang}="{esc(LANG_META[lang]["snapshot"])}"' for lang in trek["languages"] if lang in LANG_META)
+    parts = [f'<div class="langbar"><button id="langbtn" type="button">{LANG_META[first]["button"]}</button></div>',
+             f'<div class="locbar"><button id="locfab" type="button" data-act="snapshot" aria-label="{esc(LANG_META[first]["snapshot"])}" title="{esc(LANG_META[first]["snapshot"])}" {labels}>'
+             '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>'
+             '<span id="loctoast" role="status" hidden></span></div>', ""]
     for lang in trek["languages"]:
         if lang not in c:
             raise SystemExit(f"content.yaml has no '{lang}' block")

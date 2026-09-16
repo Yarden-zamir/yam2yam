@@ -1,31 +1,49 @@
-/* Trek map app: draws the real GPX, elevation profile, position snapshot, offline tiles. Config in window.TREK. */
+/* Trek map app: draws the real GPX, elevation profile, position snapshot, offline tiles. Config in window.TREK.
+   One map per language. It lives in whichever host claims it: a day's Map tab (scoped to that day's
+   stretch) or the whole-route host in the Maps section. The position fix is one state drawn twice,
+   as a dot on the map and a dot on the profile, so the two can never disagree. */
 (function () {
   'use strict';
   var TREK = window.TREK || {}; var GPX = TREK.gpx || '/route.gpx';
   var TILES = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
+  var ME = '#1E6FD9';
   var I18N = {
     en: {
       nights: 'Nights, refuges, finish', water: 'Water', passes: 'Passes and summits', side: 'Side-trip summits',
       ferrata: 'Via ferrata points', escape: 'Escapes, bus, emergency', other: 'Shelters, campsites, lakes',
-      locate: 'Where am I (snapshot)', locating: 'Locating…', save: 'Save this view offline', saveRoute: 'Save whole route offline',
+      save: 'Save this view offline', saveRoute: 'Save whole route offline',
       saving: 'Saving tiles', saved: 'Saved for offline: ', tilesTooMany: 'Too many tiles for one save (max 900). Zoom in.',
-      noGeo: 'Location is not available in this browser.', offRoute: 'off route', toNext: 'to', ascent: 'ascent',
-      descent: 'descent', total: 'Route', km: 'km', m: 'm', offline: 'Offline: page, GPX and saved tiles are available.',
-      alt: 'alt', loading: 'Loading GPX…', ready: 'GPX loaded: ', tracks: 'tracks', wpts: 'waypoints'
+      offRoute: 'off route', toNext: 'to', ascent: 'ascent',
+      descent: 'descent', total: 'Route', day: 'Day', km: 'km', m: 'm', offline: 'Offline: page, GPX and saved tiles are available.',
+      alt: 'alt', loading: 'Loading GPX…', ready: 'GPX loaded: ', tracks: 'tracks', wpts: 'waypoints',
+      rotL: 'Rotate left', rotR: 'Rotate right', north: 'North up', me: 'Your position'
     },
     he: {
       nights: 'לילות, בקתות, סיום', water: 'מים', passes: 'מעברים ופסגות', side: 'פסגות סטיות צד',
       ferrata: 'נקודות ויה פראטה', escape: 'יציאות, אוטובוס, חירום', other: 'מחסות, קמפינגים, אגמים',
-      locate: 'איפה אני (צילום מצב)', locating: 'מאתר…', save: 'שמור תצוגה זו לאופליין', saveRoute: 'שמור את כל המסלול לאופליין',
+      save: 'שמור תצוגה זו לאופליין', saveRoute: 'שמור את כל המסלול לאופליין',
       saving: 'שומר אריחים', saved: 'נשמר לאופליין: ', tilesTooMany: 'יותר מדי אריחים לשמירה אחת (מקסימום 900). התקרבו.',
-      noGeo: 'מיקום לא זמין בדפדפן הזה.', offRoute: 'מחוץ למסלול', toNext: 'עד', ascent: 'עלייה',
-      descent: 'ירידה', total: 'המסלול', km: 'ק"מ', m: 'מ\'', offline: 'אופליין: הדף, ה-GPX והאריחים השמורים זמינים.',
-      alt: 'גובה', loading: 'טוען GPX…', ready: 'GPX נטען: ', tracks: 'מסלולים', wpts: 'נקודות'
+      offRoute: 'מחוץ למסלול', toNext: 'עד', ascent: 'עלייה',
+      descent: 'ירידה', total: 'המסלול', day: 'יום', km: 'ק"מ', m: 'מ\'', offline: 'אופליין: הדף, ה-GPX והאריחים השמורים זמינים.',
+      alt: 'גובה', loading: 'טוען GPX…', ready: 'GPX נטען: ', tracks: 'מסלולים', wpts: 'נקודות',
+      rotL: 'סובב שמאלה', rotR: 'סובב ימינה', north: 'צפון למעלה', me: 'המיקום שלכם'
     }
   };
   var CAT = { Night: 'nights', Flag: 'nights', Lodging: 'nights', Restaurant: 'nights', Water: 'water', Summit: 'passes',
     SideTrip: 'side', ViaFerrata: 'ferrata', Escape: 'escape', Transport: 'escape', Info: 'escape', Campsite: 'other', Shelter: 'other' };
   var DEFAULT_ON = { nights: true, water: true };
+  /* Glyphs for the OsmAnd icon names the GPX carries (24 × 24, drawn white on the waypoint colour). */
+  var ICONS = {
+    amenity_drinking_water: '<path d="M12 2.5C9 7 5.5 10.6 5.5 14.5a6.5 6.5 0 0 0 13 0c0-3.9-3.5-7.5-6.5-12z"/>',
+    tourism_camp_site: '<path fill-rule="evenodd" d="M12 3 1.5 21h21L12 3zm0 6.2L17.6 19H6.4L12 9.2z"/>',
+    tourism_alpine_hut: '<path d="M12 3 2.5 11h2.5v10h5v-6h4v6h5V11h2.5L12 3z"/>',
+    natural_peak: '<path d="M13.5 5.5 10 12 8 9.5 1.5 20h21L13.5 5.5z"/>',
+    special_flag_finish: '<path d="M5 2h2.2v20H5V2zm3.2 2H19l-2.6 4.2L19 12.5H8.2V4z"/>',
+    special_information: '<path d="M10.4 6h3.2v3h-3.2V6zm0 4.5h3.2V18h-3.2v-7.5z"/>',
+    highway_bus_stop: '<path fill-rule="evenodd" d="M4 5.5A3.5 3.5 0 0 1 7.5 2h9A3.5 3.5 0 0 1 20 5.5V16a2 2 0 0 1-1 1.7V20a1.2 1.2 0 0 1-2.4 0v-1.5H7.4V20A1.2 1.2 0 0 1 5 20v-2.3A2 2 0 0 1 4 16V5.5zM6.5 6v6h11V6h-11zm1.3 8.2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm8.4 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>',
+    amenity_shelter: '<path d="M12 3 1 12.5h3.5V21h2.2v-8.5h10.6V21h2.2v-8.5H23L12 3z"/>',
+    sport_climbing: '<path fill-rule="evenodd" d="M9 3a5 5 0 0 0-5 5v8a5 5 0 0 0 5 5h6a5 5 0 0 0 5-5V8a5 5 0 0 0-5-5H9zm0 2.6h6A2.4 2.4 0 0 1 17.4 8v8a2.4 2.4 0 0 1-2.4 2.4H9A2.4 2.4 0 0 1 6.6 16V8A2.4 2.4 0 0 1 9 5.6z"/><path d="M13.6 5h3.2v9h-3.2z"/>'
+  };
 
   function hav(a, b) {
     var R = 6371000, dLat = (b.lat - a.lat) * Math.PI / 180, dLon = (b.lon - a.lon) * Math.PI / 180;
@@ -51,7 +69,9 @@
       };
     });
     var wpts = Array.prototype.map.call(x.getElementsByTagName('wpt'), function (w) {
-      return { lat: +w.getAttribute('lat'), lon: +w.getAttribute('lon'), name: text(w, 'name'), type: text(w, 'type'), color: text(w, 'osmand:color') || '#6B7775' };
+      var color = text(w, 'osmand:color');
+      return { lat: +w.getAttribute('lat'), lon: +w.getAttribute('lon'), name: text(w, 'name'), type: text(w, 'type'),
+        color: /^#[0-9a-fA-F]{6}$/.test(color) ? color : '#6B7775', icon: text(w, 'osmand:icon'), bg: text(w, 'osmand:background') };
     });
     return { tracks: tracks, wpts: wpts };
   }
@@ -90,14 +110,31 @@
     route.pts.forEach(function (q, i) { var dd = hav(p, q); if (!best || dd < best.dist) best = { dist: dd, i: i, pt: q }; });
     return best;
   }
+  function climb(route, d0, d1) {
+    var asc = 0, desc = 0, last = null;
+    route.pts.forEach(function (p) {
+      if (p.d < d0 || p.d > d1 || p.ele == null) return;
+      if (last == null) { last = p.ele; return; }
+      var dz = p.ele - last;
+      if (Math.abs(dz) >= 10) { if (dz > 0) asc += dz; else desc -= dz; last = p.ele; }
+    });
+    return { ascent: asc, descent: desc };
+  }
 
   function shortTrackName(name) {
     var parts = name.split(' · ');
     return parts.length > 2 ? parts[0] + ' · ' + parts[1] : name;
   }
+  function markerFor(w, c) {
+    var glyph = ICONS[w.icon];
+    if (!glyph) return L.circleMarker([w.lat, w.lon], { radius: c === 'nights' ? 7 : 5, color: '#fff', weight: 1.5, fillColor: w.color, fillOpacity: 1 });
+    var s = c === 'nights' ? 26 : 22, bg = /^(circle|square|octagon)$/.test(w.bg) ? w.bg : 'circle';
+    return L.marker([w.lat, w.lon], { keyboard: false, icon: L.divIcon({ className: 'wpi', iconSize: [s, s], iconAnchor: [s / 2, s / 2], popupAnchor: [0, -s / 2],
+      html: '<span class="wpico ' + bg + '" style="background:' + w.color + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + glyph + '</svg></span>' }) });
+  }
 
-  var data = null, route = null, apps = {}, pending = null;
-  function norm(s) { return (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+  var data = null, route = null, apps = {}, boxes = {}, me = null, pendingClaim = null, pendingFocus = null;
+  function norm(s) { return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
 
   function build(container) {
     var lang = container.getAttribute('data-map');
@@ -105,8 +142,25 @@
     var T = I18N[lang];
     var mapEl = container.querySelector('.livemap');
     var status = container.querySelector('.mapstatus');
-    var map = L.map(mapEl, { scrollWheelZoom: false, zoomSnap: 0.5 });
+    var canRotate = typeof L.Map.prototype.setBearing === 'function';
+    var opts = { scrollWheelZoom: false, zoomSnap: 0.5 };
+    if (canRotate) { opts.rotate = true; opts.touchRotate = true; opts.dragRotate = true; opts.shiftKeyRotate = true; opts.rotateControl = { position: 'topleft', behavior: 'reset', closeOnZeroBearing: false }; }
+    var map = L.map(mapEl, opts);
+    map.createPane('me').style.zIndex = 640;
     L.tileLayer(TILES, { maxZoom: 17, crossOrigin: true, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, SRTM &middot; &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)' }).addTo(map);
+    if (canRotate) {
+      /* two-finger twist or right-drag rotates; these buttons do it in 15° steps; the compass (plugin) resets north */
+      var Rot = L.Control.extend({ onAdd: function () {
+        var bar = L.DomUtil.create('div', 'leaflet-bar leaflet-control-rotatebtns');
+        [['rotL', '↺', -15], ['rotR', '↻', 15]].forEach(function (b) {
+          var a = L.DomUtil.create('a', '', bar); a.href = '#'; a.textContent = b[1]; a.title = T[b[0]]; a.setAttribute('role', 'button'); a.setAttribute('aria-label', T[b[0]]);
+          L.DomEvent.on(a, 'click', function (e) { L.DomEvent.stop(e); map.setBearing(map.getBearing() + b[2]); });
+        });
+        L.DomEvent.disableClickPropagation(bar);
+        return bar;
+      } });
+      map.addControl(new Rot({ position: 'topleft' }));
+    }
 
     var overlays = {}, routeGroup = L.featureGroup();
     data.tracks.forEach(function (t) {
@@ -123,7 +177,7 @@
     data.wpts.forEach(function (w) {
       var c = CAT[w.type] || 'other';
       cats[c] = cats[c] || L.layerGroup();
-      L.circleMarker([w.lat, w.lon], { radius: c === 'nights' ? 7 : 5, color: '#fff', weight: 1.5, fillColor: w.color, fillOpacity: 1 }).bindPopup(w.name).addTo(cats[c]);
+      markerFor(w, c).bindPopup(w.name).addTo(cats[c]);
     });
     ['nights', 'water', 'passes', 'side', 'ferrata', 'escape', 'other'].forEach(function (c) {
       if (!cats[c]) return; overlays[T[c]] = cats[c]; if (DEFAULT_ON[c]) cats[c].addTo(map);
@@ -131,67 +185,120 @@
     L.control.layers(null, overlays, { collapsed: true }).addTo(map);
     map.fitBounds(routeGroup.getBounds(), { padding: [12, 12] });
 
-    /* elevation profile */
-    var canvas = container.querySelector('canvas.profile'), hoverMarker = null;
+    /* days: NIGHT n-1 to NIGHT n along the walking line (day 1 from the start, the last day to FINISH) */
     var nights = data.wpts.filter(function (w) { return (w.type === 'Night' || w.type === 'Flag') && !/FALLBACK|option/.test(w.name); })
       .map(function (w) { var n = nearestOnRoute(route, w); return { w: w, d: n.pt.d, ele: n.pt.ele }; }).sort(function (a, b) { return a.d - b.d; });
+    function dayRange(n) {
+      var from = n === 1 ? 0 : null, to = null;
+      nights.forEach(function (x) {
+        if (x.w.name.indexOf('NIGHT ' + (n - 1) + ' ') === 0 && from == null) from = x.d;
+        if (x.w.name.indexOf('NIGHT ' + n + ' ') === 0 || x.w.name.indexOf('FINISH') === 0 && !nights.some(function (y) { return y.w.name.indexOf('NIGHT ' + n + ' ') === 0; })) to = x.d;
+      });
+      if (from == null) from = 0; if (to == null) to = route.length;
+      return { from: from, to: to };
+    }
+    function nightOf(n) { var w = null; nights.forEach(function (x) { if (!w && x.w.name.indexOf('NIGHT ' + n + ' ') === 0) w = x.w; }); return w; }
+
+    /* scope: null for the whole route, or a day number; sets the profile range and the highlighted stretch */
+    var scope = null, scopeLayer = null, range = { from: 0, to: route.length };
+    var statsEl = container.querySelector('.profstats');
+    function stats() {
+      var c = climb(route, range.from, range.to);
+      statsEl.textContent = (scope == null ? T.total : T.day + ' ' + scope) + ' ' + ((range.to - range.from) / 1000).toFixed(1) + ' ' + T.km + ' · ' + T.ascent + ' ' + Math.round(c.ascent) + ' ' + T.m + ' · ' + T.descent + ' ' + Math.round(c.descent) + ' ' + T.m + (TREK.elevation ? ' · ' + TREK.elevation : '');
+    }
+    function setScope(n, fit) {
+      scope = n;
+      if (scopeLayer) { map.removeLayer(scopeLayer); scopeLayer = null; }
+      var r = n == null ? { from: 0, to: route.length } : dayRange(n);
+      if (n != null && r.to - r.from < 200) {
+        /* an arrival or rest day: nothing to walk, show where you sleep */
+        range = { from: 0, to: route.length };
+        var w = nightOf(n) || route.pts[0];
+        if (fit) map.setView([w.lat, w.lon], Math.max(map.getZoom(), 13));
+      } else {
+        range = r;
+        if (n != null) {
+          scopeLayer = L.polyline(route.pts.filter(function (p) { return p.d >= r.from && p.d <= r.to; }).map(function (p) { return [p.lat, p.lon]; }), { color: ME, weight: 9, opacity: .45, interactive: false }).addTo(map);
+          if (fit) map.fitBounds(scopeLayer.getBounds(), { padding: [20, 20] });
+        } else if (fit) map.fitBounds(routeGroup.getBounds(), { padding: [12, 12] });
+      }
+      stats(); drawProfile(null);
+    }
+
+    /* elevation profile of the current scope; the position dot is drawn from the same state as the map marker */
+    var canvas = container.querySelector('canvas.profile'), hoverMarker = null;
     function drawProfile(hoverX) {
       var dpr = window.devicePixelRatio || 1, W = canvas.clientWidth, H = canvas.clientHeight;
+      if (!W || !H) return;
       canvas.width = W * dpr; canvas.height = H * dpr;
-      var ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
+      var ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr); ctx.direction = 'ltr';  /* axis labels lay out the same in the RTL page */
       var cs = getComputedStyle(document.documentElement);
       var ink = cs.getPropertyValue('--ink').trim(), muted = cs.getPropertyValue('--muted').trim(), line = cs.getPropertyValue('--line').trim(),
         mark = cs.getPropertyValue('--mark').trim(), lake = cs.getPropertyValue('--lake').trim(), soft = cs.getPropertyValue('--lake-soft').trim();
-      var L0 = 44, R0 = 10, T0 = 12, B0 = 24, maxD = route.length, maxE = Math.max(500, Math.ceil(route.maxEle / 500) * 500), eStep = maxE > 1500 ? 1000 : 500, kStep = maxD > 60000 ? 20 : maxD > 25000 ? 10 : 5;
-      var x = function (d) { return L0 + d / maxD * (W - L0 - R0); }, y = function (e) { return T0 + (1 - e / maxE) * (H - T0 - B0); };
+      var from = range.from, to = range.to, span = Math.max(1, to - from), pts = route.pts.filter(function (p) { return p.d >= from && p.d <= to && p.ele != null; });
+      var lo = Infinity, hi = -Infinity; pts.forEach(function (p) { if (p.ele < lo) lo = p.ele; if (p.ele > hi) hi = p.ele; });
+      if (!isFinite(lo)) { lo = 0; hi = 500; }
+      var minE = Math.floor(lo / 500) * 500, maxE = Math.max(minE + 500, Math.ceil(hi / 500) * 500), eStep = maxE - minE > 1500 ? 1000 : 500;
+      var kStep = span > 60000 ? 20 : span > 25000 ? 10 : span > 12000 ? 5 : 2;
+      var L0 = 44, R0 = 10, T0 = 12, B0 = 24;
+      var x = function (d) { return L0 + (d - from) / span * (W - L0 - R0); }, y = function (e) { return T0 + (1 - (e - minE) / (maxE - minE)) * (H - T0 - B0); };
       ctx.clearRect(0, 0, W, H);
       ctx.font = '11px IBM Plex Mono, monospace'; ctx.fillStyle = muted; ctx.strokeStyle = line; ctx.lineWidth = 1;
-      for (var e = 0; e <= maxE; e += eStep) (function (e) { ctx.beginPath(); ctx.moveTo(L0, y(e)); ctx.lineTo(W - R0, y(e)); ctx.stroke(); ctx.textAlign = 'right'; ctx.fillText(e + ' ' + T.m, L0 - 6, y(e) + 4); })(e);
-      for (var k = 0; k <= maxD / 1000; k += kStep) { ctx.textAlign = 'center'; ctx.fillText(k + ' ' + T.km, x(k * 1000), H - 8); }
-      ctx.beginPath(); var started = false;
-      route.pts.forEach(function (p) { if (p.ele == null) return; var px = x(p.d), py = y(p.ele); if (!started) { ctx.moveTo(px, py); started = true; } else ctx.lineTo(px, py); });
-      var pathEnd = ctx; ctx.lineTo(x(maxD), y(0)); ctx.lineTo(x(0), y(0)); ctx.closePath(); ctx.fillStyle = soft; ctx.fill();
-      ctx.beginPath(); started = false;
-      route.pts.forEach(function (p) { if (p.ele == null) return; var px = x(p.d), py = y(p.ele); if (!started) { ctx.moveTo(px, py); started = true; } else ctx.lineTo(px, py); });
-      ctx.strokeStyle = lake; ctx.lineWidth = 1.5; ctx.stroke();
+      for (var e = minE; e <= maxE; e += eStep) (function (e) { ctx.beginPath(); ctx.moveTo(L0, y(e)); ctx.lineTo(W - R0, y(e)); ctx.stroke(); ctx.textAlign = 'right'; ctx.fillText(e + ' ' + T.m, L0 - 6, y(e) + 4); })(e);
+      for (var k = 0; k * 1000 <= span; k += kStep) { ctx.textAlign = 'center'; ctx.fillText(k + ' ' + T.km, x(from + k * 1000), H - 8); }
+      function trace() { ctx.beginPath(); pts.forEach(function (p, i) { if (i) ctx.lineTo(x(p.d), y(p.ele)); else ctx.moveTo(x(p.d), y(p.ele)); }); }
+      if (pts.length) {
+        trace(); ctx.lineTo(x(pts[pts.length - 1].d), y(minE)); ctx.lineTo(x(pts[0].d), y(minE)); ctx.closePath(); ctx.fillStyle = soft; ctx.fill();
+        trace(); ctx.strokeStyle = lake; ctx.lineWidth = 1.5; ctx.stroke();
+      }
       ctx.font = '500 11px IBM Plex Sans, sans-serif';
-      nights.forEach(function (n, i) {
-        var px = x(n.d), py = y(n.ele || 0);
+      var ns = nights.filter(function (n) { return n.d >= from - 1 && n.d <= to + 1; });
+      ns.forEach(function (n, i) {
+        var px = x(n.d), py = y(n.ele == null ? minE : n.ele);
         ctx.beginPath(); ctx.arc(px, py, 4.5, 0, 7); ctx.fillStyle = mark; ctx.fill();
-        ctx.fillStyle = ink; ctx.textAlign = i === nights.length - 1 ? 'right' : 'center';
+        ctx.fillStyle = ink; ctx.textAlign = i === ns.length - 1 ? 'right' : i === 0 ? 'left' : 'center';
         ctx.fillText(n.w.name.split(' · ')[0].replace('NIGHT ', 'N'), px, py - 9);
       });
+      if (me && me.near && me.near.pt.d >= from && me.near.pt.d <= to) {
+        var mx = x(me.near.pt.d), my = y(me.near.pt.ele == null ? minE : me.near.pt.ele);
+        ctx.beginPath(); ctx.arc(mx, my, 6.5, 0, 7); ctx.fillStyle = ME; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1;
+      }
       if (hoverX != null) {
-        var d = Math.max(0, Math.min(maxD, (hoverX - L0) / (W - L0 - R0) * maxD)), lo = 0, hi = route.pts.length - 1;
-        while (lo < hi) { var mid = (lo + hi) >> 1; if (route.pts[mid].d < d) lo = mid + 1; else hi = mid; }
-        var p = route.pts[lo];
+        var d = from + Math.max(0, Math.min(1, (hoverX - L0) / (W - L0 - R0))) * span, a = 0, b = route.pts.length - 1;
+        while (a < b) { var mid = (a + b) >> 1; if (route.pts[mid].d < d) a = mid + 1; else b = mid; }
+        var p = route.pts[a];
         ctx.strokeStyle = mark; ctx.beginPath(); ctx.moveTo(x(d), T0); ctx.lineTo(x(d), H - B0); ctx.stroke();
         ctx.fillStyle = ink; ctx.textAlign = x(d) > W / 2 ? 'right' : 'left';
-        ctx.fillText((d / 1000).toFixed(1) + ' ' + T.km + ' · ' + (p.ele == null ? '' : p.ele + ' ' + T.m), x(d) + (x(d) > W / 2 ? -6 : 6), T0 + 12);
-        if (!hoverMarker) hoverMarker = L.circleMarker([p.lat, p.lon], { radius: 7, color: mark, weight: 3, fillColor: '#fff', fillOpacity: 1 }).addTo(map);
+        ctx.fillText(((d - from) / 1000).toFixed(1) + ' ' + T.km + ' · ' + (p.ele == null ? '' : p.ele + ' ' + T.m), x(d) + (x(d) > W / 2 ? -6 : 6), T0 + 12);
+        if (!hoverMarker) hoverMarker = L.circleMarker([p.lat, p.lon], { pane: 'me', radius: 7, color: mark, weight: 3, fillColor: '#fff', fillOpacity: 1 }).addTo(map);
         else hoverMarker.setLatLng([p.lat, p.lon]);
       }
     }
     function hover(ev) { var r = canvas.getBoundingClientRect(); var cx = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; drawProfile(cx); if (ev.touches) ev.preventDefault(); }
     canvas.addEventListener('mousemove', hover); canvas.addEventListener('touchstart', hover, { passive: false }); canvas.addEventListener('touchmove', hover, { passive: false });
     canvas.addEventListener('mouseleave', function () { drawProfile(null); if (hoverMarker) { map.removeLayer(hoverMarker); hoverMarker = null; } });
-    var stats = container.querySelector('.profstats');
-    stats.textContent = T.total + ' ' + (route.length / 1000).toFixed(1) + ' ' + T.km + ' · ' + T.ascent + ' ' + Math.round(route.ascent) + ' ' + T.m + ' · ' + T.descent + ' ' + Math.round(route.descent) + ' ' + T.m + (TREK.elevation ? ' · ' + TREK.elevation : '');
-    drawProfile(null);
+    stats(); drawProfile(null);
     window.addEventListener('resize', function () { drawProfile(null); });
 
-    /* one-shot position: a snapshot, no GPS watch, to save battery */
-    var locBtn = container.querySelector('[data-act="locate"]'), meMarker = null, meCircle = null;
-    locBtn.textContent = T.locate;
-    function showPosition(lat, lon, acc) {
-      var ll = [lat, lon];
-      if (!meMarker) { meMarker = L.circleMarker(ll, { radius: 8, color: '#fff', weight: 2, fillColor: '#1E6FD9', fillOpacity: 1 }).addTo(map); meCircle = L.circle(ll, { radius: acc || 30, weight: 1, color: '#1E6FD9', fillOpacity: .08 }).addTo(map); }
-      else { meMarker.setLatLng(ll); meCircle.setLatLng(ll).setRadius(acc || 30); }
+    /* the position snapshot: the map dot and the profile dot are both drawn from `me` */
+    var meMarker = null, meCircle = null;
+    function refreshMe() {
+      if (!me) return;
+      var ll = [me.lat, me.lon];
+      if (!meMarker) {
+        meMarker = L.circleMarker(ll, { pane: 'me', radius: 8, color: '#fff', weight: 2, fillColor: ME, fillOpacity: 1 }).bindPopup(T.me).addTo(map);
+        meCircle = L.circle(ll, { radius: me.acc || 30, weight: 1, color: ME, fillOpacity: .08, interactive: false }).addTo(map);
+      } else { meMarker.setLatLng(ll); meCircle.setLatLng(ll).setRadius(me.acc || 30); }
+      drawProfile(null);
     }
-    locBtn.addEventListener('click', function () { if (window.gr52Snapshot) window.gr52Snapshot(); });
+    function panToMe() {
+      if (!me) return;
+      var ll = L.latLng(me.lat, me.lon);
+      if (!map.getBounds().pad(-0.15).contains(ll)) map.setView(ll, Math.max(map.getZoom(), 13));
+    }
     map.on('locationerror', function (e) { status.textContent = e.message; });
 
-    /* offline tiles: current view, or a corridor along the whole route */
+    /* offline tiles: a corridor along the whole route */
     function tileXY(lat, lon, z) {
       var n = Math.pow(2, z), r = lat * Math.PI / 180;
       return [Math.floor((lon + 180) / 360 * n), Math.floor((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * n)];
@@ -212,7 +319,7 @@
     routeBtn.addEventListener('click', function () {
       var seen = {}, urls = [];
       [12, 13, 14].forEach(function (z) {
-        var pad = z === 14 ? 1 : 1;
+        var pad = 1;
         data.tracks.forEach(function (t) {
           if (t.kind === 'boundary') return;
           t.segs.forEach(function (seg) {
@@ -230,6 +337,7 @@
       saveTiles(urls, routeBtn);
     });
 
+    /* transient focus: a place, a track, a coordinate, or a day (which also scopes the map) */
     var highlight = null;
     function clearHighlight() { if (highlight) { map.removeLayer(highlight); highlight = null; } }
     function focus(q) {
@@ -238,28 +346,19 @@
       if (mLL) {
         var ll0 = [+mLL[1], +mLL[2]];
         map.setView(ll0, Math.max(map.getZoom(), 14));
-        highlight = L.circleMarker(ll0, { radius: 16, color: '#1E6FD9', weight: 3, fill: false }).addTo(map);
+        highlight = L.circleMarker(ll0, { pane: 'me', radius: 16, color: ME, weight: 3, fill: false }).addTo(map);
         if (mLL[3]) highlight.bindPopup(mLL[3]).openPopup();
         return true;
       }
       var mDay = /^day:(\d+)$/.exec(q);
-      if (mDay) {
-        var n = +mDay[1], from = n === 1 ? 0 : null, to = null;
-        nights.forEach(function (x) { var k = x.w.name.split(' ')[1]; if (x.w.name.indexOf('NIGHT ' + (n - 1) + ' ') === 0 && from == null) from = x.d; if (x.w.name.indexOf('NIGHT ' + n + ' ') === 0 || x.w.name.indexOf('FINISH') === 0 && !nights.some(function (y) { return y.w.name.indexOf('NIGHT ' + n + ' ') === 0; })) to = x.d; });
-        if (from == null) from = 0; if (to == null) to = route.length;
-        var slice = route.pts.filter(function (p) { return p.d >= from && p.d <= to; }).map(function (p) { return [p.lat, p.lon]; });
-        if (slice.length < 2) return false;
-        highlight = L.polyline(slice, { color: '#1E6FD9', weight: 9, opacity: .45 }).addTo(map);
-        map.fitBounds(highlight.getBounds(), { padding: [20, 20] });
-        return true;
-      }
+      if (mDay) { setScope(+mDay[1], true); return true; }
       var nq = norm(q), w = null;
       data.wpts.forEach(function (x) { if (!w && norm(x.name).indexOf(nq) >= 0) w = x; });
       if (w) {
         var c = CAT[w.type] || 'other'; if (cats[c] && !map.hasLayer(cats[c])) cats[c].addTo(map);
         map.setView([w.lat, w.lon], Math.max(map.getZoom(), 14));
         cats[c].eachLayer(function (l) { if (l.getLatLng && l.getLatLng().lat === w.lat && l.getLatLng().lng === w.lon) l.openPopup(); });
-        highlight = L.circleMarker([w.lat, w.lon], { radius: 16, color: '#1E6FD9', weight: 3, fill: false }).addTo(map);
+        highlight = L.circleMarker([w.lat, w.lon], { pane: 'me', radius: 16, color: ME, weight: 3, fill: false }).addTo(map);
         return true;
       }
       var t = null; data.tracks.forEach(function (x) { if (!t && norm(x.name).indexOf(nq) >= 0) t = x; });
@@ -267,43 +366,129 @@
         var g = overlays[shortTrackName(t.name)]; if (g && !map.hasLayer(g)) g.addTo(map);
         var fg = L.featureGroup(); g.eachLayer(function (l) { fg.addLayer(l); });
         map.fitBounds(fg.getBounds(), { padding: [20, 20] });
-        highlight = L.polyline(t.segs.map(function (s) { return s.map(function (p) { return [p.lat, p.lon]; }); }), { color: '#1E6FD9', weight: 9, opacity: .35 }).addTo(map);
+        highlight = L.polyline(t.segs.map(function (s) { return s.map(function (p) { return [p.lat, p.lon]; }); }), { color: ME, weight: 9, opacity: .35 }).addTo(map);
         return true;
       }
       return false;
     }
     map.on('click', clearHighlight);
     function pick(cb) { mapEl.style.cursor = 'crosshair'; map.once('click', function (e) { mapEl.style.cursor = ''; cb(e.latlng.lat, e.latlng.lng); }); }
-    apps[lang] = { map: map, focus: focus, showPosition: showPosition, pick: pick, box: container, status: status, redraw: function () { map.invalidateSize(); drawProfile(null); } };
+
+    /* hosts: the box moves into whichever day tab or section claims it */
+    var host = container.parentNode;
+    function claim(h) {
+      var n = h.getAttribute('data-host') === 'all' ? null : +h.getAttribute('data-host');
+      if (h !== host) { h.appendChild(container); host.classList.add('empty'); h.classList.remove('empty'); host = h; }
+      map.invalidateSize();
+      if (scope !== n) setScope(n, true); else drawProfile(null);
+    }
+    apps[lang] = { map: map, focus: focus, pick: pick, box: container, status: status, claim: claim, refreshMe: refreshMe, panToMe: panToMe,
+      redraw: function () { map.invalidateSize(); drawProfile(null); }, hostEl: function () { return host; } };
+    refreshMe();
     return apps[lang];
   }
 
-  function visible() {
-    document.querySelectorAll('.mapbox').forEach(function (c) { if (c.offsetParent !== null) build(c).redraw(); });
+  function visibleLang() { var w = document.querySelector('.wrap[lang]:not([hidden])'); return w ? w.getAttribute('lang') : null; }
+  function langOf(el) { var w = el.closest('[lang]'); return w ? w.getAttribute('lang') : visibleLang(); }
+  function allHost(lang) { return document.querySelector('#' + lang + ' .maphost[data-host="all"]'); }
+  function appFor(lang) { var box = boxes[lang]; return box && data && box.offsetParent !== null ? build(box) : (apps[lang] || null); }
+  function inView(el) {
+    var r = el.getBoundingClientRect(), h = window.innerHeight || document.documentElement.clientHeight;
+    return r.height > 0 && Math.min(r.bottom, h) - Math.max(r.top, 0) >= r.height * 0.6;
   }
-  document.querySelectorAll('.mapstatus').forEach(function (s) { s.textContent = I18N[s.closest('.mapbox').getAttribute('data-map')].loading; });
+  /* move the language's map box into a host (a day's Map tab or the whole-route section) and scope it */
+  function claimHost(h) {
+    if (!h) return null;
+    if (!data) { pendingClaim = h; return null; }
+    var lang = langOf(h), box = boxes[lang]; if (!box) return null;
+    var cur = box.parentNode;
+    if (cur !== h) { h.appendChild(box); cur.classList.add('empty'); h.classList.remove('empty'); }
+    if (box.offsetParent === null) return apps[lang] || null;
+    var app = build(box); app.claim(h); return app;
+  }
+  function showTab(stage, name) {
+    if (stage.classList.contains('done')) stage.classList.add('open');  /* a finished day is collapsed; a tab click means show it */
+    stage.querySelectorAll('.tabs [data-tab]').forEach(function (b) { var on = b.getAttribute('data-tab') === name; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    stage.querySelectorAll('.pane').forEach(function (p) { p.hidden = p.getAttribute('data-pane') !== name; });
+    if (name === 'map') claimHost(stage.querySelector('.maphost'));
+    if (name === 'wx') stage.dispatchEvent(new CustomEvent('trek:wxshown', { bubbles: true }));
+  }
+  function stageOf(lang, n) { return document.querySelector('#' + lang + ' .stage[data-day="' + n + '"]'); }
+  /* open a day's Map tab in the visible language, scroll to it, then focus q inside it */
+  function openDay(n, q) {
+    var lang = visibleLang(), stage = stageOf(lang, n);
+    if (!stage) return focusAll(q);
+    if (stage.classList.contains('done')) stage.classList.add('open');
+    showTab(stage, 'map');
+    stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var app = apps[lang];
+    if (app && q && q !== 'day:' + n) setTimeout(function () { app.redraw(); app.focus(q); }, 250);
+  }
+  function focusAll(q) {
+    var lang = visibleLang(), h = allHost(lang); if (!h) return;
+    claimHost(h);
+    h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var app = apps[lang];
+    if (app && q) setTimeout(function () { app.redraw(); app.focus(q); }, 250);
+  }
+  function focusVisible(q, origin) {
+    if (!data) { pendingFocus = [q, origin]; return; }
+    var mDay = /^day:(\d+)$/.exec(q);
+    if (mDay) return openDay(+mDay[1], q);
+    var stage = origin && origin.closest ? origin.closest('.stage[data-day]') : null;
+    if (stage) return openDay(+stage.getAttribute('data-day'), q);
+    focusAll(q);
+  }
+  function visible() {
+    Object.keys(boxes).forEach(function (lang) { var b = boxes[lang]; if (b.offsetParent !== null) build(b).redraw(); });
+  }
+
+  document.querySelectorAll('.mapbox').forEach(function (b) { boxes[b.getAttribute('data-map')] = b; b.querySelector('.mapstatus').textContent = I18N[b.getAttribute('data-map')].loading; });
   fetch(GPX).then(function (r) { return r.text(); }).then(function (t) {
     data = parseGpx(t); route = buildRoute(data.tracks); window.gr52Data = { data: data, route: route };
     document.querySelectorAll('.mapstatus').forEach(function (s) { var T = I18N[s.closest('.mapbox').getAttribute('data-map')]; s.textContent = T.ready + data.tracks.length + ' ' + T.tracks + ', ' + data.wpts.length + ' ' + T.wpts + (navigator.onLine ? '' : ' · ' + T.offline); });
     visible();
-    if (pending) { var q = pending; pending = null; focusVisible(q); } else fromHash();
+    if (pendingClaim) { var h = pendingClaim; pendingClaim = null; claimHost(h); }
+    if (pendingFocus) { var q = pendingFocus; pendingFocus = null; focusVisible(q[0], q[1]); } else fromHash();
   });
   var btn = document.getElementById('langbtn'); if (btn) btn.addEventListener('click', function () { setTimeout(visible, 30); });
-  function focusVisible(q) {
-    var box = null; document.querySelectorAll('.mapbox').forEach(function (c) { if (c.offsetParent !== null) box = c; });
-    if (!box) return;
-    if (!data) { pending = q; return; }
-    var app = build(box);
-    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setTimeout(function () { app.redraw(); app.focus(q); }, 250);
-  }
   window.gr52Focus = focusVisible;
-  window.gr52Map = { visibleApp: function () { var box = null; document.querySelectorAll('.mapbox').forEach(function (c) { if (c.offsetParent !== null) box = c; }); return box && data ? build(box) : null; }, nearest: function (p) { return route ? nearestOnRoute(route, p) : null; } };
+  window.gr52Map = {
+    visibleApp: function () { return appFor(visibleLang()); },
+    nearest: function (p) { return route ? nearestOnRoute(route, p) : null; },
+    /* one position for every map and profile */
+    showPosition: function (lat, lon, acc) {
+      if (!route) return;
+      me = { lat: lat, lon: lon, acc: acc, near: nearestOnRoute(route, { lat: lat, lon: lon }) };
+      Object.keys(apps).forEach(function (k) { apps[k].refreshMe(); });
+    },
+    /* bring the map with the position into view: the day you are on, or the whole route */
+    reveal: function (n) {
+      var lang = visibleLang(), app = appFor(lang), box = boxes[lang]; if (!box) return;
+      var cur = box.parentNode.getAttribute('data-host'), onScreen = box.offsetParent !== null && inView(box.querySelector('.livemap'));
+      var keep = onScreen && (cur === 'all' || n == null || +cur === n);
+      if (!keep) { if (n != null && stageOf(lang, n)) openDay(n); else focusAll(null); }
+      setTimeout(function () { var a = apps[lang]; if (a) { a.redraw(); a.panToMe(); } }, keep ? 0 : 300);
+    },
+    /* make sure the visible language's map is on screen (for picking a position on it) */
+    ensureVisible: function () {
+      var lang = visibleLang(), box = boxes[lang]; if (!box) return null;
+      var h = box.parentNode, stage = h.closest('.stage');
+      if (box.offsetParent === null) { if (stage) { if (stage.classList.contains('done')) stage.classList.add('open'); showTab(stage, 'map'); } else claimHost(allHost(lang)); }
+      (stage || h).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return apps[lang] || null;
+    }
+  };
   document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('a[data-focus]'); if (!a) return;
-    e.preventDefault(); focusVisible(a.getAttribute('data-focus'));
+    if (!e.target.closest) return;
+    var a = e.target.closest('a[data-focus]');
+    if (a) { e.preventDefault(); focusVisible(a.getAttribute('data-focus'), a); return; }
+    var tab = e.target.closest('.tabs [data-tab]');
+    if (tab) { showTab(tab.closest('.stage'), tab.getAttribute('data-tab')); return; }
+    var c = e.target.closest('.mapclaim');
+    if (c) claimHost(c.closest('.maphost'));
   });
-  function fromHash() { var h = decodeURIComponent(location.hash || ''); if (h.indexOf('#map=') === 0) focusVisible(h.slice(5)); }
+  function fromHash() { var h = decodeURIComponent(location.hash || ''); if (h.indexOf('#map=') === 0) focusVisible(h.slice(5), null); }
   window.addEventListener('hashchange', fromHash);
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 })();
@@ -321,7 +506,7 @@
       w: { storm: 'Thunderstorm risk at the high point', rain: 'Rain likely', snow: 'Snow or freezing on the high point',
         wind: 'Strong gusts on the ridge', frost: 'Frost at the bivouac', heat: 'Heat on the low ground: start early, 3 L water', fog: 'Fog: navigation care on boulder fields', uv: 'Very high UV', cold: 'Cold night', late: 'Planned arrival after sunset' },
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' },
-      snap: { far: 'You are {km} km from the route. Snapshot not applied.', at: 'You are at km {km} of the route', walked: 'walked today', left: 'left to', ascent: 'ascent left', pace: 'pace', measured: 'measured', planned: 'planned', eta: 'ETA', sunset: 'sunset', tent: 'tent window opens 19:00', done: 'done', show: 'show', undo: 'not done', noGeo: 'Location is not available in this browser.', taken: 'Snapshot', manual: 'picked on map', pick: 'Tap the map where you are.', off: 'off route by', before: 'Trek not started: you are near the start.', after: 'Past the finish: well done.' }
+      snap: { far: 'You are {km} km from the route. Snapshot not applied.', at: 'You are at km {km} of the route', walked: 'walked today', left: 'left to', ascent: 'ascent left', pace: 'pace', measured: 'measured', planned: 'planned', eta: 'ETA', sunset: 'sunset', tent: 'tent window opens 19:00', done: 'done', show: 'show', undo: 'not done', noGeo: 'Location is not available in this browser.', taken: 'Snapshot', locating: 'Locating…', manual: 'picked on map', pick: 'Tap the map where you are.', off: 'off route by', before: 'Trek not started: you are near the start.', after: 'Past the finish: well done.' }
     },
     he: { night: 'לינה', finish: 'סיום', high: 'נקודה גבוהה', rain: 'גשם', prob: 'סיכוי', gusts: 'משבים', fl: 'גובה קיפאון', uv: 'UV', sun: 'שמש',
       feels: 'מורגש', fetched: 'Open-Meteo · נמשך', ago: 'לפני', stale: 'לא עדכני', offline: 'עותק אופליין', refresh: 'רענן', range: 'עדיין אין תחזית לתאריך הזה (טווח של 16 יום). טענו שוב קרוב ליום.',
@@ -329,7 +514,7 @@
       w: { storm: 'סיכון לסופות רעמים בנקודה הגבוהה', rain: 'גשם צפוי', snow: 'שלג או קיפאון בנקודה הגבוהה',
         wind: 'משבי רוח חזקים על הרכס', frost: 'כפור בלינה', heat: 'חום בגובה הנמוך: לצאת מוקדם, 3 ליטר מים', fog: 'ערפל: זהירות בניווט בשדות הבולדרים', uv: 'קרינה גבוהה מאוד', cold: 'לילה קר', late: 'הגעה מתוכננת אחרי השקיעה' },
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' },
-      snap: { far: 'אתם במרחק {km} ק"מ מהמסלול. צילום המצב לא הוחל.', at: 'אתם בק"מ {km} של המסלול', walked: 'הלכתם היום', left: 'נשאר עד', ascent: 'עלייה שנותרה', pace: 'קצב', measured: 'נמדד', planned: 'מתוכנן', eta: 'הגעה משוערת', sunset: 'שקיעה', tent: 'מותר להקים מ-19:00', done: 'הושלם', show: 'הצג', undo: 'לא הושלם', noGeo: 'מיקום לא זמין בדפדפן הזה.', taken: 'צילום מצב', manual: 'נבחר במפה', pick: 'לחצו על המפה איפה שאתם.', off: 'מחוץ למסלול ב', before: 'הטרק עוד לא התחיל: אתם ליד ההתחלה.', after: 'אחרי הסיום: כל הכבוד.' }
+      snap: { far: 'אתם במרחק {km} ק"מ מהמסלול. צילום המצב לא הוחל.', at: 'אתם בק"מ {km} של המסלול', walked: 'הלכתם היום', left: 'נשאר עד', ascent: 'עלייה שנותרה', pace: 'קצב', measured: 'נמדד', planned: 'מתוכנן', eta: 'הגעה משוערת', sunset: 'שקיעה', tent: 'מותר להקים מ-19:00', done: 'הושלם', show: 'הצג', undo: 'לא הושלם', noGeo: 'מיקום לא זמין בדפדפן הזה.', taken: 'צילום מצב', locating: 'מאתר…', manual: 'נבחר במפה', pick: 'לחצו על המפה איפה שאתם.', off: 'מחוץ למסלול ב', before: 'הטרק עוד לא התחיל: אתם ליד ההתחלה.', after: 'אחרי הסיום: כל הכבוד.' }
     }
   };
   /* per-trek wording: trek.json "strings": {"en": {"w": {"heat": "..."}, "snap": {...}}, "he": {...}} overrides any key */
@@ -347,6 +532,12 @@
   function fmtHM(d) { return (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes(); }
   function lsGet(k, dflt) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : dflt; } catch (e) { return dflt; } }
   function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
+  function curLang() { var w = document.querySelector('.wrap[lang]:not([hidden])'); return w ? w.getAttribute('lang') : 'en'; }
+  /* short feedback next to the position button; sticky while waiting for a fix or a tap on the map */
+  var toastTimer = null;
+  function toast(msg, sticky) { var t = document.getElementById('loctoast'); if (!t) return; clearTimeout(toastTimer); t.textContent = msg || ''; t.hidden = !msg; if (msg && !sticky) toastTimer = setTimeout(function () { t.hidden = true; }, 8000); }
+  /* warning count on the day's Weather tab, so a bad day shows without opening the tab */
+  function badge(card, ws) { var b = card.querySelector('[data-tab="wx"] .badge'); if (!b) return; b.textContent = ws.length ? String(ws.length) : ''; b.hidden = !ws.length; b.classList.toggle('bad', ws.some(function (x) { return x[1] === 'bad'; })); }
 
   /* ---- day geometry from the GPX ---- */
   function dayPoints(data, route) {
@@ -585,7 +776,7 @@
   /* ---- card render ---- */
   function render(el, lang, day, N, Hh, meta, card) {
     var L = T[lang], date = card.getAttribute('data-date'), iN = N.daily.time.indexOf(date), iH = Hh ? Hh.daily.time.indexOf(date) : -1;
-    if (iN < 0 || (Hh && iH < 0)) { el.innerHTML = '<span class="wxmeta">' + L.range + '</span>'; return; }
+    if (iN < 0 || (Hh && iH < 0)) { el.innerHTML = '<span class="wxmeta">' + L.range + '</span>'; badge(card, []); return; }
     var dN = N.daily, dH = Hh && Hh.daily, hs = hourStats(Hh || N, date), rows = [];
     var nightLink = '<a href="#map" class="focus" data-focus="' + esc(day.night.key) + '">' + esc(day.night.name) + '</a>';
     rows.push('<span><span class="wxk">' + (day.night.finish ? L.finish : L.night) + '</span> ' + nightLink + ' ' + Math.round(day.night.ele) + ' m: <b>' + Math.round(dN.temperature_2m_min[iN]) + '–' + Math.round(dN.temperature_2m_max[iN]) + ' °C</b>, ' + (L.codes[dN.weather_code[iN]] || dN.weather_code[iN]) + ' (' + L.feels + ' ' + Math.round(dN.apparent_temperature_min[iN]) + ' °C)</span>');
@@ -604,7 +795,7 @@
     var leadDays = Math.round((new Date(date + 'T12:00:00').getTime() - Date.now()) / 864e5), leadTxt = leadDays > 4 ? ' · ' + leadDays + ' ' + L.lead + ', ' + L.lowconf : '';
     html += '<div class="wxmeta"><span class="wxfresh' + (age >= 360 ? ' old' : '') + '">' + L.fetched + (window.TREK && window.TREK.weatherModelLabel ? ' · ' + window.TREK.weatherModelLabel : '') + ' ' + meta.when + ' (' + ageTxt + ' ' + L.ago + (age >= 360 ? ', ' + L.stale : '') + (meta.stale ? ', ' + L.offline : '') + ')' + leadTxt + '</span> <button type="button" class="wxbtn" data-wx="refresh">' + L.refresh + '</button>' + (Hh ? ' <button type="button" class="wxbtn" data-wx="hourly">' + L.hourly + ' ▾</button>' : '') + '</div>';
     html += '<div class="wxhour" hidden><div class="wxslider"><label><span class="wxk">' + L.start + '</span> <output></output></label><input type="range" min="5.5" max="10" step="0.5"><span class="wxrec"></span></div><canvas></canvas><div class="wxread"></div><div class="wxevents"></div><div class="wxlegend">' + L.legend + ' · ' + L.rule + '</div></div>';
-    el.innerHTML = html;
+    el.innerHTML = html; badge(card, ws);
     var hourBox = el.querySelector('.wxhour'), canvas = hourBox.querySelector('canvas'), btn = el.querySelector('[data-wx="hourly"]');
     if (!btn) { hourBox.remove(); return; }
     var slider = hourBox.querySelector('input[type=range]'), out = hourBox.querySelector('output'), rec = hourBox.querySelector('.wxrec'), evBox = hourBox.querySelector('.wxevents'), read = hourBox.querySelector('.wxread');
@@ -622,7 +813,10 @@
       hourBox.hidden = !hourBox.hidden; btn.textContent = hourBox.hidden ? L.hourly + ' ▾' : L.hide + ' ▴';
       if (!hourBox.hidden) { if (!best && samples.length && Hh) { best = recommendStart(day, card, N, samples, sIdx, ctx.locs, date); rec.textContent = L.recommend + ' ' + fmtH(best.start) + ' (' + best.sim.risk + ' ' + L.exposed + ')'; } show(+slider.value); }
     });
-    window.addEventListener('resize', function () { if (!hourBox.hidden) show(+slider.value); });
+    function reshow() { if (!hourBox.hidden && canvas.clientWidth) show(+slider.value); }
+    window.addEventListener('resize', reshow);
+    if (el._onShown) card.removeEventListener('trek:wxshown', el._onShown);
+    el._onShown = reshow; card.addEventListener('trek:wxshown', reshow);
   }
 
   /* ---- snapshot: one position fix, applied to the plan ---- */
@@ -643,13 +837,15 @@
   }
   function applySnapshot(pos) {
     var me = { lat: pos.coords.latitude, lon: pos.coords.longitude }, near = window.gr52Map.nearest(me), now = Date.now();
-    var app = window.gr52Map.visibleApp(); if (app) { app.showPosition(me.lat, me.lon, pos.coords.accuracy); }
+    window.gr52Map.showPosition(me.lat, me.lon, pos.coords.accuracy);
     var snaps = lsGet(((window.TREK && window.TREK.slug) || 'trek') + '-snaps', []); snaps.push({ t: now, lat: me.lat, lon: me.lon, d: near.pt.d, off: near.dist }); if (snaps.length > 50) snaps = snaps.slice(-50); lsSet(((window.TREK && window.TREK.slug) || 'trek') + '-snaps', snaps);
+    var day = null, short = null, cur = curLang();
+    if (near.dist <= 20000) Object.keys(ctx.days).forEach(function (k) { var dd = ctx.days[k]; if (day == null && +k > 0 && near.pt.d <= dd.to + 50) day = dd; });
     document.querySelectorAll('.snapstatus').forEach(function (s) {
-      var lang = s.closest('[lang]').getAttribute('lang'), L = T[lang].snap, day = null, text;
-      if (near.dist > 20000) { s.textContent = L.far.replace('{km}', Math.round(near.dist / 1000)); return; }
-      Object.keys(ctx.days).forEach(function (k) { var dd = ctx.days[k]; if (day == null && +k > 0 && near.pt.d <= dd.to + 50) day = dd; });
-      if (!day) { s.textContent = L.after; return; }
+      var lang = s.closest('[lang]').getAttribute('lang'), L = T[lang].snap, text;
+      if (near.dist > 20000) { text = L.far.replace('{km}', Math.round(near.dist / 1000)); }
+      else if (!day) { text = L.after; }
+      if (text) { s.textContent = text; if (lang === cur) short = text; return; }
       for (var k = 1; k < day.n; k++) setDone(k, true);
       var walked = Math.max(0, near.pt.d - day.from), left = Math.max(0, day.to - near.pt.d), asc = ascentBetween(ctx.route, near.pt.d, day.to);
       var card = cardsFor(day.n).filter(function (c) { return c.closest('[lang]').getAttribute('lang') === lang; })[0];
@@ -661,17 +857,19 @@
       var ss = iN >= 0 ? N.daily.sunset[iN].slice(11) : null;
       text = L.taken + (pos.manual ? ' (' + L.manual + ')' : '') + ' ' + fmtHM(new Date(now)) + ' · ' + L.at.replace('{km}', (near.pt.d / 1000).toFixed(1)) + (near.dist > 150 ? ' (' + L.off + ' ' + Math.round(near.dist) + ' m)' : '') + ' · D' + day.n + ': ' + (walked / 1000).toFixed(1) + ' km ' + L.walked + ' · ' + (left / 1000).toFixed(1) + ' km ' + L.left + ' ' + day.night.name + ' · ' + L.ascent + ' +' + Math.round(asc) + ' m · ' + (measured ? L.pace + ' ' + (pace / 1000).toFixed(1) + ' km/h (' + L.measured + ') · ' : '') + L.eta + ' ' + fmtHM(eta) + (measured ? '' : ' (' + L.planned + ')') + (ss ? ' · ' + L.sunset + ' ' + ss : '') + (window.TREK && window.TREK.tentWindow && eta.getHours() < parseInt(window.TREK.tentWindow, 10) ? ' · ' + L.tent.replace('19:00', window.TREK.tentWindow) : '');
       s.textContent = text;
-      if (card) { var box = card.querySelector('.snapbox') || document.createElement('div'); box.className = 'snapbox'; box.textContent = text; if (!box.parentNode) card.querySelector('.wx').insertAdjacentElement('beforebegin', box); }
+      if (lang === cur) short = text.split(' · ').slice(1, 5).join(' · ');
+      if (card) { var box = card.querySelector('.snapbox') || document.createElement('div'); box.className = 'snapbox'; box.textContent = text; if (!box.parentNode) (card.querySelector('.tabs') || card.querySelector('.wx')).insertAdjacentElement('beforebegin', box); }
     });
+    toast(short);
+    window.gr52Map.reveal(day ? day.n : null);
   }
   window.gr52PickOnMap = function () {
-    var app = window.gr52Map.visibleApp(); if (!app) return;
-    var lang = document.getElementById('he').hidden ? 'en' : 'he', L = T[lang].snap;
-    app.box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    document.querySelectorAll('.snapstatus').forEach(function (s) { s.textContent = L.pick; }); app.status.textContent = L.pick;
+    var app = window.gr52Map.ensureVisible() || window.gr52Map.visibleApp(); if (!app) return;
+    var L = T[curLang()].snap;
+    document.querySelectorAll('.snapstatus').forEach(function (s) { s.textContent = L.pick; }); app.status.textContent = L.pick; toast(L.pick, true);
     app.pick(function (lat, lon) { app.status.textContent = ''; applySnapshot({ coords: { latitude: lat, longitude: lon, accuracy: 50 }, manual: true }); });
   };
-  /* long-press on either "Where am I" button picks the position on the map instead of GPS.
+  /* long-press on the "Where am I" button picks the position on the map instead of GPS.
      Cancel only on lift or drag: iOS fires pointercancel during a hold, which must not stop the timer. */
   (function () {
     var timer = null, fired = false, sx = 0, sy = 0, SEL = '[data-act="snapshot"],[data-act="locate"]';
@@ -693,9 +891,11 @@
   window.gr52Snapshot = function (fake) {
     if (!ctx.route) return;
     if (fake && fake.coords) return applySnapshot(fake);
-    var L = T[document.getElementById('he').hidden ? 'en' : 'he'].snap;
-    if (!navigator.geolocation) { document.querySelectorAll('.snapstatus').forEach(function (s) { s.textContent = L.noGeo; }); return; }
-    navigator.geolocation.getCurrentPosition(applySnapshot, function (e) { document.querySelectorAll('.snapstatus').forEach(function (s) { s.textContent = e.message; }); }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 60000 });
+    var L = T[curLang()].snap, fab = document.getElementById('locfab');
+    function fail(msg) { if (fab) fab.classList.remove('busy'); document.querySelectorAll('.snapstatus').forEach(function (s) { s.textContent = msg; }); toast(msg); }
+    if (!navigator.geolocation) { fail(L.noGeo); return; }
+    toast(L.locating, true); if (fab) fab.classList.add('busy');
+    navigator.geolocation.getCurrentPosition(function (p) { if (fab) fab.classList.remove('busy'); applySnapshot(p); }, function (e) { fail(e.message); }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 60000 });
   };
 
   /* ---- boot ---- */
@@ -729,7 +929,7 @@
         var card = el.closest('.stage'), n = +card.getAttribute('data-day'), lang = card.closest('[lang]').getAttribute('lang');
         if (!ctx.days[n]) return;
         render(el, lang, ctx.days[n], locs[index[n].night], index[n].high != null ? locs[index[n].high] : null, meta, card);
-        el.querySelector('[data-wx="refresh"]').addEventListener('click', load);
+        var rb = el.querySelector('[data-wx="refresh"]'); if (rb) rb.addEventListener('click', load);  /* a past day has no button */
       });
     }
     function load() {

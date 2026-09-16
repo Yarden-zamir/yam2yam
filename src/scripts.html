@@ -7,14 +7,16 @@
     btn.textContent=isHe?'English':'עברית';
     btn.setAttribute('lang',isHe?'en':'he');
     document.documentElement.setAttribute('dir',isHe?'rtl':'ltr');
-    try{localStorage.setItem('trek-lang',l)}catch(e){}
+    var fab=document.getElementById('locfab');if(fab){var t=fab.getAttribute('data-label-'+l)||'';fab.setAttribute('aria-label',t);fab.title=t;}
+    try{localStorage.setItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang',l)}catch(e){}
   }
   var saved='en';
-  try{saved=localStorage.getItem('trek-lang')||'en'}catch(e){}
+  try{saved=localStorage.getItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang')||'en'}catch(e){}
   apply(saved);
   btn.addEventListener('click',function(){apply(en.hidden?'en':'he')});
 
 })();
 </script>
 <script src="/vendor/leaflet.min.js"></script>
+<script src="/vendor/leaflet-rotate.umd.min.js"></script>
 <script src="/map.js" defer></script>

@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Heebo:wght@400;500;700&family=Rubik:wght@600;700&display=swap">
 <link rel="stylesheet" href="/vendor/leaflet.min.css">
+<link rel="stylesheet" href="/vendor/leaflet-rotate.css">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#C8322B">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -36,7 +37,7 @@
 body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.55;margin:0}
 a{color:var(--lake);text-decoration-thickness:1px;text-underline-offset:2px}
 a:focus-visible,button:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
-.wrap{max-width:980px;margin:0 auto;padding:0 20px 80px}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px 96px}
 h1,h2,h3{font-family:"Barlow Condensed","Arial Narrow",sans-serif;line-height:1.05;text-wrap:balance;margin:0}
 h1{font-size:clamp(44px,7vw,76px);font-weight:700;letter-spacing:-.01em}
 h2{font-size:34px;font-weight:600;margin-top:64px;padding-top:18px;border-top:3px solid var(--ink);display:flex;align-items:baseline;gap:14px}
@@ -116,6 +117,8 @@ nav.toc a{padding:4px 0}
   .src{columns:1}
   .maptools button{flex:1 1 45%;padding:10px 12px}
   .livemap{height:62vh}
+  .tabs button{padding:8px 10px;font-size:13px}
+  .locbar{left:10px;bottom:10px}
   /* tables become stacked cards */
   .scroll{overflow:visible}
   .scroll table,.scroll caption,.scroll tbody,.scroll tr,.scroll td{display:block;width:100%}
@@ -210,12 +213,41 @@ a.daylink:hover{color:var(--lake)}
 .wxev.storm{border-color:var(--mark)} a.wxsrc{font-size:11px;color:var(--muted);margin-inline-start:6px} .wxev.heat{border-color:#E07A2F} .wxev.rain{border-color:var(--lake)} .wxev.wind{border-color:var(--warn)} .wxev.exp{font-weight:600} .wxev.ok{color:var(--muted)}
 .stage.done .d{color:var(--muted)} .stage.done .d::before{opacity:.35}
 .stage.done h3{opacity:.6}
-.stage.done:not(.open) .stats,.stage.done:not(.open) .wx,.stage.done:not(.open) p,.stage.done:not(.open) .snapbox{display:none}
+.stage.done:not(.open) .stats,.stage.done:not(.open) .tabs,.stage.done:not(.open) .pane,.stage.done:not(.open) .snapbox{display:none}
 .donebar{display:flex;gap:8px;align-items:center;margin:4px 0 6px;font-size:13px}
 .donechip{color:#2E7D32;font-weight:600}
 [lang="he"] .planbar button,[lang="he"] .wxbtn,[lang="he"] .donebar button{font-family:"Heebo",sans-serif}
 [lang="he"] .wxread{font-family:"Heebo",sans-serif}
 [data-act="snapshot"],[data-act="locate"]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+/* day tabs: plan, map, weather */
+.tabs{display:flex;gap:2px;margin:8px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{font:600 13.5px "IBM Plex Sans",sans-serif;color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:7px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.tabs button:hover{color:var(--ink)} .tabs button.on{color:var(--ink);border-bottom-color:var(--mark)}
+.tabs .badge{font:600 11px "IBM Plex Mono",monospace;background:var(--warn-soft);border:1px solid var(--warn);color:var(--ink);border-radius:9px;padding:0 6px;line-height:16px}
+.tabs .badge.bad{background:var(--mark-soft);border-color:var(--mark)}
+.pane{min-width:0} .pane[data-pane="plan"] p:first-child{margin-top:0}
+[lang="he"] .tabs button{font-family:"Heebo",sans-serif}
+/* map hosts: the map box moves into a day's Map tab or back to the Maps section */
+.maphost:not(.empty) .mapclaim{display:none}
+.mapclaim{font:600 13px "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px dashed var(--line);border-radius:3px;padding:10px 14px;cursor:pointer;width:100%}
+.mapclaim:hover{border-color:var(--mark)}
+[lang="he"] .mapclaim{font-family:"Heebo",sans-serif}
+.stage .mapbox{margin:0} .stage .livemap{margin:0 0 10px;height:min(60vh,520px)} .stage canvas.profile{height:180px}
+/* position button, fixed bottom left, and its short status */
+.locbar{position:fixed;left:14px;bottom:14px;z-index:6;display:flex;align-items:center;gap:8px;direction:ltr}
+#locfab{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:#1E6FD9;box-shadow:0 4px 14px -4px rgba(0,0,0,.5);cursor:pointer;display:grid;place-items:center;padding:0;flex:none}
+#locfab svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+#locfab:hover{border-color:#1E6FD9} #locfab.busy{opacity:.6;cursor:wait}
+#loctoast{font:13px/1.4 "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-left:4px solid #1E6FD9;border-radius:3px;padding:6px 10px;max-width:min(70vw,420px);box-shadow:0 4px 14px -6px rgba(0,0,0,.5)}
+[lang="he"] #loctoast,html[dir="rtl"] #loctoast{font-family:"Heebo",sans-serif;direction:rtl}
+/* waypoint icons from the GPX (OsmAnd icon names), white glyph on the waypoint colour */
+.wpi{background:none;border:0}
+.wpico{display:block;width:100%;height:100%;border-radius:50%;box-shadow:0 0 0 1.5px #fff,0 1px 3px rgba(0,0,0,.45)}
+.wpico.square{border-radius:4px} .wpico.octagon{border-radius:30%}
+.wpico svg{display:block;width:100%;height:100%;padding:3px;fill:#fff;box-sizing:border-box}
+/* rotation: plugin compass plus 15° step buttons */
+.leaflet-control-rotatebtns a{font-size:18px;line-height:30px;text-decoration:none}
+.livemap .leaflet-control-rotate{border-radius:4px;box-shadow:0 1px 5px rgba(0,0,0,.4)}
 </style>
 
 <style>:root{--mark:#7B3FA0;--mark-soft:#EAE0F0}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--mark:#9869B5;--mark-soft:#322540}}:root[data-theme="dark"]{--mark:#9869B5;--mark-soft:#322540}</style>
@@ -223,6 +255,7 @@ a.daylink:hover{color:var(--lake)}
 </head>
 <body>
 <div class="langbar"><button id="langbtn" type="button">עברית</button></div>
+<div class="locbar"><button id="locfab" type="button" data-act="snapshot" aria-label="Where am I" title="Where am I" data-label-en="Where am I" data-label-he="איפה אני"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button><span id="loctoast" role="status" hidden></span></div>
 
 <div id="en" lang="en" dir="ltr" class="wrap">
 <header>
@@ -243,14 +276,18 @@ a.daylink:hover{color:var(--lake)}
 
 <h2 id="plan"><span class="k">§1</span>The plan</h2>
 <p>The common four-day split, sleeping only in the official night camps because the whole line runs through nature reserves. Guidebook times plus about 20 %. Sunset is 18:52 at the start and 18:47 at the end, but the reserves close their trails an hour before it and September afternoons are hot, so walk at first light, 06:00, and be in camp by 15:00. Friday 11 to Sunday 13 September is Shabbat straight into Rosh Hashana: no buses from Friday noon until Sunday night, and full camps. The GPX in your Downloads folder carries these nights, the escapes and every OpenStreetMap tap and spring near the line.</p>
-<p class="planbar"><button type="button" data-act="snapshot">Where am I</button> <span class="snapstatus">One position fix, no tracking: marks finished days done and fills in today's distance, ascent left and arrival estimate. Long-press to pick your position on the map instead. Tap a day title to see it on the map.</span></p>
+<p class="planbar"><span class="snapstatus">The round button at the bottom left takes one position fix, no tracking: it shows you on the map and on the profile, marks finished days done and fills in today's distance, ascent left and arrival estimate. Long-press it to pick your position on the map instead. Each day has Plan, Map and Weather tabs; tap a day title to open its map.</span></p>
 <div class="stage" data-day="0" data-date="2026-09-09">
   <div class="d"><a href="#map" data-focus="day:0">D0<small>WED 9 SEP</small></a></div>
   <div>
     <h3><a href="#map" class="daylink" data-focus="day:0">Train to Nahariya → bus 22 → Achziv</a></h3>
     <div class="stats"><span>train to <a href="#map" class="focus" data-focus="TRANSPORT · Achziv">Nahariya</a>, then 10 min by bus</span><span>campsite check-in by dusk, 18:52</span></div>
-    <div class="wx" aria-live="polite"></div>
-    <p>Israel Railways to <a href="#map" class="focus" data-focus="TRANSPORT · Achziv">Nahariya</a>, the last station on the coast line; the bus station is across the road. Nateev Express line 22 runs to the <a href="#map" class="focus" data-focus="NIGHT 0">Achziv</a> National Park stop about every half hour. Sleep in the <a href="#map" class="focus" data-focus="NIGHT 0">Achziv National Park campsite</a> (INPA, paid, book online, showers, no dogs) or for free in the eucalyptus grove behind the <a href="#map" class="focus" data-focus="INFO · Yad LeYad">Yad LeYad</a> memorial, 800 m north, with a tap at the memorial entrance; <a href="#map" class="focus" data-focus="INFO · Betzet beach">Betzet beach</a> further north is the other free option. Buy four days of food in <a href="#map" class="focus" data-focus="TRANSPORT · Achziv">Nahariya</a>: the only shops on the line are the fuel station at <a href="#map" class="focus" data-focus="ESCAPE · Elkosh">Elkosh bridge</a> and the village of <a href="#map" class="focus" data-focus="ESCAPE · Hurfeish">Hurfeish</a> on day 2.</p>
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="plan" class="on" aria-selected="true">Plan</button><button type="button" role="tab" data-tab="map" class="" aria-selected="false">Map</button><button type="button" role="tab" data-tab="wx" class="" aria-selected="false">Weather<span class="badge" hidden></span></button></div>
+    <div class="pane" data-pane="plan" role="tabpanel">
+      <p>Israel Railways to <a href="#map" class="focus" data-focus="TRANSPORT · Achziv">Nahariya</a>, the last station on the coast line; the bus station is across the road. Nateev Express line 22 runs to the <a href="#map" class="focus" data-focus="NIGHT 0">Achziv</a> National Park stop about every half hour. Sleep in the <a href="#map" class="focus" data-focus="NIGHT 0">Achziv National Park campsite</a> (INPA, paid, book online, showers, no dogs) or for free in the eucalyptus grove behind the <a href="#map" class="focus" data-focus="INFO · Yad LeYad">Yad LeYad</a> memorial, 800 m north, with a tap at the memorial entrance; <a href="#map" class="focus" data-focus="INFO · Betzet beach">Betzet beach</a> further north is the other free option. Buy four days of food in <a href="#map" class="focus" data-focus="TRANSPORT · Achziv">Nahariya</a>: the only shops on the line are the fuel station at <a href="#map" class="focus" data-focus="ESCAPE · Elkosh">Elkosh bridge</a> and the village of <a href="#map" class="focus" data-focus="ESCAPE · Hurfeish">Hurfeish</a> on day 2.</p>
+    </div>
+    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="0"><button type="button" class="mapclaim">Show the map here</button></div></div>
+    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wx" aria-live="polite"></div></div>
   </div>
 </div>
 <div class="stage" data-day="1" data-date="2026-09-10" data-hours="8">
@@ -258,8 +295,12 @@ a.daylink:hover{color:var(--lake)}
   <div>
     <h3><a href="#map" class="daylink" data-focus="day:1">Achziv → Nahal Kziv → Montfort → Ein Tamir → Abirim</a></h3>
     <div class="stats"><span>≈20 km</span><span>+550 / −10 m</span><span>7–8 h</span><span>free camp at <a href="#map" class="focus" data-focus="NIGHT 1">Abirim</a>, 546 m, tap, no toilets</span></div>
-    <div class="wx" aria-live="polite"></div>
-    <p>Feet in the sea at 06:00, then east on farm tracks to the <a href="#map" class="focus" data-focus="Ein Hardalit">Nahal Kziv</a> reserve at <a href="#map" class="focus" data-focus="Ein Hardalit">Ein Hardalit</a> (km 8, shaded pools, a tap at the car park). The stream runs all year but INPA says do not drink it: fill at the <a href="#map" class="focus" data-focus="INFO · Yad LeYad">Yad LeYad</a> tap and at <a href="#map" class="focus" data-focus="Ein Hardalit">Ein Hardalit</a>. The path climbs to <a href="#map" class="focus" data-focus="INFO · Montfort">Montfort</a>, the Crusader castle on its spur (km 12, steps and a short scramble, no sleeping in the reserve), drops back to the water and follows it past the Dlavim pool to <a href="#map" class="focus" data-focus="INFO · Ein Tamir">Ein Tamir</a> (km 16), a spring at the end of a cut tunnel you can wade with a headtorch. Then the one climb of the day: 300 m up past <a href="#map" class="focus" data-focus="Ein Ziv">Ein Ziv</a> to the village of <a href="#map" class="focus" data-focus="NIGHT 1">Abirim</a>. The night camp is at the village entrance, with a tap and a bin and nothing else. Thursday is a normal day: buses still run on road 89 below the village if something goes wrong; from Friday noon they stop for the holiday weekend. <b>Behind schedule?</b> <a href="#map" class="focus" data-focus="CAMPSITE · Goren">Goren Park</a> (KKL, free, tap, toilets) sits above <a href="#map" class="focus" data-focus="INFO · Montfort">Montfort</a> at km 14, 300 m off the line.</p>
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="plan" class="on" aria-selected="true">Plan</button><button type="button" role="tab" data-tab="map" class="" aria-selected="false">Map</button><button type="button" role="tab" data-tab="wx" class="" aria-selected="false">Weather<span class="badge" hidden></span></button></div>
+    <div class="pane" data-pane="plan" role="tabpanel">
+      <p>Feet in the sea at 06:00, then east on farm tracks to the <a href="#map" class="focus" data-focus="Ein Hardalit">Nahal Kziv</a> reserve at <a href="#map" class="focus" data-focus="Ein Hardalit">Ein Hardalit</a> (km 8, shaded pools, a tap at the car park). The stream runs all year but INPA says do not drink it: fill at the <a href="#map" class="focus" data-focus="INFO · Yad LeYad">Yad LeYad</a> tap and at <a href="#map" class="focus" data-focus="Ein Hardalit">Ein Hardalit</a>. The path climbs to <a href="#map" class="focus" data-focus="INFO · Montfort">Montfort</a>, the Crusader castle on its spur (km 12, steps and a short scramble, no sleeping in the reserve), drops back to the water and follows it past the Dlavim pool to <a href="#map" class="focus" data-focus="INFO · Ein Tamir">Ein Tamir</a> (km 16), a spring at the end of a cut tunnel you can wade with a headtorch. Then the one climb of the day: 300 m up past <a href="#map" class="focus" data-focus="Ein Ziv">Ein Ziv</a> to the village of <a href="#map" class="focus" data-focus="NIGHT 1">Abirim</a>. The night camp is at the village entrance, with a tap and a bin and nothing else. Thursday is a normal day: buses still run on road 89 below the village if something goes wrong; from Friday noon they stop for the holiday weekend. <b>Behind schedule?</b> <a href="#map" class="focus" data-focus="CAMPSITE · Goren">Goren Park</a> (KKL, free, tap, toilets) sits above <a href="#map" class="focus" data-focus="INFO · Montfort">Montfort</a> at km 14, 300 m off the line.</p>
+    </div>
+    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="1"><button type="button" class="mapclaim">Show the map here</button></div></div>
+    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wx" aria-live="polite"></div></div>
   </div>
 </div>
 <div class="stage" data-day="2" data-date="2026-09-11" data-hours="8">
@@ -267,8 +308,12 @@ a.daylink:hover{color:var(--lake)}
   <div>
     <h3><a href="#map" class="daylink" data-focus="day:2">Abirim → Elkosh bridge → the springs → Hurfeish → Horbat Hammama</a></h3>
     <div class="stats"><span>≈19 km</span><span>+560 / −270 m</span><span>7–8 h</span><span>INPA free camp at <a href="#map" class="focus" data-focus="NIGHT 2">Horbat Hammama</a>, 886 m, tap, toilets, fire spots</span></div>
-    <div class="wx" aria-live="polite"></div>
-    <p>Rolling Galilee hills, no reserve gates. Down to <a href="#map" class="focus" data-focus="ESCAPE · Elkosh">Elkosh bridge</a> on road 89 (km 29, fuel station shop 200 m, the popular unofficial camp there has no water), then up the wadi past a string of small springs: Ein Retet, Ein Tabaat, Ein Zevul and <a href="#map" class="focus" data-focus="Ein Hotam">Ein Hotam</a> (km 33, clear and pooled). <a href="#map" class="focus" data-focus="ESCAPE · Hurfeish">Hurfeish</a> (km 34) lies 1.5 km north of the line if you need a shop or a cafe; it is a Druze village, open on Friday and on Rosh Hashana. Buses on road 89 stop around 14:00 today for Shabbat and the holiday: from <a href="#map" class="focus" data-focus="ESCAPE · Elkosh">Elkosh bridge</a> onward there is no bus until Sunday night. The afternoon climbs steadily to the foot of <a href="#map" class="focus" data-focus="PASS · Har Meron">Har Meron</a>. <a href="#map" class="focus" data-focus="NIGHT 2">Horbat Hammama</a> is the best camp on the trail: tables under the trees, a tap, toilets, and fires allowed in the marked spots. It is also the coolest night, 15–18 °C at 886 m in the open. The <a href="#map" class="focus" data-focus="INFO · Har Meron field school">Har Meron field school</a> next door has a paid camp with a kitchen and showers if the forecast turns.</p>
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="plan" class="on" aria-selected="true">Plan</button><button type="button" role="tab" data-tab="map" class="" aria-selected="false">Map</button><button type="button" role="tab" data-tab="wx" class="" aria-selected="false">Weather<span class="badge" hidden></span></button></div>
+    <div class="pane" data-pane="plan" role="tabpanel">
+      <p>Rolling Galilee hills, no reserve gates. Down to <a href="#map" class="focus" data-focus="ESCAPE · Elkosh">Elkosh bridge</a> on road 89 (km 29, fuel station shop 200 m, the popular unofficial camp there has no water), then up the wadi past a string of small springs: Ein Retet, Ein Tabaat, Ein Zevul and <a href="#map" class="focus" data-focus="Ein Hotam">Ein Hotam</a> (km 33, clear and pooled). <a href="#map" class="focus" data-focus="ESCAPE · Hurfeish">Hurfeish</a> (km 34) lies 1.5 km north of the line if you need a shop or a cafe; it is a Druze village, open on Friday and on Rosh Hashana. Buses on road 89 stop around 14:00 today for Shabbat and the holiday: from <a href="#map" class="focus" data-focus="ESCAPE · Elkosh">Elkosh bridge</a> onward there is no bus until Sunday night. The afternoon climbs steadily to the foot of <a href="#map" class="focus" data-focus="PASS · Har Meron">Har Meron</a>. <a href="#map" class="focus" data-focus="NIGHT 2">Horbat Hammama</a> is the best camp on the trail: tables under the trees, a tap, toilets, and fires allowed in the marked spots. It is also the coolest night, 15–18 °C at 886 m in the open. The <a href="#map" class="focus" data-focus="INFO · Har Meron field school">Har Meron field school</a> next door has a paid camp with a kitchen and showers if the forecast turns.</p>
+    </div>
+    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="2"><button type="button" class="mapclaim">Show the map here</button></div></div>
+    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wx" aria-live="polite"></div></div>
   </div>
 </div>
 <div class="stage" data-day="3" data-date="2026-09-12" data-hours="6">
@@ -276,8 +321,12 @@ a.daylink:hover{color:var(--lake)}
   <div>
     <h3><a href="#map" class="daylink" data-focus="day:3">Horbat Hammama → Har Meron → Pitul Meron → Nahal Amud night camp</a></h3>
     <div class="stats"><span>≈13 km</span><span>+340 / −600 m</span><span>5–6 h</span><span>INPA paid camp, book online, check-in 15:00–19:00</span></div>
-    <div class="wx" aria-live="polite"></div>
-    <p>The short day, on purpose: the <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Nahal Amud</a> reserve admits walkers from <a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> only between 08:00 and 14:30, and closes its trails at 16:00, so the canyon waits for the morning. 300 m of climb from camp to the summit plateau of <a href="#map" class="focus" data-focus="PASS · Har Meron">Har Meron</a> (1,204 m, the highest point west of the Jordan; the peak loop is 15 minutes off the line, tap at the summit car park), then a long descent through Meron's oak forest past Ein Zeved and Ein Meron to <a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> by road 866 (km 49, tables and a tap; <a href="#map" class="focus" data-focus="ESCAPE · Meron">Meron Center</a> bus stop 500 m away). From there the trail enters the reserve and reaches the <a href="#map" class="focus" data-focus="NIGHT 3">Nahal Amud night camp</a> at the upper entrance in 2.6 km. Saturday is also the first day of Rosh Hashana: the reserve keeps its Saturday hours and the camp will be full, so book it as early as possible; it also sells the reserve ticket you need for day 4. Confirm the holiday gate hours on *3639 when you book. <b>Option B:</b> sleep free at <a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> and enter the reserve at 08:00, which makes day 4 half an hour longer.</p>
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="plan" class="on" aria-selected="true">Plan</button><button type="button" role="tab" data-tab="map" class="" aria-selected="false">Map</button><button type="button" role="tab" data-tab="wx" class="" aria-selected="false">Weather<span class="badge" hidden></span></button></div>
+    <div class="pane" data-pane="plan" role="tabpanel">
+      <p>The short day, on purpose: the <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Nahal Amud</a> reserve admits walkers from <a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> only between 08:00 and 14:30, and closes its trails at 16:00, so the canyon waits for the morning. 300 m of climb from camp to the summit plateau of <a href="#map" class="focus" data-focus="PASS · Har Meron">Har Meron</a> (1,204 m, the highest point west of the Jordan; the peak loop is 15 minutes off the line, tap at the summit car park), then a long descent through Meron's oak forest past Ein Zeved and Ein Meron to <a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> by road 866 (km 49, tables and a tap; <a href="#map" class="focus" data-focus="ESCAPE · Meron">Meron Center</a> bus stop 500 m away). From there the trail enters the reserve and reaches the <a href="#map" class="focus" data-focus="NIGHT 3">Nahal Amud night camp</a> at the upper entrance in 2.6 km. Saturday is also the first day of Rosh Hashana: the reserve keeps its Saturday hours and the camp will be full, so book it as early as possible; it also sells the reserve ticket you need for day 4. Confirm the holiday gate hours on *3639 when you book. <b>Option B:</b> sleep free at <a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> and enter the reserve at 08:00, which makes day 4 half an hour longer.</p>
+    </div>
+    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="3"><button type="button" class="mapclaim">Show the map here</button></div></div>
+    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wx" aria-live="polite"></div></div>
   </div>
 </div>
 <div class="stage" data-day="4" data-date="2026-09-13" data-hours="9">
@@ -285,20 +334,25 @@ a.daylink:hover{color:var(--lake)}
   <div>
     <h3><a href="#map" class="daylink" data-focus="day:4">Nahal Amud night camp → Sechvi pools → the lower canyon → Ginosar, the Kinneret</a></h3>
     <div class="stats"><span>≈20 km</span><span>+75 / −850 m</span><span>8–9 h</span><span>finish at the shore, −211 m; bus 59 from <a href="#map" class="focus" data-focus="FINISH">Ginosar</a></span></div>
-    <div class="wx" aria-live="polite"></div>
-    <p>The technical day. The reserve opens at 08:00, so this is the one late start. From the camp past <a href="#map" class="focus" data-focus="Ein Yakim">Ein Yakim</a> into the upper canyon: six kilometres of ladders, iron pins and handholds beside running water, past the <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Sechvi pools</a>, to the old flour mill below the <a href="#map" class="focus" data-focus="ESCAPE · Safed">Safed industrial zone</a> (km 54, the last bail-out with a bus). Fill 4 L each at the camp tap: INPA forbids drinking from the stream and there is no tap until the <a href="#map" class="focus" data-focus="CAMPSITE · Nahal Amud lower">lower Nahal Amud camp</a> (km 61, fenced, tap). Then the middle and lower sections, rocky and exposed, bolted in places, drying out as you drop below sea level past the Amud pillar and the caves, to the fish-farm gate and the shore at <a href="#map" class="focus" data-focus="FINISH">Ginosar</a>. INPA closes the full canyon on hot days, on rainy days and the day after rain: call *3639 the evening before. Sunday 13 September is the second day of Rosh Hashana: no bus 59 from the <a href="#map" class="focus" data-focus="FINISH">Ginosar</a> stop on road 90 until the holiday ends about 19:15, and a thin evening service after it. Arrange a lift or a taxi from Tiberias to <a href="#map" class="focus" data-focus="FINISH">Ginosar</a>, or swim at <a href="#map" class="focus" data-focus="ESCAPE · Hukok">Hukok</a> beach and take the late 59 to Tiberias, then Egged 430 to Haifa or 836 to Tel Aviv.</p>
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="plan" class="on" aria-selected="true">Plan</button><button type="button" role="tab" data-tab="map" class="" aria-selected="false">Map</button><button type="button" role="tab" data-tab="wx" class="" aria-selected="false">Weather<span class="badge" hidden></span></button></div>
+    <div class="pane" data-pane="plan" role="tabpanel">
+      <p>The technical day. The reserve opens at 08:00, so this is the one late start. From the camp past <a href="#map" class="focus" data-focus="Ein Yakim">Ein Yakim</a> into the upper canyon: six kilometres of ladders, iron pins and handholds beside running water, past the <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Sechvi pools</a>, to the old flour mill below the <a href="#map" class="focus" data-focus="ESCAPE · Safed">Safed industrial zone</a> (km 54, the last bail-out with a bus). Fill 4 L each at the camp tap: INPA forbids drinking from the stream and there is no tap until the <a href="#map" class="focus" data-focus="CAMPSITE · Nahal Amud lower">lower Nahal Amud camp</a> (km 61, fenced, tap). Then the middle and lower sections, rocky and exposed, bolted in places, drying out as you drop below sea level past the Amud pillar and the caves, to the fish-farm gate and the shore at <a href="#map" class="focus" data-focus="FINISH">Ginosar</a>. INPA closes the full canyon on hot days, on rainy days and the day after rain: call *3639 the evening before. Sunday 13 September is the second day of Rosh Hashana: no bus 59 from the <a href="#map" class="focus" data-focus="FINISH">Ginosar</a> stop on road 90 until the holiday ends about 19:15, and a thin evening service after it. Arrange a lift or a taxi from Tiberias to <a href="#map" class="focus" data-focus="FINISH">Ginosar</a>, or swim at <a href="#map" class="focus" data-focus="ESCAPE · Hukok">Hukok</a> beach and take the late 59 to Tiberias, then Egged 430 to Haifa or 836 to Tel Aviv.</p>
+    </div>
+    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="4"><button type="button" class="mapclaim">Show the map here</button></div></div>
+    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wx" aria-live="polite"></div></div>
   </div>
 </div>
 <div class="note"><p><b>Faster?</b> The three-day split sleeps at <a href="#map" class="focus" data-focus="NIGHT 1">Abirim</a> and <a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> and finishes with a 23 km day through the canyon, which only works with the 08:00 gate and a fast pace. <b>Spare day?</b> Sleep a second night at the <a href="#map" class="focus" data-focus="CAMPSITE · Nahal Amud lower">lower Nahal Amud camp</a> and swim at <a href="#map" class="focus" data-focus="ESCAPE · Hukok">Hukok</a> beach (free camping on the grass, showers, shop, no fires).</p></div>
 
 <h2 id="maps"><span class="k">§2</span>Maps and profile</h2>
-<p>This map is drawn live from the same GPX you download for OsmAnd, so the two never differ. Tap any line or dot for its note. The layers button toggles the track and each kind of waypoint. "Where am I" shows your position, the kilometre on the route and the distance to the next camp. "Save whole route offline" stores the map tiles in the browser; the page and the GPX are stored automatically, so the site keeps working without signal. Base map OpenTopoMap, a planning aid: carry the SPNI trail map 2, Upper Galilee 1:50,000, or the Israel Hiking Map app.</p>
+<p>This map is drawn live from the same GPX you download for OsmAnd, so the two never differ. Each day's Map tab shows its own stretch and profile; this is the whole route. Twist with two fingers or use the arrows to rotate; the compass resets north. Tap any line or dot for its note. The layers button toggles the track and each kind of waypoint. "Where am I" shows your position, the kilometre on the route and the distance to the next camp. "Save whole route offline" stores the map tiles in the browser; the page and the GPX are stored automatically, so the site keeps working without signal. Base map OpenTopoMap, a planning aid: carry the SPNI trail map 2, Upper Galilee 1:50,000, or the Israel Hiking Map app.</p>
+<div class="maphost" data-host="all"><button type="button" class="mapclaim">Show the whole route here</button>
 <div class="mapbox" data-map="en">
   <div class="livemap" role="application" aria-label="Map"></div>
-  <div class="maptools"><button type="button" data-act="locate"></button><button type="button" data-act="saveroute"></button><span class="mapstatus"></span></div>
+  <div class="maptools"><button type="button" data-act="saveroute"></button><span class="mapstatus"></span></div>
   <canvas class="profile" aria-label="Elevation profile"></canvas>
   <p class="profstats"></p>
-</div>
+</div></div>
 <details class="staticmaps">
   <summary>Annotated section maps, for printing or offline</summary>
   <figure><img class="map" src="/maps/overview.webp" width="700" height="416" loading="lazy" decoding="async" alt="Whole route, north at top."><figcaption>Whole route, north at top.</figcaption></figure>
@@ -369,14 +423,18 @@ a.daylink:hover{color:var(--lake)}
 
 <h2 id="he-plan"><span class="k">§1</span>התוכנית</h2>
 <p>החלוקה המקובלת לארבעה ימים, עם לינה רק בחניוני הלילה המוסדרים, כי כמעט כל המסלול עובר בשמורות טבע. זמני המדריכים פלוס בערך 20 אחוז. השקיעה ב-18:52 בהתחלה ו-18:47 בסוף, אבל השמורות סוגרות את השבילים שעה לפני ואחר הצהריים בספטמבר חם, אז יוצאים עם אור ראשון, 06:00, ומגיעים לחניון עד 15:00. שישי 11 עד ראשון 13 בספטמבר זה שבת שנכנסת ישר לראש השנה: אין אוטובוסים משישי בצהריים עד ראשון בערב, והחניונים מלאים. קובץ ה-GPX בתיקיית ההורדות כולל את הלילות האלה, נקודות היציאה וכל ברז ומעיין מ-OpenStreetMap ליד הקו.</p>
-<p class="planbar"><button type="button" data-act="snapshot">איפה אני</button> <span class="snapstatus">קריאת מיקום אחת, בלי מעקב: מסמנת ימים שהסתיימו כהושלמו וממלאת את המרחק, העלייה שנותרה והערכת ההגעה להיום. לחיצה ארוכה בוחרת את המיקום במפה במקום GPS. לחצו על כותרת יום כדי לראות אותו במפה.</span></p>
+<p class="planbar"><span class="snapstatus">הכפתור העגול בפינה השמאלית התחתונה קורא מיקום אחד, בלי מעקב: הוא מציג אתכם במפה ובפרופיל, מסמן ימים שהסתיימו כהושלמו וממלא את המרחק, העלייה שנותרה והערכת ההגעה להיום. לחיצה ארוכה עליו בוחרת את המיקום במפה במקום GPS. לכל יום יש לשוניות תוכנית, מפה ומזג אוויר; לחצו על כותרת יום כדי לפתוח את המפה שלו.</span></p>
 <div class="stage" data-day="0" data-date="2026-09-09">
   <div class="d"><a href="#map" data-focus="day:0">D0<small>רביעי 9.9</small></a></div>
   <div>
     <h3><a href="#map" class="daylink" data-focus="day:0">רכבת ל-Nahariya, אוטובוס 22, Achziv</a></h3>
     <div class="stats"><span>רכבת ל<a href="#map" class="focus" data-focus="TRANSPORT · Achziv">נהריה</a>, ואז 10 דקות באוטובוס</span><span>להגיע לחניון עד החושך, 18:52</span></div>
-    <div class="wx" aria-live="polite"></div>
-    <p>רכבת ישראל עד <a href="#map" class="focus" data-focus="TRANSPORT · Achziv">Nahariya</a>, התחנה האחרונה בקו החוף; התחנה המרכזית ממול. קו 22 של נתיב אקספרס נוסע לתחנת גן לאומי אכזיב בערך כל חצי שעה. ישנים בחניון של גן לאומי <a href="#map" class="focus" data-focus="NIGHT 0">Achziv</a> (רט"ג, בתשלום, הזמנה באתר, מקלחות, בלי כלבים) או בחינם בחורשת האקליפטוס מאחורי אנדרטת <a href="#map" class="focus" data-focus="INFO · Yad LeYad">Yad LeYad</a>, 800 מטר צפונה, עם ברז בכניסה לאנדרטה; <a href="#map" class="focus" data-focus="INFO · Betzet beach">חוף בצת</a> עוד צפונה הוא האופציה החינמית השנייה. קונים אוכל לארבעה ימים ב-<a href="#map" class="focus" data-focus="TRANSPORT · Achziv">Nahariya</a>: החנויות היחידות על הקו הן תחנת הדלק ב-<a href="#map" class="focus" data-focus="ESCAPE · Elkosh">Elkosh bridge</a> והכפר <a href="#map" class="focus" data-focus="ESCAPE · Hurfeish">Hurfeish</a> ביום 2.</p>
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="plan" class="on" aria-selected="true">תוכנית</button><button type="button" role="tab" data-tab="map" class="" aria-selected="false">מפה</button><button type="button" role="tab" data-tab="wx" class="" aria-selected="false">מזג אוויר<span class="badge" hidden></span></button></div>
+    <div class="pane" data-pane="plan" role="tabpanel">
+      <p>רכבת ישראל עד <a href="#map" class="focus" data-focus="TRANSPORT · Achziv">Nahariya</a>, התחנה האחרונה בקו החוף; התחנה המרכזית ממול. קו 22 של נתיב אקספרס נוסע לתחנת גן לאומי אכזיב בערך כל חצי שעה. ישנים בחניון של גן לאומי <a href="#map" class="focus" data-focus="NIGHT 0">Achziv</a> (רט"ג, בתשלום, הזמנה באתר, מקלחות, בלי כלבים) או בחינם בחורשת האקליפטוס מאחורי אנדרטת <a href="#map" class="focus" data-focus="INFO · Yad LeYad">Yad LeYad</a>, 800 מטר צפונה, עם ברז בכניסה לאנדרטה; <a href="#map" class="focus" data-focus="INFO · Betzet beach">חוף בצת</a> עוד צפונה הוא האופציה החינמית השנייה. קונים אוכל לארבעה ימים ב-<a href="#map" class="focus" data-focus="TRANSPORT · Achziv">Nahariya</a>: החנויות היחידות על הקו הן תחנת הדלק ב-<a href="#map" class="focus" data-focus="ESCAPE · Elkosh">Elkosh bridge</a> והכפר <a href="#map" class="focus" data-focus="ESCAPE · Hurfeish">Hurfeish</a> ביום 2.</p>
+    </div>
+    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="0"><button type="button" class="mapclaim">הצג את המפה כאן</button></div></div>
+    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wx" aria-live="polite"></div></div>
   </div>
 </div>
 <div class="stage" data-day="1" data-date="2026-09-10" data-hours="8">
@@ -384,8 +442,12 @@ a.daylink:hover{color:var(--lake)}
   <div>
     <h3><a href="#map" class="daylink" data-focus="day:1">Achziv, Nahal Kziv, Montfort, Ein Tamir, Abirim</a></h3>
     <div class="stats"><span>≈20 ק"מ</span><span>+550 / −10 מ'</span><span>7–8 h</span><span>חניון לילה חינמי ב-<a href="#map" class="focus" data-focus="NIGHT 1">Abirim</a>, 546 מ', ברז, בלי שירותים</span></div>
-    <div class="wx" aria-live="polite"></div>
-    <p>רגליים בים ב-06:00, ואז מזרחה בדרכים חקלאיות עד הכניסה לשמורת <a href="#map" class="focus" data-focus="Ein Hardalit">Nahal Kziv</a> ב-<a href="#map" class="focus" data-focus="Ein Hardalit">Ein Hardalit</a> (ק"מ 8, בריכות מוצלות, ברז בחניון). הנחל זורם כל השנה אבל רט"ג אומרים לא לשתות ממנו: ממלאים בברז של <a href="#map" class="focus" data-focus="INFO · Yad LeYad">Yad LeYad</a> וב-<a href="#map" class="focus" data-focus="Ein Hardalit">Ein Hardalit</a>. השביל מטפס ל-<a href="#map" class="focus" data-focus="INFO · Montfort">Montfort</a>, המבצר הצלבני על השלוחה (ק"מ 12, מדרגות וטיפוס קצר, אסור לישון בשמורה), יורד חזרה למים ועוקב אחריהם דרך בריכת הדלבים עד <a href="#map" class="focus" data-focus="INFO · Ein Tamir">Ein Tamir</a> (ק"מ 16), מעיין בקצה נקבה חצובה שאפשר ללכת בה עם פנס. ואז העלייה היחידה של היום: 300 מטר למעלה דרך <a href="#map" class="focus" data-focus="Ein Ziv">Ein Ziv</a> עד הכפר <a href="#map" class="focus" data-focus="NIGHT 1">Abirim</a>. חניון הלילה בכניסה לכפר, עם ברז ופח ולא יותר. יום חמישי הוא יום רגיל: עדיין יש אוטובוסים בכביש 89 מתחת לכפר אם משהו משתבש; משישי בצהריים הם נעצרים לסוף השבוע של החג. <b>מאחרים?</b> פארק Goren (קק"ל, חינם, ברז, שירותים) יושב מעל <a href="#map" class="focus" data-focus="INFO · Montfort">Montfort</a> בק"מ 14, 300 מטר מהקו.</p>
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="plan" class="on" aria-selected="true">תוכנית</button><button type="button" role="tab" data-tab="map" class="" aria-selected="false">מפה</button><button type="button" role="tab" data-tab="wx" class="" aria-selected="false">מזג אוויר<span class="badge" hidden></span></button></div>
+    <div class="pane" data-pane="plan" role="tabpanel">
+      <p>רגליים בים ב-06:00, ואז מזרחה בדרכים חקלאיות עד הכניסה לשמורת <a href="#map" class="focus" data-focus="Ein Hardalit">Nahal Kziv</a> ב-<a href="#map" class="focus" data-focus="Ein Hardalit">Ein Hardalit</a> (ק"מ 8, בריכות מוצלות, ברז בחניון). הנחל זורם כל השנה אבל רט"ג אומרים לא לשתות ממנו: ממלאים בברז של <a href="#map" class="focus" data-focus="INFO · Yad LeYad">Yad LeYad</a> וב-<a href="#map" class="focus" data-focus="Ein Hardalit">Ein Hardalit</a>. השביל מטפס ל-<a href="#map" class="focus" data-focus="INFO · Montfort">Montfort</a>, המבצר הצלבני על השלוחה (ק"מ 12, מדרגות וטיפוס קצר, אסור לישון בשמורה), יורד חזרה למים ועוקב אחריהם דרך בריכת הדלבים עד <a href="#map" class="focus" data-focus="INFO · Ein Tamir">Ein Tamir</a> (ק"מ 16), מעיין בקצה נקבה חצובה שאפשר ללכת בה עם פנס. ואז העלייה היחידה של היום: 300 מטר למעלה דרך <a href="#map" class="focus" data-focus="Ein Ziv">Ein Ziv</a> עד הכפר <a href="#map" class="focus" data-focus="NIGHT 1">Abirim</a>. חניון הלילה בכניסה לכפר, עם ברז ופח ולא יותר. יום חמישי הוא יום רגיל: עדיין יש אוטובוסים בכביש 89 מתחת לכפר אם משהו משתבש; משישי בצהריים הם נעצרים לסוף השבוע של החג. <b>מאחרים?</b> פארק Goren (קק"ל, חינם, ברז, שירותים) יושב מעל <a href="#map" class="focus" data-focus="INFO · Montfort">Montfort</a> בק"מ 14, 300 מטר מהקו.</p>
+    </div>
+    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="1"><button type="button" class="mapclaim">הצג את המפה כאן</button></div></div>
+    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wx" aria-live="polite"></div></div>
   </div>
 </div>
 <div class="stage" data-day="2" data-date="2026-09-11" data-hours="8">
@@ -393,8 +455,12 @@ a.daylink:hover{color:var(--lake)}
   <div>
     <h3><a href="#map" class="daylink" data-focus="day:2">Abirim, Elkosh bridge, המעיינות, Hurfeish, Horbat Hammama</a></h3>
     <div class="stats"><span>≈19 ק"מ</span><span>+560 / −270 מ'</span><span>7–8 h</span><span>חניון רט"ג חינמי ב-<a href="#map" class="focus" data-focus="NIGHT 2">Horbat Hammama</a>, 886 מ', ברז, שירותים, מקומות מדורה</span></div>
-    <div class="wx" aria-live="polite"></div>
-    <p>גבעות הגליל, בלי שערים של שמורות. יורדים ל-<a href="#map" class="focus" data-focus="ESCAPE · Elkosh">Elkosh bridge</a> על כביש 89 (ק"מ 29, חנות בתחנת הדלק 200 מטר, בחניון הלא רשמי והפופולרי שם אין מים), ואז עולים בוואדי דרך שרשרת של מעיינות קטנים: עין רטט, עין טבעת, עין זבול ו-<a href="#map" class="focus" data-focus="Ein Hotam">Ein Hotam</a> (ק"מ 33, צלול עם בריכה). <a href="#map" class="focus" data-focus="ESCAPE · Hurfeish">Hurfeish</a> (ק"מ 34) נמצא 1.5 ק"מ צפונית לקו אם צריך חנות או בית קפה; זה כפר דרוזי, פתוח בשישי ובראש השנה. האוטובוסים בכביש 89 נעצרים היום בסביבות 14:00 לשבת ולחג: מ-<a href="#map" class="focus" data-focus="ESCAPE · Elkosh">Elkosh bridge</a> והלאה אין אוטובוס עד ראשון בערב. אחר הצהריים מטפסים בהדרגה עד רגלי <a href="#map" class="focus" data-focus="PASS · Har Meron">Har Meron</a>. <a href="#map" class="focus" data-focus="NIGHT 2">Horbat Hammama</a> הוא החניון הכי טוב במסלול: שולחנות בין העצים, ברז, שירותים, ומותר להדליק מדורה במקומות המסומנים. זה גם הלילה הכי קריר, 15–18 מעלות ב-886 מטר בשטח פתוח. בבית ספר שדה <a href="#map" class="focus" data-focus="PASS · Har Meron">Har Meron</a> ליד יש חניון בתשלום עם מטבח ומקלחות אם התחזית מתהפכת.</p>
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="plan" class="on" aria-selected="true">תוכנית</button><button type="button" role="tab" data-tab="map" class="" aria-selected="false">מפה</button><button type="button" role="tab" data-tab="wx" class="" aria-selected="false">מזג אוויר<span class="badge" hidden></span></button></div>
+    <div class="pane" data-pane="plan" role="tabpanel">
+      <p>גבעות הגליל, בלי שערים של שמורות. יורדים ל-<a href="#map" class="focus" data-focus="ESCAPE · Elkosh">Elkosh bridge</a> על כביש 89 (ק"מ 29, חנות בתחנת הדלק 200 מטר, בחניון הלא רשמי והפופולרי שם אין מים), ואז עולים בוואדי דרך שרשרת של מעיינות קטנים: עין רטט, עין טבעת, עין זבול ו-<a href="#map" class="focus" data-focus="Ein Hotam">Ein Hotam</a> (ק"מ 33, צלול עם בריכה). <a href="#map" class="focus" data-focus="ESCAPE · Hurfeish">Hurfeish</a> (ק"מ 34) נמצא 1.5 ק"מ צפונית לקו אם צריך חנות או בית קפה; זה כפר דרוזי, פתוח בשישי ובראש השנה. האוטובוסים בכביש 89 נעצרים היום בסביבות 14:00 לשבת ולחג: מ-<a href="#map" class="focus" data-focus="ESCAPE · Elkosh">Elkosh bridge</a> והלאה אין אוטובוס עד ראשון בערב. אחר הצהריים מטפסים בהדרגה עד רגלי <a href="#map" class="focus" data-focus="PASS · Har Meron">Har Meron</a>. <a href="#map" class="focus" data-focus="NIGHT 2">Horbat Hammama</a> הוא החניון הכי טוב במסלול: שולחנות בין העצים, ברז, שירותים, ומותר להדליק מדורה במקומות המסומנים. זה גם הלילה הכי קריר, 15–18 מעלות ב-886 מטר בשטח פתוח. בבית ספר שדה <a href="#map" class="focus" data-focus="PASS · Har Meron">Har Meron</a> ליד יש חניון בתשלום עם מטבח ומקלחות אם התחזית מתהפכת.</p>
+    </div>
+    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="2"><button type="button" class="mapclaim">הצג את המפה כאן</button></div></div>
+    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wx" aria-live="polite"></div></div>
   </div>
 </div>
 <div class="stage" data-day="3" data-date="2026-09-12" data-hours="6">
@@ -402,8 +468,12 @@ a.daylink:hover{color:var(--lake)}
   <div>
     <h3><a href="#map" class="daylink" data-focus="day:3">Horbat Hammama, Har Meron, Pitul Meron, חניון הלילה Nahal Amud</a></h3>
     <div class="stats"><span>≈13 ק"מ</span><span>+340 / −600 מ'</span><span>5–6 h</span><span>חניון רט"ג בתשלום, הזמנה באתר, קבלה 15:00–19:00</span></div>
-    <div class="wx" aria-live="polite"></div>
-    <p>היום הקצר, בכוונה: שמורת <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Nahal Amud</a> מכניסה מטיילים מ-<a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> רק בין 08:00 ל-14:30, וסוגרת את השבילים ב-16:00, אז הקניון מחכה לבוקר. 300 מטר עלייה מהחניון לרמת הפסגה של <a href="#map" class="focus" data-focus="PASS · Har Meron">Har Meron</a> (1,204 מ', הנקודה הגבוהה ממערב לירדן; שביל הפסגה הוא סטייה של 15 דקות, ברז בחניון הפסגה), ואז ירידה ארוכה ביער האלונים של מירון דרך עין זבד ועין מירון עד <a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> ליד כביש 866 (ק"מ 49, שולחנות וברז; תחנת האוטובוס <a href="#map" class="focus" data-focus="ESCAPE · Meron">מירון מרכז</a> 500 מטר משם). משם השביל נכנס לשמורה ומגיע לחניון הלילה <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Nahal Amud</a> בכניסה העליונה אחרי 2.6 ק"מ. שבת היא גם היום הראשון של ראש השנה: השמורה עובדת בשעות של שבת והחניון יהיה מלא, אז מזמינים כמה שיותר מוקדם; שם גם קונים את הכרטיס לשמורה ליום 4. מאמתים את שעות השער בחג ב-*3639 כשמזמינים. <b>אופציה ב':</b> ישנים בחינם ב-<a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> ונכנסים לשמורה ב-08:00, וזה מאריך את יום 4 בחצי שעה.</p>
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="plan" class="on" aria-selected="true">תוכנית</button><button type="button" role="tab" data-tab="map" class="" aria-selected="false">מפה</button><button type="button" role="tab" data-tab="wx" class="" aria-selected="false">מזג אוויר<span class="badge" hidden></span></button></div>
+    <div class="pane" data-pane="plan" role="tabpanel">
+      <p>היום הקצר, בכוונה: שמורת <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Nahal Amud</a> מכניסה מטיילים מ-<a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> רק בין 08:00 ל-14:30, וסוגרת את השבילים ב-16:00, אז הקניון מחכה לבוקר. 300 מטר עלייה מהחניון לרמת הפסגה של <a href="#map" class="focus" data-focus="PASS · Har Meron">Har Meron</a> (1,204 מ', הנקודה הגבוהה ממערב לירדן; שביל הפסגה הוא סטייה של 15 דקות, ברז בחניון הפסגה), ואז ירידה ארוכה ביער האלונים של מירון דרך עין זבד ועין מירון עד <a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> ליד כביש 866 (ק"מ 49, שולחנות וברז; תחנת האוטובוס <a href="#map" class="focus" data-focus="ESCAPE · Meron">מירון מרכז</a> 500 מטר משם). משם השביל נכנס לשמורה ומגיע לחניון הלילה <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Nahal Amud</a> בכניסה העליונה אחרי 2.6 ק"מ. שבת היא גם היום הראשון של ראש השנה: השמורה עובדת בשעות של שבת והחניון יהיה מלא, אז מזמינים כמה שיותר מוקדם; שם גם קונים את הכרטיס לשמורה ליום 4. מאמתים את שעות השער בחג ב-*3639 כשמזמינים. <b>אופציה ב':</b> ישנים בחינם ב-<a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> ונכנסים לשמורה ב-08:00, וזה מאריך את יום 4 בחצי שעה.</p>
+    </div>
+    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="3"><button type="button" class="mapclaim">הצג את המפה כאן</button></div></div>
+    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wx" aria-live="polite"></div></div>
   </div>
 </div>
 <div class="stage" data-day="4" data-date="2026-09-13" data-hours="9">
@@ -411,20 +481,25 @@ a.daylink:hover{color:var(--lake)}
   <div>
     <h3><a href="#map" class="daylink" data-focus="day:4">חניון הלילה Nahal Amud, בריכות שכווי, הקניון התחתון, Ginosar, הכנרת</a></h3>
     <div class="stats"><span>≈20 ק"מ</span><span>+75 / −850 מ'</span><span>8–9 h</span><span>סיום בחוף, −211 מ'; אוטובוס 59 מ-<a href="#map" class="focus" data-focus="FINISH">Ginosar</a></span></div>
-    <div class="wx" aria-live="polite"></div>
-    <p>היום הטכני. השמורה נפתחת ב-08:00, אז זו היציאה המאוחרת היחידה. מהחניון דרך <a href="#map" class="focus" data-focus="Ein Yakim">Ein Yakim</a> לתוך הקניון העליון: שישה קילומטרים של סולמות, יתדות ברזל ואחיזות לצד מים זורמים, דרך <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Sechvi pools</a>, עד טחנת הקמח העתיקה מתחת לאזור התעשייה של צפת (ק"מ 54, נקודת היציאה האחרונה עם אוטובוס). ממלאים 4 ליטר לכל אחד בברז של החניון: רט"ג אוסרים לשתות מהנחל ואין ברז עד החניון התחתון של <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Nahal Amud</a> (ק"מ 61, מגודר, ברז). אחר כך הקטעים האמצעי והתחתון, סלעיים וחשופים, עם יתדות במקומות, מתייבשים ככל שיורדים מתחת לפני הים דרך העמוד והמערות, עד שער בריכות הדגים והחוף ב-<a href="#map" class="focus" data-focus="FINISH">Ginosar</a>. רט"ג סוגרים את הקניון המלא בימי שרב, בימי גשם וביום שאחרי גשם: מתקשרים ל-*3639 בערב הקודם. ראשון 13 בספטמבר הוא היום השני של ראש השנה: אין סופרבוס 59 מתחנת <a href="#map" class="focus" data-focus="FINISH">Ginosar</a> על כביש 90 עד צאת החג בסביבות 19:15, ואחריו שירות ערב דליל. מסדרים הסעה או מונית מטבריה ל-<a href="#map" class="focus" data-focus="FINISH">Ginosar</a>, או שוחים בחוף <a href="#map" class="focus" data-focus="ESCAPE · Hukok">חוקוק</a> ולוקחים את ה-59 המאוחר לטבריה, ומשם אגד 430 לחיפה או 836 לתל אביב.</p>
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="plan" class="on" aria-selected="true">תוכנית</button><button type="button" role="tab" data-tab="map" class="" aria-selected="false">מפה</button><button type="button" role="tab" data-tab="wx" class="" aria-selected="false">מזג אוויר<span class="badge" hidden></span></button></div>
+    <div class="pane" data-pane="plan" role="tabpanel">
+      <p>היום הטכני. השמורה נפתחת ב-08:00, אז זו היציאה המאוחרת היחידה. מהחניון דרך <a href="#map" class="focus" data-focus="Ein Yakim">Ein Yakim</a> לתוך הקניון העליון: שישה קילומטרים של סולמות, יתדות ברזל ואחיזות לצד מים זורמים, דרך <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Sechvi pools</a>, עד טחנת הקמח העתיקה מתחת לאזור התעשייה של צפת (ק"מ 54, נקודת היציאה האחרונה עם אוטובוס). ממלאים 4 ליטר לכל אחד בברז של החניון: רט"ג אוסרים לשתות מהנחל ואין ברז עד החניון התחתון של <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Nahal Amud</a> (ק"מ 61, מגודר, ברז). אחר כך הקטעים האמצעי והתחתון, סלעיים וחשופים, עם יתדות במקומות, מתייבשים ככל שיורדים מתחת לפני הים דרך העמוד והמערות, עד שער בריכות הדגים והחוף ב-<a href="#map" class="focus" data-focus="FINISH">Ginosar</a>. רט"ג סוגרים את הקניון המלא בימי שרב, בימי גשם וביום שאחרי גשם: מתקשרים ל-*3639 בערב הקודם. ראשון 13 בספטמבר הוא היום השני של ראש השנה: אין סופרבוס 59 מתחנת <a href="#map" class="focus" data-focus="FINISH">Ginosar</a> על כביש 90 עד צאת החג בסביבות 19:15, ואחריו שירות ערב דליל. מסדרים הסעה או מונית מטבריה ל-<a href="#map" class="focus" data-focus="FINISH">Ginosar</a>, או שוחים בחוף <a href="#map" class="focus" data-focus="ESCAPE · Hukok">חוקוק</a> ולוקחים את ה-59 המאוחר לטבריה, ומשם אגד 430 לחיפה או 836 לתל אביב.</p>
+    </div>
+    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="4"><button type="button" class="mapclaim">הצג את המפה כאן</button></div></div>
+    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wx" aria-live="polite"></div></div>
   </div>
 </div>
 <div class="note"><p><b>מהר יותר?</b> החלוקה לשלושה ימים ישנה ב-<a href="#map" class="focus" data-focus="NIGHT 1">Abirim</a> וב-<a href="#map" class="focus" data-focus="CAMPSITE · Pitul Meron">Pitul Meron</a> ומסיימת ביום של 23 ק"מ דרך הקניון, וזה עובד רק עם שער ה-08:00 וקצב מהיר. <b>יום פנוי?</b> ישנים לילה שני בחניון התחתון של <a href="#map" class="focus" data-focus="INFO · Sechvi pools">Nahal Amud</a> ושוחים בחוף <a href="#map" class="focus" data-focus="ESCAPE · Hukok">חוקוק</a> (קמפינג חינם על הדשא, מקלחות, קיוסק, בלי מדורות).</p></div>
 
 <h2 id="he-maps"><span class="k">§2</span>מפות ופרופיל</h2>
-<p>המפה מצוירת בזמן אמת מאותו קובץ GPX שאתם מורידים ל-OsmAnd, אז השניים לא יכולים להיות שונים. לחיצה על קו או נקודה מציגה את ההערה שלהם. כפתור השכבות מדליק ומכבה את המסלול וכל סוג של נקודת דרך. "איפה אני" מציג את המיקום שלכם, הקילומטר במסלול והמרחק לחניון הבא. "שמור את כל המסלול לאופליין" שומר את אריחי המפה בדפדפן; הדף וה-GPX נשמרים אוטומטית, אז האתר ממשיך לעבוד בלי קליטה. מפת הבסיס OpenTopoMap, לתכנון בלבד: קחו את מפת סימון השבילים 2, הגליל העליון 1:50,000, או את אפליקציית Israel Hiking Map.</p>
+<p>המפה מצוירת בזמן אמת מאותו קובץ GPX שאתם מורידים ל-OsmAnd, אז השניים לא יכולים להיות שונים. לשונית המפה של כל יום מציגה את הקטע והפרופיל שלו; כאן כל המסלול. סובבו בשתי אצבעות או עם החצים, והמצפן מחזיר לצפון. לחיצה על קו או נקודה מציגה את ההערה שלהם. כפתור השכבות מדליק ומכבה את המסלול וכל סוג של נקודת דרך. "איפה אני" מציג את המיקום שלכם, הקילומטר במסלול והמרחק לחניון הבא. "שמור את כל המסלול לאופליין" שומר את אריחי המפה בדפדפן; הדף וה-GPX נשמרים אוטומטית, אז האתר ממשיך לעבוד בלי קליטה. מפת הבסיס OpenTopoMap, לתכנון בלבד: קחו את מפת סימון השבילים 2, הגליל העליון 1:50,000, או את אפליקציית Israel Hiking Map.</p>
+<div class="maphost" data-host="all"><button type="button" class="mapclaim">הצג את כל המסלול כאן</button>
 <div class="mapbox" data-map="he">
   <div class="livemap" role="application" aria-label="Map"></div>
-  <div class="maptools"><button type="button" data-act="locate"></button><button type="button" data-act="saveroute"></button><span class="mapstatus"></span></div>
+  <div class="maptools"><button type="button" data-act="saveroute"></button><span class="mapstatus"></span></div>
   <canvas class="profile" aria-label="Elevation profile"></canvas>
   <p class="profstats"></p>
-</div>
+</div></div>
 <details class="staticmaps">
   <summary>מפות מקטעים עם סימונים, להדפסה או לאופליין</summary>
   <figure><img class="map" src="/maps/overview.webp" width="700" height="416" loading="lazy" decoding="async" alt="כל המסלול, צפון למעלה."><figcaption>כל המסלול, צפון למעלה.</figcaption></figure>
@@ -485,16 +560,18 @@ a.daylink:hover{color:var(--lake)}
     btn.textContent=isHe?'English':'עברית';
     btn.setAttribute('lang',isHe?'en':'he');
     document.documentElement.setAttribute('dir',isHe?'rtl':'ltr');
-    try{localStorage.setItem('trek-lang',l)}catch(e){}
+    var fab=document.getElementById('locfab');if(fab){var t=fab.getAttribute('data-label-'+l)||'';fab.setAttribute('aria-label',t);fab.title=t;}
+    try{localStorage.setItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang',l)}catch(e){}
   }
   var saved='en';
-  try{saved=localStorage.getItem('trek-lang')||'en'}catch(e){}
+  try{saved=localStorage.getItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang')||'en'}catch(e){}
   apply(saved);
   btn.addEventListener('click',function(){apply(en.hidden?'en':'he')});
 
 })();
 </script>
 <script src="/vendor/leaflet.min.js"></script>
+<script src="/vendor/leaflet-rotate.umd.min.js"></script>
 <script src="/map.js" defer></script>
 </body>
 </html>

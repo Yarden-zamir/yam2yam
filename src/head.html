@@ -3,6 +3,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Heebo:wght@400;500;700&family=Rubik:wght@600;700&display=swap">
 <link rel="stylesheet" href="/vendor/leaflet.min.css">
+<link rel="stylesheet" href="/vendor/leaflet-rotate.css">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#C8322B">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -28,7 +29,7 @@
 body{background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.55;margin:0}
 a{color:var(--lake);text-decoration-thickness:1px;text-underline-offset:2px}
 a:focus-visible,button:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
-.wrap{max-width:980px;margin:0 auto;padding:0 20px 80px}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px 96px}
 h1,h2,h3{font-family:"Barlow Condensed","Arial Narrow",sans-serif;line-height:1.05;text-wrap:balance;margin:0}
 h1{font-size:clamp(44px,7vw,76px);font-weight:700;letter-spacing:-.01em}
 h2{font-size:34px;font-weight:600;margin-top:64px;padding-top:18px;border-top:3px solid var(--ink);display:flex;align-items:baseline;gap:14px}
@@ -108,6 +109,8 @@ nav.toc a{padding:4px 0}
   .src{columns:1}
   .maptools button{flex:1 1 45%;padding:10px 12px}
   .livemap{height:62vh}
+  .tabs button{padding:8px 10px;font-size:13px}
+  .locbar{left:10px;bottom:10px}
   /* tables become stacked cards */
   .scroll{overflow:visible}
   .scroll table,.scroll caption,.scroll tbody,.scroll tr,.scroll td{display:block;width:100%}
@@ -202,11 +205,40 @@ a.daylink:hover{color:var(--lake)}
 .wxev.storm{border-color:var(--mark)} a.wxsrc{font-size:11px;color:var(--muted);margin-inline-start:6px} .wxev.heat{border-color:#E07A2F} .wxev.rain{border-color:var(--lake)} .wxev.wind{border-color:var(--warn)} .wxev.exp{font-weight:600} .wxev.ok{color:var(--muted)}
 .stage.done .d{color:var(--muted)} .stage.done .d::before{opacity:.35}
 .stage.done h3{opacity:.6}
-.stage.done:not(.open) .stats,.stage.done:not(.open) .wx,.stage.done:not(.open) p,.stage.done:not(.open) .snapbox{display:none}
+.stage.done:not(.open) .stats,.stage.done:not(.open) .tabs,.stage.done:not(.open) .pane,.stage.done:not(.open) .snapbox{display:none}
 .donebar{display:flex;gap:8px;align-items:center;margin:4px 0 6px;font-size:13px}
 .donechip{color:#2E7D32;font-weight:600}
 [lang="he"] .planbar button,[lang="he"] .wxbtn,[lang="he"] .donebar button{font-family:"Heebo",sans-serif}
 [lang="he"] .wxread{font-family:"Heebo",sans-serif}
 [data-act="snapshot"],[data-act="locate"]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+/* day tabs: plan, map, weather */
+.tabs{display:flex;gap:2px;margin:8px 0 10px;border-bottom:1px solid var(--line)}
+.tabs button{font:600 13.5px "IBM Plex Sans",sans-serif;color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:7px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.tabs button:hover{color:var(--ink)} .tabs button.on{color:var(--ink);border-bottom-color:var(--mark)}
+.tabs .badge{font:600 11px "IBM Plex Mono",monospace;background:var(--warn-soft);border:1px solid var(--warn);color:var(--ink);border-radius:9px;padding:0 6px;line-height:16px}
+.tabs .badge.bad{background:var(--mark-soft);border-color:var(--mark)}
+.pane{min-width:0} .pane[data-pane="plan"] p:first-child{margin-top:0}
+[lang="he"] .tabs button{font-family:"Heebo",sans-serif}
+/* map hosts: the map box moves into a day's Map tab or back to the Maps section */
+.maphost:not(.empty) .mapclaim{display:none}
+.mapclaim{font:600 13px "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px dashed var(--line);border-radius:3px;padding:10px 14px;cursor:pointer;width:100%}
+.mapclaim:hover{border-color:var(--mark)}
+[lang="he"] .mapclaim{font-family:"Heebo",sans-serif}
+.stage .mapbox{margin:0} .stage .livemap{margin:0 0 10px;height:min(60vh,520px)} .stage canvas.profile{height:180px}
+/* position button, fixed bottom left, and its short status */
+.locbar{position:fixed;left:14px;bottom:14px;z-index:6;display:flex;align-items:center;gap:8px;direction:ltr}
+#locfab{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:#1E6FD9;box-shadow:0 4px 14px -4px rgba(0,0,0,.5);cursor:pointer;display:grid;place-items:center;padding:0;flex:none}
+#locfab svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+#locfab:hover{border-color:#1E6FD9} #locfab.busy{opacity:.6;cursor:wait}
+#loctoast{font:13px/1.4 "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-left:4px solid #1E6FD9;border-radius:3px;padding:6px 10px;max-width:min(70vw,420px);box-shadow:0 4px 14px -6px rgba(0,0,0,.5)}
+[lang="he"] #loctoast,html[dir="rtl"] #loctoast{font-family:"Heebo",sans-serif;direction:rtl}
+/* waypoint icons from the GPX (OsmAnd icon names), white glyph on the waypoint colour */
+.wpi{background:none;border:0}
+.wpico{display:block;width:100%;height:100%;border-radius:50%;box-shadow:0 0 0 1.5px #fff,0 1px 3px rgba(0,0,0,.45)}
+.wpico.square{border-radius:4px} .wpico.octagon{border-radius:30%}
+.wpico svg{display:block;width:100%;height:100%;padding:3px;fill:#fff;box-sizing:border-box}
+/* rotation: plugin compass plus 15° step buttons */
+.leaflet-control-rotatebtns a{font-size:18px;line-height:30px;text-decoration:none}
+.livemap .leaflet-control-rotate{border-radius:4px;box-shadow:0 1px 5px rgba(0,0,0,.4)}
 </style>
 
