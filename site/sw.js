@@ -1,5 +1,5 @@
 /* Offline: precache the page and its data; cache map tiles and fonts as they are used or saved. */
-var VERSION = 'yam2yam-c713a82a7b74';
+var VERSION = 'yam2yam-78aac1496cc8';
 var PRECACHE = ["/", "/route.gpx", "/map.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css", "/vendor/leaflet-rotate.umd.min.js", "/vendor/leaflet-rotate.css", "/vendor/images/layers.png", "/vendor/images/layers-2x.png", "/manifest.webmanifest", "/icon.svg", "/maps/east.webp", "/maps/overview.webp", "/maps/west.webp"];
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(PRECACHE); }).then(function () { return self.skipWaiting(); }));
@@ -21,7 +21,7 @@ self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') return;
   var url = new URL(e.request.url);
   if (url.hostname.endsWith('tile.opentopomap.org')) { e.respondWith(cacheFirst('tiles', e.request)); return; }
-  if (url.hostname === 'api.open-meteo.com') {
+  if (/(^|\.)open-meteo\.com$/.test(url.hostname)) {
     e.respondWith(caches.open('weather').then(function (c) {
       return fetch(e.request).then(function (res) { if (res && res.ok) c.put(e.request, res.clone()); return res; })
         .catch(function () { return c.match(e.request, { ignoreVary: true }).then(function (hit) { return hit || Response.error(); }); });

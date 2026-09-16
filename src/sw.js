@@ -21,7 +21,7 @@ self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') return;
   var url = new URL(e.request.url);
   if (url.hostname.endsWith('tile.opentopomap.org')) { e.respondWith(cacheFirst('tiles', e.request)); return; }
-  if (url.hostname === 'api.open-meteo.com') {
+  if (/(^|\.)open-meteo\.com$/.test(url.hostname)) {
     e.respondWith(caches.open('weather').then(function (c) {
       return fetch(e.request).then(function (res) { if (res && res.ok) c.put(e.request, res.clone()); return res; })
         .catch(function () { return c.match(e.request, { ignoreVary: true }).then(function (hit) { return hit || Response.error(); }); });

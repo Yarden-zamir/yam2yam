@@ -12,20 +12,20 @@
       nights: 'Nights, refuges, finish', water: 'Water', passes: 'Passes and summits', side: 'Side-trip summits',
       ferrata: 'Via ferrata points', escape: 'Escapes, bus, emergency', other: 'Shelters, campsites, lakes',
       save: 'Save this view offline', saveRoute: 'Save whole route offline',
-      saving: 'Saving tiles', saved: 'Saved for offline: ', tilesTooMany: 'Too many tiles for one save (max 900). Zoom in.',
+      saving: 'Saving tiles', saved: 'Saved for offline: ', tilesTooMany: 'Too many tiles for one save (max 1500).',
       offRoute: 'off route', toNext: 'to', ascent: 'ascent',
       descent: 'descent', total: 'Route', day: 'Day', km: 'km', m: 'm', offline: 'Offline: page, GPX and saved tiles are available.',
-      alt: 'alt', loading: 'Loading GPX…', ready: 'GPX loaded: ', tracks: 'tracks', wpts: 'waypoints',
+      alt: 'alt', loading: 'Loading GPX…', retry: 'retry in', ready: 'GPX loaded: ', tracks: 'tracks', wpts: 'waypoints',
       rotL: 'Rotate left', rotR: 'Rotate right', north: 'North up', me: 'Your position'
     },
     he: {
       nights: 'לילות, בקתות, סיום', water: 'מים', passes: 'מעברים ופסגות', side: 'פסגות סטיות צד',
       ferrata: 'נקודות ויה פראטה', escape: 'יציאות, אוטובוס, חירום', other: 'מחסות, קמפינגים, אגמים',
       save: 'שמור תצוגה זו לאופליין', saveRoute: 'שמור את כל המסלול לאופליין',
-      saving: 'שומר אריחים', saved: 'נשמר לאופליין: ', tilesTooMany: 'יותר מדי אריחים לשמירה אחת (מקסימום 900). התקרבו.',
+      saving: 'שומר אריחים', saved: 'נשמר לאופליין: ', tilesTooMany: 'יותר מדי אריחים לשמירה אחת (מקסימום 1500).',
       offRoute: 'מחוץ למסלול', toNext: 'עד', ascent: 'עלייה',
       descent: 'ירידה', total: 'המסלול', day: 'יום', km: 'ק"מ', m: 'מ\'', offline: 'אופליין: הדף, ה-GPX והאריחים השמורים זמינים.',
-      alt: 'גובה', loading: 'טוען GPX…', ready: 'GPX נטען: ', tracks: 'מסלולים', wpts: 'נקודות',
+      alt: 'גובה', loading: 'טוען GPX…', retry: 'ניסיון נוסף בעוד', ready: 'GPX נטען: ', tracks: 'מסלולים', wpts: 'נקודות',
       rotL: 'סובב שמאלה', rotR: 'סובב ימינה', north: 'צפון למעלה', me: 'המיקום שלכם'
     }
   };
@@ -304,22 +304,37 @@
       return [Math.floor((lon + 180) / 360 * n), Math.floor((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * n)];
     }
     function tileUrl(z, x, y) { return TILES.replace('{s}', 'abc'[(x + y) % 3]).replace('{z}', z).replace('{x}', x).replace('{y}', y); }
+    /* Tiles go straight into the 'tiles' cache the service worker reads, so a save works even before
+       the worker controls the page. Three at a time, already-saved tiles are skipped. */
     function saveTiles(urls, btn) {
-      if (urls.length > 900) { status.textContent = T.tilesTooMany + ' (' + urls.length + ')'; return; }
+      if (urls.length > 1500) { status.textContent = T.tilesTooMany + ' (' + urls.length + ')'; return; }
       if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
-      var done = 0, failed = 0; btn.disabled = true;
+      var done = 0, failed = 0, i = 0, active = 0; btn.disabled = true;
+      function one(u) {
+        if (window.caches) return caches.open('tiles').then(function (c) { return c.match(u, { ignoreVary: true }).then(function (hit) { return hit ? null : c.add(u); }); });
+        return fetch(u, { mode: 'cors' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); });
+      }
+      function finish() { status.textContent = T.saved + (urls.length - failed) + (failed ? ' (' + failed + ' failed)' : ''); btn.disabled = false; }
       (function next() {
-        if (done >= urls.length) { status.textContent = T.saved + (urls.length - failed) + (failed ? ' (' + failed + ' failed)' : ''); btn.disabled = false; return; }
-        fetch(urls[done], { mode: 'cors' }).then(function (r) { if (!r.ok) failed++; }).catch(function () { failed++; })
-          .then(function () { done++; if (done % 10 === 0) status.textContent = T.saving + ' ' + done + '/' + urls.length; setTimeout(next, 40); });
+        while (active < 3 && i < urls.length) {
+          (function (u) {
+            active++;
+            one(u).catch(function () { failed++; }).then(function () {
+              active--; done++;
+              if (done % 10 === 0) status.textContent = T.saving + ' ' + done + '/' + urls.length;
+              if (done >= urls.length) finish(); else setTimeout(next, 20);
+            });
+          })(urls[i++]);
+        }
       })();
     }
     var routeBtn = container.querySelector('[data-act="saveroute"]');
     routeBtn.textContent = T.saveRoute;
     routeBtn.addEventListener('click', function () {
       var seen = {}, urls = [];
-      [12, 13, 14].forEach(function (z) {
-        var pad = 1;
+      /* z12–15 one tile around the line, z16 the tiles it crosses: a day's map zoomed in stays readable */
+      [12, 13, 14, 15, 16].forEach(function (z) {
+        var pad = z >= 16 ? 0 : 1;
         data.tracks.forEach(function (t) {
           if (t.kind === 'boundary') return;
           t.segs.forEach(function (seg) {
@@ -444,13 +459,23 @@
   }
 
   document.querySelectorAll('.mapbox').forEach(function (b) { boxes[b.getAttribute('data-map')] = b; b.querySelector('.mapstatus').textContent = I18N[b.getAttribute('data-map')].loading; });
-  fetch(GPX).then(function (r) { return r.text(); }).then(function (t) {
-    data = parseGpx(t); route = buildRoute(data.tracks); window.gr52Data = { data: data, route: route };
-    document.querySelectorAll('.mapstatus').forEach(function (s) { var T = I18N[s.closest('.mapbox').getAttribute('data-map')]; s.textContent = T.ready + data.tracks.length + ' ' + T.tracks + ', ' + data.wpts.length + ' ' + T.wpts + (navigator.onLine ? '' : ' · ' + T.offline); });
-    visible();
-    if (pendingClaim) { var h = pendingClaim; pendingClaim = null; claimHost(h); }
-    if (pendingFocus) { var q = pendingFocus; pendingFocus = null; focusVisible(q[0], q[1]); } else fromHash();
-  });
+  /* the GPX is the whole app's data: keep trying on a bad signal, with a growing pause, until it is here */
+  (function loadGpx(attempt) {
+    fetch(GPX).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); }).then(function (t) {
+      var d = parseGpx(t), r = buildRoute(d.tracks);
+      if (!r.pts.length) throw new Error('no route in GPX');
+      data = d; route = r; window.gr52Data = { data: data, route: route };
+      document.querySelectorAll('.mapstatus').forEach(function (s) { var T = I18N[s.closest('.mapbox').getAttribute('data-map')]; s.textContent = T.ready + data.tracks.length + ' ' + T.tracks + ', ' + data.wpts.length + ' ' + T.wpts + (navigator.onLine ? '' : ' · ' + T.offline); });
+      visible();
+      if (pendingClaim) { var h = pendingClaim; pendingClaim = null; claimHost(h); }
+      if (pendingFocus) { var q = pendingFocus; pendingFocus = null; focusVisible(q[0], q[1]); } else fromHash();
+      document.dispatchEvent(new CustomEvent('trek:gpx'));
+    }).catch(function (e) {
+      var wait = Math.min(30000, 1000 * Math.pow(2, attempt));
+      document.querySelectorAll('.mapstatus').forEach(function (s) { var T = I18N[s.closest('.mapbox').getAttribute('data-map')]; s.textContent = T.loading + ' (' + (e && e.message || e) + ' · ' + T.retry + ' ' + Math.round(wait / 1000) + ' s)'; });
+      setTimeout(function () { loadGpx(attempt + 1); }, wait);
+    });
+  })(0);
   var btn = document.getElementById('langbtn'); if (btn) btn.addEventListener('click', function () { setTimeout(visible, 30); });
   window.gr52Focus = focusVisible;
   window.gr52Map = {
@@ -502,7 +527,7 @@
   var T = {
     en: { night: 'night spot', finish: 'finish', high: 'high point', rain: 'rain', prob: 'chance', gusts: 'gusts', fl: 'freezing level', uv: 'UV', sun: 'sun',
       feels: 'feels', fetched: 'Open-Meteo · fetched', ago: 'ago', stale: 'stale', offline: 'offline copy', refresh: 'Refresh', range: 'Forecast not yet available for this date (16-day horizon). Reload closer to the day.',
-      err: 'Weather unavailable right now.', hourly: 'Hour by hour', hide: 'Hide hours', walk: 'planned walking', leave: 'Leave the pass by', stormHours: 'storm risk', early: 'start at first light and clear the high point before', wait: 'storms from the start of the day: consider waiting it out or a low route', legend: 'top: your altitude through the day, thick where exposed above the treeline or at a pass · red: storm risk where you are · blue: rain where you are · orange: heat · strip: share of ECMWF ensemble members with storm conditions at the high point · bottom: temperature at your position, bars rain mm per hour · dotted: sunrise, sunset', lead: 'days out', lowconf: 'low confidence beyond 4 days', stormHere: 'Thunderstorm risk where you are', source: 'source', rule: 'Storm = thunderstorm code, or CAPE ≥ 400 J/kg with lifted index ≤ −2 and rain chance ≥ 20 %. Source links open the same numbers on Open-Meteo.', start: 'Start', arrive: 'arrive', exposed: 'exposed hours in risk', recommend: 'Recommended start', events: 'What you meet on the way', noevents: 'No storm, heavy rain or strong wind on your line for this start.', members: 'of ensemble members', reach: 'you reach', at: 'at', ensLoading: 'ensemble…', afterSunset: 'after sunset', afterTent: 'inside the tent window', temp: 'temp', highT: 'high point', nightT: 'night spot',
+      err: 'Weather unavailable right now.', past: 'This day is over: no forecast shown.', hourly: 'Hour by hour', hide: 'Hide hours', walk: 'planned walking', leave: 'Leave the pass by', stormHours: 'storm risk', early: 'start at first light and clear the high point before', wait: 'storms from the start of the day: consider waiting it out or a low route', legend: 'top: your altitude through the day, thick where exposed above the treeline or at a pass · red: storm risk where you are · blue: rain where you are · orange: heat · strip: share of ECMWF ensemble members with storm conditions at the high point · bottom: temperature at your position, bars rain mm per hour · dotted: sunrise, sunset', lead: 'days out', lowconf: 'low confidence beyond 4 days', stormHere: 'Thunderstorm risk where you are', source: 'source', rule: 'Storm = thunderstorm code, or CAPE ≥ 400 J/kg with lifted index ≤ −2 and rain chance ≥ 20 %. Source links open the same numbers on Open-Meteo.', start: 'Start', arrive: 'arrive', exposed: 'exposed hours in risk', recommend: 'Recommended start', events: 'What you meet on the way', noevents: 'No storm, heavy rain or strong wind on your line for this start.', members: 'of ensemble members', reach: 'you reach', at: 'at', ensLoading: 'ensemble…', afterSunset: 'after sunset', afterTent: 'inside the tent window', temp: 'temp', highT: 'high point', nightT: 'night spot',
       w: { storm: 'Thunderstorm risk at the high point', rain: 'Rain likely', snow: 'Snow or freezing on the high point',
         wind: 'Strong gusts on the ridge', frost: 'Frost at the bivouac', heat: 'Heat on the low ground: start early, 3 L water', fog: 'Fog: navigation care on boulder fields', uv: 'Very high UV', cold: 'Cold night', late: 'Planned arrival after sunset' },
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' },
@@ -510,7 +535,7 @@
     },
     he: { night: 'לינה', finish: 'סיום', high: 'נקודה גבוהה', rain: 'גשם', prob: 'סיכוי', gusts: 'משבים', fl: 'גובה קיפאון', uv: 'UV', sun: 'שמש',
       feels: 'מורגש', fetched: 'Open-Meteo · נמשך', ago: 'לפני', stale: 'לא עדכני', offline: 'עותק אופליין', refresh: 'רענן', range: 'עדיין אין תחזית לתאריך הזה (טווח של 16 יום). טענו שוב קרוב ליום.',
-      err: 'מזג האוויר לא זמין כרגע.', hourly: 'שעה אחר שעה', hide: 'הסתר שעות', walk: 'הליכה מתוכננת', leave: 'לרדת מהמעבר עד', stormHours: 'סיכון לסופות', early: 'לצאת עם אור ראשון ולעבור את הנקודה הגבוהה לפני', wait: 'סופות מתחילת היום: לשקול להמתין או מסלול נמוך', legend: 'למעלה: הגובה שלכם לאורך היום, עבה איפה שחשופים מעל קו העצים או במעבר · אדום: סיכון סופה איפה שאתם · כחול: גשם איפה שאתם · כתום: חום · הפס: חלק חברי האנסמבל של ECMWF עם תנאי סופה בנקודה הגבוהה · למטה: טמפרטורה במיקום שלכם, עמודות גשם מ\"מ לשעה · מקווקו: זריחה, שקיעה', lead: 'ימים קדימה', lowconf: 'ודאות נמוכה מעבר ל-4 ימים', stormHere: 'סיכון לסופת רעמים איפה שאתם', source: 'מקור', rule: 'סופה = קוד סופת רעמים, או CAPE ≥ 400 J/kg עם lifted index ≤ −2 וסיכוי גשם ≥ 20%. קישורי המקור פותחים את אותם מספרים ב-Open-Meteo.', start: 'יציאה', arrive: 'הגעה', exposed: 'שעות חשופות בסיכון', recommend: 'יציאה מומלצת', events: 'מה תפגשו בדרך', noevents: 'אין סופה, גשם כבד או רוח חזקה על הקו שלכם ליציאה הזו.', members: 'מחברי האנסמבל', reach: 'מגיעים ל', at: 'ב', ensLoading: 'אנסמבל…', afterSunset: 'אחרי השקיעה', afterTent: 'בתוך חלון האוהל', temp: 'טמפ\'', highT: 'נקודה גבוהה', nightT: 'לינה',
+      err: 'מזג האוויר לא זמין כרגע.', past: 'היום הזה נגמר: אין תחזית להצגה.', hourly: 'שעה אחר שעה', hide: 'הסתר שעות', walk: 'הליכה מתוכננת', leave: 'לרדת מהמעבר עד', stormHours: 'סיכון לסופות', early: 'לצאת עם אור ראשון ולעבור את הנקודה הגבוהה לפני', wait: 'סופות מתחילת היום: לשקול להמתין או מסלול נמוך', legend: 'למעלה: הגובה שלכם לאורך היום, עבה איפה שחשופים מעל קו העצים או במעבר · אדום: סיכון סופה איפה שאתם · כחול: גשם איפה שאתם · כתום: חום · הפס: חלק חברי האנסמבל של ECMWF עם תנאי סופה בנקודה הגבוהה · למטה: טמפרטורה במיקום שלכם, עמודות גשם מ\"מ לשעה · מקווקו: זריחה, שקיעה', lead: 'ימים קדימה', lowconf: 'ודאות נמוכה מעבר ל-4 ימים', stormHere: 'סיכון לסופת רעמים איפה שאתם', source: 'מקור', rule: 'סופה = קוד סופת רעמים, או CAPE ≥ 400 J/kg עם lifted index ≤ −2 וסיכוי גשם ≥ 20%. קישורי המקור פותחים את אותם מספרים ב-Open-Meteo.', start: 'יציאה', arrive: 'הגעה', exposed: 'שעות חשופות בסיכון', recommend: 'יציאה מומלצת', events: 'מה תפגשו בדרך', noevents: 'אין סופה, גשם כבד או רוח חזקה על הקו שלכם ליציאה הזו.', members: 'מחברי האנסמבל', reach: 'מגיעים ל', at: 'ב', ensLoading: 'אנסמבל…', afterSunset: 'אחרי השקיעה', afterTent: 'בתוך חלון האוהל', temp: 'טמפ\'', highT: 'נקודה גבוהה', nightT: 'לינה',
       w: { storm: 'סיכון לסופות רעמים בנקודה הגבוהה', rain: 'גשם צפוי', snow: 'שלג או קיפאון בנקודה הגבוהה',
         wind: 'משבי רוח חזקים על הרכס', frost: 'כפור בלינה', heat: 'חום בגובה הנמוך: לצאת מוקדם, 3 ליטר מים', fog: 'ערפל: זהירות בניווט בשדות הבולדרים', uv: 'קרינה גבוהה מאוד', cold: 'לילה קר', late: 'הגעה מתוכננת אחרי השקיעה' },
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' },
@@ -532,6 +557,8 @@
   function fmtHM(d) { return (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes(); }
   function lsGet(k, dflt) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : dflt; } catch (e) { return dflt; } }
   function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
+  function localDate(d) { d = d || new Date(); return d.getFullYear() + '-' + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + '-' + (d.getDate() < 10 ? '0' : '') + d.getDate(); }
+  function note(kind, text) { return '<span class="wxmeta" data-wx="' + kind + '">' + text + '</span>'; }
   function curLang() { var w = document.querySelector('.wrap[lang]:not([hidden])'); return w ? w.getAttribute('lang') : 'en'; }
   /* short feedback next to the position button; sticky while waiting for a fix or a tap on the map */
   var toastTimer = null;
@@ -621,7 +648,11 @@
       + '&elevation=' + points.map(function (p) { return Math.round(p.ele); }).join(',') + '&daily=' + DAILY + '&hourly=' + HOURLY
       + '&timezone=' + encodeURIComponent((window.TREK && window.TREK.timezone) || 'auto') + '&wind_speed_unit=kmh&start_date=' + startDate + '&end_date=' + endDate + (model ? '&models=' + model : '');
   }
-  function getJson(u) { return fetch(u).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }).then(function (j) { return Array.isArray(j) ? j : [j]; }); }
+  function getJson(u) {
+    var ctl = typeof AbortController === 'function' ? new AbortController() : null, timer = ctl ? setTimeout(function () { ctl.abort(); }, 30000) : null;
+    return fetch(u, ctl ? { signal: ctl.signal } : undefined).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (j) { clearTimeout(timer); return Array.isArray(j) ? j : [j]; }, function (e) { clearTimeout(timer); throw e; });
+  }
   function fillNulls(primary, fallback) {
     primary.forEach(function (loc, k) {
       var fb = fallback[k]; if (!fb) return;
@@ -635,10 +666,11 @@
     return primary;
   }
   function fetchForecast(points, startDate, endDate) {
-    var model = window.TREK && window.TREK.weatherModel;
-    if (!model || model === 'best_match') return getJson(omUrl(points, startDate, endDate, null));
-    return Promise.all([getJson(omUrl(points, startDate, endDate, model)), getJson(omUrl(points, startDate, endDate, null))])
-      .then(function (r) { return fillNulls(r[0], r[1]); });
+    var model = window.TREK && window.TREK.weatherModel, blend = getJson(omUrl(points, startDate, endDate, null));
+    if (!model || model === 'best_match') return blend;
+    /* the model run can be down or reject a variable: it must never take the blend down with it */
+    return Promise.all([getJson(omUrl(points, startDate, endDate, model)).catch(function () { return null; }), blend.catch(function () { return null; })])
+      .then(function (r) { if (r[0] && r[1]) return fillNulls(r[0], r[1]); if (r[1] || r[0]) return r[1] || r[0]; throw new Error('forecast unavailable'); });
   }
   var ENS = 'https://ensemble-api.open-meteo.com/v1/ensemble';
   function fetchEnsemble(points, startDate, endDate) {
@@ -776,7 +808,7 @@
   /* ---- card render ---- */
   function render(el, lang, day, N, Hh, meta, card) {
     var L = T[lang], date = card.getAttribute('data-date'), iN = N.daily.time.indexOf(date), iH = Hh ? Hh.daily.time.indexOf(date) : -1;
-    if (iN < 0 || (Hh && iH < 0)) { el.innerHTML = '<span class="wxmeta">' + L.range + '</span>'; badge(card, []); return; }
+    if (iN < 0 || (Hh && iH < 0)) { el.innerHTML = note(date < localDate() ? 'past' : 'range', date < localDate() ? L.past : L.range); badge(card, []); return; }
     var dN = N.daily, dH = Hh && Hh.daily, hs = hourStats(Hh || N, date), rows = [];
     var nightLink = '<a href="#map" class="focus" data-focus="' + esc(day.night.key) + '">' + esc(day.night.name) + '</a>';
     rows.push('<span><span class="wxk">' + (day.night.finish ? L.finish : L.night) + '</span> ' + nightLink + ' ' + Math.round(day.night.ele) + ' m: <b>' + Math.round(dN.temperature_2m_min[iN]) + '–' + Math.round(dN.temperature_2m_max[iN]) + ' °C</b>, ' + (L.codes[dN.weather_code[iN]] || dN.weather_code[iN]) + ' (' + L.feels + ' ' + Math.round(dN.apparent_temperature_min[iN]) + ' °C)</span>');
@@ -808,11 +840,16 @@
       evBox.innerHTML = sim.events.length ? '<div class="wxk">' + L.events + '</div>' + sim.events.slice(0, 6).map(function (e) { e.date = date; return '<div class="wxev ' + e.kind + (e.exposed ? ' exp' : '') + '">' + eventText(L, e) + '</div>'; }).join('') : '<div class="wxev ok">' + L.noevents + '</div>';
       read.textContent = (ens ? ens.members + ' ' + L.members + ' · ' : '') + ((window.TREK && window.TREK.weatherModelLabel) || 'Open-Meteo');
     }
-    slider.value = startH; slider.addEventListener('input', function () { show(+slider.value); });
-    btn.addEventListener('click', function () {
-      hourBox.hidden = !hourBox.hidden; btn.textContent = hourBox.hidden ? L.hourly + ' ▾' : L.hide + ' ▴';
-      if (!hourBox.hidden) { if (!best && samples.length && Hh) { best = recommendStart(day, card, N, samples, sIdx, ctx.locs, date); rec.textContent = L.recommend + ' ' + fmtH(best.start) + ' (' + best.sim.risk + ' ' + L.exposed + ')'; } show(+slider.value); }
-    });
+    /* the open state and start time live on the card element, so the 10-minute repaint keeps them */
+    function setOpen(open) {
+      hourBox.hidden = !open; btn.textContent = open ? L.hide + ' ▴' : L.hourly + ' ▾';
+      if (open) { if (!best && samples.length && Hh) { best = recommendStart(day, card, N, samples, sIdx, ctx.locs, date); rec.textContent = L.recommend + ' ' + fmtH(best.start) + ' (' + best.sim.risk + ' ' + L.exposed + ')'; } show(+slider.value); }
+      el._hour = { open: open, start: +slider.value };
+    }
+    slider.value = el._hour && el._hour.start ? el._hour.start : startH;
+    slider.addEventListener('input', function () { el._hour = { open: !hourBox.hidden, start: +slider.value }; show(+slider.value); });
+    btn.addEventListener('click', function () { setOpen(hourBox.hidden); });
+    if (el._hour && el._hour.open) setOpen(true);
     function reshow() { if (!hourBox.hidden && canvas.clientWidth) show(+slider.value); }
     window.addEventListener('resize', reshow);
     if (el._onShown) card.removeEventListener('trek:wxshown', el._onShown);
@@ -899,9 +936,8 @@
   };
 
   /* ---- boot ---- */
-  var tries = 0;
   function start() {
-    var app = window.gr52Data; if (!app) { if (tries++ < 150) return setTimeout(start, 200); return; }
+    var app = window.gr52Data; if (!app || ctx.route) return;
     ctx.data = app.data; ctx.route = app.route; ctx.days = dayPoints(app.data, app.route); window.gr52Days = ctx.days;
     ctx.cards = Array.prototype.slice.call(document.querySelectorAll('.stage[data-day]'));
     var points = [], index = {}; ctx.samples = {};
@@ -921,20 +957,26 @@
     applyDone();
     var els = Array.prototype.slice.call(document.querySelectorAll('.wx'));
     var dates = ctx.cards.map(function (c) { return c.getAttribute('data-date'); }).sort();
-    var today = new Date().toISOString().slice(0, 10), horizon = new Date(Date.now() + 15 * 864e5).toISOString().slice(0, 10);
+    var today = localDate(), horizon = localDate(new Date(Date.now() + 15 * 864e5));
     var startDate = dates[0] < today ? today : dates[0], endDate = dates[dates.length - 1] > horizon ? horizon : dates[dates.length - 1];
     function paint(locs, meta) {
       ctx.locs = locs; ctx.meta = meta;
       els.forEach(function (el) {
         var card = el.closest('.stage'), n = +card.getAttribute('data-day'), lang = card.closest('[lang]').getAttribute('lang');
         if (!ctx.days[n]) return;
-        render(el, lang, ctx.days[n], locs[index[n].night], index[n].high != null ? locs[index[n].high] : null, meta, card);
+        try { render(el, lang, ctx.days[n], locs[index[n].night], index[n].high != null ? locs[index[n].high] : null, meta, card); }
+        catch (e) { el.innerHTML = note('err', T[lang].err); badge(card, []); if (window.console) console.error('weather card ' + n, e); }  /* one bad card must not take the others down */
         var rb = el.querySelector('[data-wx="refresh"]'); if (rb) rb.addEventListener('click', load);  /* a past day has no button */
       });
     }
     function load() {
       var cached = lsGet(((window.TREK && window.TREK.slug) || 'trek') + '-wx', null);
-      if (startDate > endDate) { els.forEach(function (el) { el.innerHTML = '<span class="wxmeta">' + T[el.closest('[lang]').getAttribute('lang')].range + '</span>'; }); return; }
+      if (startDate > endDate) {
+        els.forEach(function (el) { var card = el.closest('.stage'), L = T[card.closest('[lang]').getAttribute('lang')], past = card.getAttribute('data-date') < today; el.innerHTML = note(past ? 'past' : 'range', past ? L.past : L.range); badge(card, []); });
+        return;
+      }
+      /* the saved copy first, so a weak signal never leaves the cards empty; the network replaces it when it answers */
+      if (cached && cached.locs && !ctx.locs) { ctx.ens = cached.ens || {}; paint(cached.locs, { t: cached.t, when: cached.when, stale: true }); }
       var highs = Object.keys(ctx.days).filter(function (n) { return ctx.days[n].high; }), ensPts = highs.map(function (n) { return ctx.days[n].high; });
       Promise.all([fetchForecast(points, startDate, endDate), fetchEnsemble(ensPts, startDate, endDate).catch(function () { return null; })]).then(function (r) {
         var locs = r[0], ens = {}; if (r[1]) highs.forEach(function (n, k) { ens[n] = r[1][k]; });
@@ -943,11 +985,12 @@
       }).catch(function () {
         if (cached) { ctx.ens = cached.ens || {}; paint(cached.locs, { t: cached.t, when: cached.when, stale: true }); }
 
-        else els.forEach(function (el) { el.innerHTML = '<span class="wxmeta">' + T[el.closest('[lang]').getAttribute('lang')].err + '</span>'; });
+        else els.forEach(function (el) { el.innerHTML = note('err', T[el.closest('[lang]').getAttribute('lang')].err); });
       });
     }
     load();
     setInterval(function () { if (ctx.locs && ctx.meta) paint(ctx.locs, ctx.meta); }, 10 * 60e3);
   }
+  document.addEventListener('trek:gpx', start);
   start();
 })();

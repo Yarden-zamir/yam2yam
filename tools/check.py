@@ -52,7 +52,7 @@ window.addEventListener('unhandledrejection',function(e){window.__log.push('REJ 
 var __t0=Date.now(); (function waitWx(){ if(Date.now()-__t0<30000 && !document.querySelector('.wx .wxrow') && !document.querySelector('.wx .wxmeta')) return setTimeout(waitWx,500); setTimeout(function(){try{
   var tiles=document.querySelectorAll('.leaflet-tile').length, paths=document.querySelectorAll('path.leaflet-interactive').length, icons=document.querySelectorAll('.wpico').length;
   var wx=document.querySelectorAll('.wx .wxrow').length, wxlinks=document.querySelectorAll('.wx a.focus').length, daylinks=document.querySelectorAll('a.daylink').length;
-  var wxcards=document.querySelectorAll('.wx').length, wxrange=[].filter.call(document.querySelectorAll('.wx'),function(e){return e.textContent.indexOf('16')>=0&&e.children.length===1&&e.firstElementChild.className==='wxmeta'}).length;
+  var wxcards=document.querySelectorAll('.wx').length, wxrange=document.querySelectorAll('.wx [data-wx="range"],.wx [data-wx="past"]').length;
   if(!window.gr52Data){document.title=JSON.stringify({exc:'GPX not loaded',log:window.__log});return;}
   var vis=document.querySelector('.wrap[lang]:not([hidden])'), stats=(vis.querySelector('.profstats')||{}).textContent||'';
   var app=window.gr52Map.visibleApp(), rot=!!(app&&app.map.setBearing); if(rot){app.map.setBearing(45); rot=app.map.getBearing()===45;}
@@ -126,7 +126,7 @@ if res.get("mehost") != "2":
 # so the weather rows, place links and hourly chart cannot be checked until the trek is within 16 days.
 beyond_horizon = res.get("wx", 0) == 0 and res.get("wxcards", 0) > 0 and res.get("wxrange", 0) == res.get("wxcards", 0)
 if beyond_horizon:
-    print("weather: trek dates are beyond the 16-day forecast horizon; every card shows the 'not yet available' note")
+    print("weather: every day is past or beyond the 16-day forecast horizon; the cards say so")
 elif res.get("wx", 0) < 1:
     fails.append("no weather rows rendered (check network, dates within 16 days, trek.json timezone)")
 elif res.get("wxlinks", 0) < 1:
