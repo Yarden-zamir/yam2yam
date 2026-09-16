@@ -146,7 +146,9 @@
     var opts = { scrollWheelZoom: false, zoomSnap: 0.5 };
     if (canRotate) { opts.rotate = true; opts.touchRotate = true; opts.dragRotate = true; opts.shiftKeyRotate = true; opts.rotateControl = { position: 'topleft', behavior: 'reset', closeOnZeroBearing: false }; }
     var map = L.map(mapEl, opts);
-    map.createPane('me').style.zIndex = 640;
+    /* points that must sit exactly on a spot are markers in the marker pane: the rotation plugin keeps
+       that pane upright and re-places its markers on every turn; a custom pane would be left behind */
+    function pin(ll, cls, size, z) { return L.marker(ll, { icon: L.divIcon({ className: cls, iconSize: [size, size], iconAnchor: [size / 2, size / 2], popupAnchor: [0, -size / 2], html: '' }), zIndexOffset: z, keyboard: false }); }
     L.tileLayer(TILES, { maxZoom: 17, crossOrigin: true, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, SRTM &middot; &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)' }).addTo(map);
     if (canRotate) {
       /* two-finger twist or right-drag rotates; these buttons do it in 15° steps; the compass (plugin) resets north */
@@ -270,7 +272,7 @@
         ctx.strokeStyle = mark; ctx.beginPath(); ctx.moveTo(x(d), T0); ctx.lineTo(x(d), H - B0); ctx.stroke();
         ctx.fillStyle = ink; ctx.textAlign = x(d) > W / 2 ? 'right' : 'left';
         ctx.fillText(((d - from) / 1000).toFixed(1) + ' ' + T.km + ' · ' + (p.ele == null ? '' : p.ele + ' ' + T.m), x(d) + (x(d) > W / 2 ? -6 : 6), T0 + 12);
-        if (!hoverMarker) hoverMarker = L.circleMarker([p.lat, p.lon], { pane: 'me', radius: 7, color: mark, weight: 3, fillColor: '#fff', fillOpacity: 1 }).addTo(map);
+        if (!hoverMarker) hoverMarker = pin([p.lat, p.lon], 'hoverpin', 16, 900).addTo(map);
         else hoverMarker.setLatLng([p.lat, p.lon]);
       }
     }
@@ -286,7 +288,7 @@
       if (!me) return;
       var ll = [me.lat, me.lon];
       if (!meMarker) {
-        meMarker = L.circleMarker(ll, { pane: 'me', radius: 8, color: '#fff', weight: 2, fillColor: ME, fillOpacity: 1 }).bindPopup(T.me).addTo(map);
+        meMarker = pin(ll, 'mepin', 18, 1000).bindPopup(T.me).addTo(map);
         meCircle = L.circle(ll, { radius: me.acc || 30, weight: 1, color: ME, fillOpacity: .08, interactive: false }).addTo(map);
       } else { meMarker.setLatLng(ll); meCircle.setLatLng(ll).setRadius(me.acc || 30); }
       drawProfile(null);
@@ -361,7 +363,7 @@
       if (mLL) {
         var ll0 = [+mLL[1], +mLL[2]];
         map.setView(ll0, Math.max(map.getZoom(), 14));
-        highlight = L.circleMarker(ll0, { pane: 'me', radius: 16, color: ME, weight: 3, fill: false }).addTo(map);
+        highlight = pin(ll0, 'focusring', 36, 800).addTo(map);
         if (mLL[3]) highlight.bindPopup(mLL[3]).openPopup();
         return true;
       }
@@ -373,7 +375,7 @@
         var c = CAT[w.type] || 'other'; if (cats[c] && !map.hasLayer(cats[c])) cats[c].addTo(map);
         map.setView([w.lat, w.lon], Math.max(map.getZoom(), 14));
         cats[c].eachLayer(function (l) { if (l.getLatLng && l.getLatLng().lat === w.lat && l.getLatLng().lng === w.lon) l.openPopup(); });
-        highlight = L.circleMarker([w.lat, w.lon], { pane: 'me', radius: 16, color: ME, weight: 3, fill: false }).addTo(map);
+        highlight = pin([w.lat, w.lon], 'focusring', 36, 800).addTo(map);
         return true;
       }
       var t = null; data.tracks.forEach(function (x) { if (!t && norm(x.name).indexOf(nq) >= 0) t = x; });
@@ -883,7 +885,7 @@
       if (near.dist > 20000) { text = L.far.replace('{km}', Math.round(near.dist / 1000)); }
       else if (!day) { text = L.after; }
       if (text) { s.textContent = text; if (lang === cur) short = text; return; }
-      for (var k = 1; k < day.n; k++) setDone(k, true);
+      for (var k = 0; k < day.n; k++) setDone(k, true);
       var walked = Math.max(0, near.pt.d - day.from), left = Math.max(0, day.to - near.pt.d), asc = ascentBetween(ctx.route, near.pt.d, day.to);
       var card = cardsFor(day.n).filter(function (c) { return c.closest('[lang]').getAttribute('lang') === lang; })[0];
       var todaySnaps = snaps.filter(function (x) { return now - x.t < 12 * 3600e3 && x.off < 1500; }), pace = null, measured = false;
@@ -954,7 +956,8 @@
     ctx.index = index;
 
     document.querySelectorAll('[data-act="snapshot"]').forEach(function (b) { b.addEventListener('click', function () { window.gr52Snapshot(); }); });
-    applyDone();
+    /* the arrival day has nothing to walk: it is done once its date has passed */
+    var d0 = cardsFor(0)[0]; if (d0 && d0.getAttribute('data-date') < localDate()) setDone(0, true); else applyDone();
     var els = Array.prototype.slice.call(document.querySelectorAll('.wx'));
     var dates = ctx.cards.map(function (c) { return c.getAttribute('data-date'); }).sort();
     var today = localDate(), horizon = localDate(new Date(Date.now() + 15 * 864e5));

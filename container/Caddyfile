@@ -17,8 +17,8 @@ http:// {
 			header Content-Type image/svg+xml*
 		}
 	}
-	@sw path /sw.js
-	header @sw Cache-Control "no-cache"
+	@fresh path / /index.html /sw.js /*.js /*.css /vendor/* /manifest.webmanifest /*.gpx
+	header @fresh Cache-Control "no-cache"
 	@gpx path *.gpx
 	header /maps/* Cache-Control "public, max-age=604800"
 	header @gpx Content-Type application/gpx+xml

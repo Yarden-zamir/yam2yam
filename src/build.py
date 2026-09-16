@@ -148,8 +148,20 @@ if (ROOT / "content.yaml").exists():
     from render import render  # noqa: E402
 
     (SRC / "body.html").write_text(render(ROOT / "content.yaml", TREK))
+def bust(html: str) -> str:
+    """Append ?v=<content hash> to local script and stylesheet URLs, so a changed file is a new URL."""
+    def one(m: re.Match) -> str:
+        f = SITE / m.group(2).lstrip("/")
+        return f'{m.group(1)}="{m.group(2)}?v={_vhash(f)}"' if f.exists() else m.group(0)
+    return re.sub(r'(src|href)="(/[^"?]+\.(?:js|css))"', one, html)
+
+
+def _vhash(f: Path) -> str:
+    return hashlib.sha256(f.read_bytes()).hexdigest()[:10]
+
+
 body = section_maps(link_places(label_tables((SRC / "body.html").read_text())))
-head = (SRC / "head.html").read_text().replace("{{NAME}}", TREK["name"])
+head = bust((SRC / "head.html").read_text().replace("{{NAME}}", TREK["name"]))
 page = (
     SHELL_HEAD.format(lang=TREK.get("languages", ["en"])[0], description=TREK["description"].replace('"', "&quot;"))
     + head
@@ -158,7 +170,7 @@ page = (
     + "</head>\n<body>\n"
     + body
     + "\n"
-    + (SRC / "scripts.html").read_text()
+    + bust((SRC / "scripts.html").read_text())
     + "</body>\n</html>\n"
 )
 (SITE / "index.html").write_text(page)
@@ -187,7 +199,7 @@ host = TREK["hostname"]
     + "\n{%- endif %} {\n    reverse_proxy unix//{{ paths.default_socket }}\n}\n"
 )
 
-precache = ["/", "/" + Path(TREK["gpx"]).name, "/map.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css", "/vendor/leaflet-rotate.umd.min.js", "/vendor/leaflet-rotate.css",
+precache = ["/", "/" + Path(TREK["gpx"]).name] + [f"{u}?v={_vhash(SITE / u.lstrip('/'))}" for u in ("/map.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css", "/vendor/leaflet-rotate.umd.min.js", "/vendor/leaflet-rotate.css")] + [
             "/vendor/images/layers.png", "/vendor/images/layers-2x.png", "/manifest.webmanifest", "/icon.svg"]
 precache += sorted("/maps/" + p.name for p in (SITE / "maps").glob("*.webp")) if (SITE / "maps").exists() else []
 files = sorted(p for p in SITE.rglob("*") if p.is_file() and p.name != "sw.js")

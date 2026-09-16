@@ -17,6 +17,10 @@
 
 })();
 </script>
+<script>
+if('serviceWorker' in navigator){(function(){var had=!!navigator.serviceWorker.controller,done=false;
+  navigator.serviceWorker.addEventListener('controllerchange',function(){if(had&&!done){done=true;location.reload();}});})();}
+</script>
 <script src="/vendor/leaflet.min.js"></script>
 <script src="/vendor/leaflet-rotate.umd.min.js"></script>
 <script src="/map.js" defer></script>

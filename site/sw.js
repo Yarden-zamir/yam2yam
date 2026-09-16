@@ -1,8 +1,9 @@
 /* Offline: precache the page and its data; cache map tiles and fonts as they are used or saved. */
-var VERSION = 'yam2yam-78aac1496cc8';
-var PRECACHE = ["/", "/route.gpx", "/map.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css", "/vendor/leaflet-rotate.umd.min.js", "/vendor/leaflet-rotate.css", "/vendor/images/layers.png", "/vendor/images/layers-2x.png", "/manifest.webmanifest", "/icon.svg", "/maps/east.webp", "/maps/overview.webp", "/maps/west.webp"];
+var VERSION = 'yam2yam-2b9ebefde0cc';
+var PRECACHE = ["/", "/route.gpx", "/map.js?v=d7bfd6bf6f", "/vendor/leaflet.min.js?v=5c9aecfc30", "/vendor/leaflet.min.css?v=b570abbda9", "/vendor/leaflet-rotate.umd.min.js?v=543dab62fe", "/vendor/leaflet-rotate.css?v=fde9c7ff97", "/vendor/images/layers.png", "/vendor/images/layers-2x.png", "/manifest.webmanifest", "/icon.svg", "/maps/east.webp", "/maps/overview.webp", "/maps/west.webp"];
 self.addEventListener('install', function (e) {
-  e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(PRECACHE); }).then(function () { return self.skipWaiting(); }));
+  /* cache: 'reload' bypasses the browser's HTTP cache, so a new version never precaches a stale file */
+  e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(PRECACHE.map(function (u) { return new Request(u, { cache: 'reload' }); })); }).then(function () { return self.skipWaiting(); }));
 });
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (keys) {
@@ -32,7 +33,7 @@ self.addEventListener('fetch', function (e) {
   if (url.origin === location.origin) {
     e.respondWith(caches.open(VERSION).then(function (c) {
       return c.match(e.request, { ignoreSearch: true }).then(function (hit) {
-        var net = fetch(e.request).then(function (res) { if (res && res.ok) c.put(e.request, res.clone()); return res; }).catch(function () { return hit; });
+        var net = fetch(e.request.url, { cache: 'no-cache', credentials: 'same-origin' }).then(function (res) { if (res && res.ok) c.put(e.request, res.clone()); return res; }).catch(function () { return hit; });
         return hit || net;
       });
     }));

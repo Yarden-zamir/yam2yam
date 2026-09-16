@@ -2,7 +2,8 @@
 var VERSION = '{{SLUG}}-__BUILD__';
 var PRECACHE = {{PRECACHE}};
 self.addEventListener('install', function (e) {
-  e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(PRECACHE); }).then(function () { return self.skipWaiting(); }));
+  /* cache: 'reload' bypasses the browser's HTTP cache, so a new version never precaches a stale file */
+  e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(PRECACHE.map(function (u) { return new Request(u, { cache: 'reload' }); })); }).then(function () { return self.skipWaiting(); }));
 });
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (keys) {
@@ -32,7 +33,7 @@ self.addEventListener('fetch', function (e) {
   if (url.origin === location.origin) {
     e.respondWith(caches.open(VERSION).then(function (c) {
       return c.match(e.request, { ignoreSearch: true }).then(function (hit) {
-        var net = fetch(e.request).then(function (res) { if (res && res.ok) c.put(e.request, res.clone()); return res; }).catch(function () { return hit; });
+        var net = fetch(e.request.url, { cache: 'no-cache', credentials: 'same-origin' }).then(function (res) { if (res && res.ok) c.put(e.request, res.clone()); return res; }).catch(function () { return hit; });
         return hit || net;
       });
     }));
