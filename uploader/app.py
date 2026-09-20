@@ -80,16 +80,44 @@ def save_photo(user: str, name: str, data: bytes) -> dict:
     th = img.copy()
     th.thumbnail((800, 800), Image.LANCZOS)
     th.save(udir / "photos" / (pid + ".t.jpg"), "JPEG", quality=82, optimize=True)
-    rec = {"id": pid, "file": pid + ".jpg", "thumb": pid + ".t.jpg", "w": web.width, "h": web.height, "name": Path(name).name[:80], **info}
+    rec = {"id": pid, "file": pid + ".jpg", "thumb": pid + ".t.jpg", "orig": pid + ext, "w": web.width, "h": web.height, "name": Path(name).name[:80], **info}
+    put_record(user, rec)
+    return rec
+
+
+def put_record(user: str, rec: dict) -> None:
+    udir = DATA / user
     with LOCK:
         index_path = udir / "photos" / "index.json"
         index = json.loads(index_path.read_text()) if index_path.exists() else []
-        index = [r for r in index if r.get("id") != pid] + [rec]
+        index = [r for r in index if r.get("id") != rec["id"]] + [rec]
         index.sort(key=lambda r: (r.get("taken") or "9999", r["id"]))
         tmp = index_path.with_suffix(".tmp")
         tmp.write_text(json.dumps(index, ensure_ascii=False, indent=0))
         tmp.replace(index_path)
-    return rec
+
+
+def reindex(user: str) -> list:
+    """Re-read time and place from every original (after a fix to the EXIF reading) and name the originals."""
+    udir = DATA / user
+    index_path = udir / "photos" / "index.json"
+    index = json.loads(index_path.read_text()) if index_path.exists() else []
+    out = []
+    for rec in index:
+        origs = list((udir / "orig").glob(rec["id"] + ".*"))
+        if origs:
+            rec["orig"] = origs[0].name
+            try:
+                img = Image.open(origs[0])
+                info = exif_info(img)
+                for k, v in info.items():
+                    if v is not None:
+                        rec[k] = v
+            except Exception as e:  # keep the record, note the failure
+                rec["error"] = str(e)[:80]
+        put_record(user, rec)
+        out.append(rec)
+    return out
 
 
 def used_bytes(user: str) -> int:
@@ -118,10 +146,12 @@ class Handler(BaseHTTPRequestHandler):
         self._json(405, {"error": "POST pictures to /log/<user>/upload"})
 
     def do_POST(self):
-        m = re.match(r"^/log/([^/]+)/upload/?$", self.path.split("?")[0])
+        m = re.match(r"^/log/([^/]+)/(upload|reindex)/?$", self.path.split("?")[0])
         if not m or not USER_RE.match(m.group(1)):
             return self._json(404, {"error": "unknown log"})
         user = m.group(1)
+        if m.group(2) == "reindex":
+            return self._json(200, reindex(user))
         length = int(self.headers.get("Content-Length") or 0)
         ctype = self.headers.get("Content-Type") or ""
         if length <= 0 or length > MAX_FILE * 4 or not ctype.startswith("multipart/form-data"):

@@ -101,11 +101,11 @@ def render(log_path: Path, trek: dict, plan_path: Path | None) -> tuple[str, dic
     first = trek["languages"][0]
     parts = [f'<div class="langbar"><button id="langbtn" type="button">{LANG_META[first]["button"]}</button></div>',
              '<button id="backbubble" type="button" hidden></button>',
-             '<div id="lightbox" hidden><button type="button" class="lbx" data-lb="close" aria-label="Close">×</button><button type="button" class="lbp" data-lb="prev" aria-label="Previous">‹</button><img alt=""><button type="button" class="lbp" data-lb="next" aria-label="Next">›</button><div class="lbcap"></div><div class="lbn"></div></div>', ""]
+             '<div id="lightbox" hidden><button type="button" class="lbx" data-lb="close" aria-label="Close">×</button><button type="button" class="lbp" data-lb="prev" aria-label="Previous">‹</button><img alt=""><button type="button" class="lbp" data-lb="next" aria-label="Next">›</button><a class="lbdl" download aria-label="Download">⤓</a><div class="lbcap"></div><div class="lbn"></div></div>', ""]
     for lang in trek["languages"]:
         parts.append(render_lang(lang, log, trek, plan.get(lang), "" if lang == first else lang + "-"))
         parts.append("")
-    cfg = {"user": log["user"], "days": {int(d["n"]): d["date"] for d in log["days"]}, "photos": log.get("photos") or {}}
+    cfg = {"user": log["user"], "days": {int(d["n"]): {"date": d["date"], "anchors": d.get("anchors") or []} for d in log["days"]}, "photos": log.get("photos") or {}}
     return "\n".join(parts), cfg
 
 

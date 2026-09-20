@@ -1,25 +1,27 @@
-/* Trip log page: photos by day (grid, inline in the text, clustered dots on the day's map, lightbox),
-   weather history per day from the Open-Meteo archive, and photo upload. Builds on map.js
-   (window.gr52Map, the trek:gpx and trek:scope events). Config in window.LOG and window.TREK. */
+/* Trip log page: pictures by day (a two-column grid, inline in the text, dots on the day's map and on
+   the elevation profile, a lightbox), weather history per day from the Open-Meteo archive, and
+   upload. Builds on map.js (window.gr52Map, the trek:gpx and trek:scope events). Config in
+   window.LOG (user, days with dates and time anchors, per-picture overrides) and window.TREK.
+   A picture without coordinates is placed on the route by its time, between the day's anchors. */
 (function () {
   'use strict';
-  var LOG = window.LOG || {}, TREK = window.TREK || {}, USER = LOG.user || 'me', BASE = '/log/' + USER + '/photos/', UPLOAD = '/log/' + USER + '/upload';
+  var LOG = window.LOG || {}, TREK = window.TREK || {}, USER = LOG.user || 'me', BASE = '/log/' + USER + '/photos/', ORIG = '/log/' + USER + '/orig/', UPLOAD = '/log/' + USER + '/upload';
   var T = {
-    en: { none: 'No pictures for this day yet.', undated: 'Undated pictures', onMap: 'Show on map', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
-      source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', pick: 'Choose pictures', taken: 'taken', photo: 'picture', photos: 'pictures',
+    en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
+      source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', taken: 'taken', photo: 'picture', download: 'Download',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
-    he: { none: 'עדיין אין תמונות ליום הזה.', undated: 'תמונות בלי תאריך', onMap: 'הצג במפה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
-      source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', pick: 'בחרו תמונות', taken: 'צולם', photo: 'תמונה', photos: 'תמונות',
+    he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
+      source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', taken: 'צולם', photo: 'תמונה', download: 'הורדה',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
-  var photos = [], byId = {}, over = LOG.photos || {}, dayDates = LOG.days || {}, clusters = {}, layers = {};
+  var photos = [], byId = {}, over = LOG.photos || {}, DAYS = LOG.days || {}, clusters = {}, layers = {};
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
   function langOf(el) { var w = el.closest('[lang]'); return w ? w.getAttribute('lang') : 'en'; }
   function visibleLang() { var w = document.querySelector('.wrap[lang]:not([hidden])'); return w ? w.getAttribute('lang') : 'en'; }
   function dayOf(p) {
     var o = over[p.id]; if (o && o.day != null) return o.day;
     var d = (p.taken || '').slice(0, 10), n = null;
-    Object.keys(dayDates).forEach(function (k) { if (dayDates[k] === d) n = +k; });
+    Object.keys(DAYS).forEach(function (k) { if (DAYS[k].date === d) n = +k; });
     return n;
   }
   function caption(p, lang) { var o = over[p.id] || {}, c = o.caption; if (c && typeof c === 'object') c = c[lang] || c.en || c.he; return c || p.caption || ''; }
@@ -29,12 +31,44 @@
     return '<a class="tile" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"' + (p.w && p.h ? ' style="aspect-ratio:' + p.w + '/' + p.h + '"' : '') + '><img src="' + BASE + esc(p.thumb) + '" alt="' + esc(c) + '" loading="lazy">' + (c || when(p) ? '<span>' + esc(c || when(p)) + '</span>' : '') + '</a>';
   }
 
-  /* ---- galleries, inline pictures, map dots ---- */
+  /* ---- where a picture was taken: its own coordinates, an override, or the route at that time ---- */
+  function hm(s) { var m = /^(\d{1,2}):(\d{2})/.exec(s || ''); return m ? +m[1] + m[2] / 60 : null; }
+  function anchorsFor(n) {
+    var G = window.gr52Map, r = G.dayRange(n); if (!r || r.to - r.from < 200) return null;
+    var list = ((DAYS[n] || {}).anchors || []).map(function (a) {
+      var t = hm(a.time), d = a.at === 'start' ? r.from : a.at === 'end' ? r.to : a.at != null && a.km != null ? null : null;
+      if (a.km != null) d = r.from + a.km * 1000;
+      else if (a.at && a.at !== 'start' && a.at !== 'end') { var f = G.findPlace(a.at); d = f ? Math.max(r.from, Math.min(r.to, f.pt.d)) : null; }
+      return t != null && d != null ? { t: t, d: d } : null;
+    }).filter(Boolean).sort(function (a, b) { return a.t - b.t; });
+    if (!list.length) list = [{ t: (TREK.plannedStart || 8), d: r.from }, { t: (TREK.plannedStart || 8) + 9, d: r.to }];
+    if (list.length === 1) list.push(list[0].d > (r.from + r.to) / 2 ? { t: list[0].t - 8, d: r.from } : { t: list[0].t + 8, d: r.to });
+    return { range: r, list: list };
+  }
+  function place(p) {
+    var o = over[p.id] || {};
+    if (o.lat != null && o.lon != null) return { lat: o.lat, lon: o.lon, d: window.gr52Map.nearest(o).pt.d, est: false };
+    if (p.lat != null && p.lon != null) return { lat: p.lat, lon: p.lon, d: window.gr52Map.nearest(p).pt.d, est: false };
+    var n = dayOf(p), t = hm((p.taken || '').slice(11)); if (n == null || t == null) return null;
+    var A = anchorsFor(n); if (!A) return null;
+    var L0 = A.list, d;
+    if (t <= L0[0].t) d = L0[0].d; else if (t >= L0[L0.length - 1].t) d = L0[L0.length - 1].d;
+    else { for (var i = 1; i < L0.length; i++) if (t <= L0[i].t) { var a = L0[i - 1], b = L0[i]; d = a.d + (b.d - a.d) * (t - a.t) / (b.t - a.t); break; } }
+    var pt = window.gr52Map.routePointAt(d);
+    return pt ? { lat: pt.lat, lon: pt.lon, d: pt.d, ele: pt.ele, est: true } : null;
+  }
+
+  /* ---- galleries: two columns filled by height, so different shapes leave no holes ---- */
+  function grid(list, lang) {
+    var cols = [[], []], h = [0, 0];
+    list.forEach(function (p) { var k = h[0] <= h[1] ? 0 : 1; cols[k].push(tile(p, lang)); h[k] += p.w && p.h ? p.h / p.w : 0.75; });
+    return '<div class="col">' + cols[0].join('') + '</div><div class="col">' + cols[1].join('') + '</div>';
+  }
   function render() {
     document.querySelectorAll('.gallery').forEach(function (g) {
       var lang = langOf(g), key = g.getAttribute('data-day'), list = photos.filter(function (p) { var d = dayOf(p); return key === 'none' ? d == null : d === +key; });
       g._list = list;
-      g.innerHTML = list.length ? list.map(function (p) { return tile(p, lang); }).join('') : (key === 'none' ? '' : '<p class="muted">' + T[lang].none + '</p>');
+      g.innerHTML = list.length ? grid(list, lang) : (key === 'none' ? '' : '<p class="muted">' + T[lang].none + '</p>');
       var sec = g.closest('.undated'); if (sec) sec.hidden = !list.length;
       var badge = g.closest('.stage') && g.closest('.stage').querySelector('[data-tab="pics"] .badge'); if (badge) { badge.textContent = list.length ? String(list.length) : ''; badge.hidden = !list.length; }
     });
@@ -45,27 +79,33 @@
     });
     Object.keys(layers).forEach(function (lang) { rebuildDots(lang); });
   }
+
+  /* ---- dots: one per group of pictures within 150 m, on the map and on the profile ---- */
   function hav(a, b) { return window.gr52Map.hav(a, b); }
-  /* one dot per group of pictures taken within 150 m of each other */
   function clusterize(list) {
     var out = [];
     list.forEach(function (p) {
-      var c = null; out.forEach(function (x) { if (!c && hav(x, p) < 150) c = x; });
-      if (c) { c.items.push(p); c.lat = c.items.reduce(function (s, q) { return s + q.lat; }, 0) / c.items.length; c.lon = c.items.reduce(function (s, q) { return s + q.lon; }, 0) / c.items.length; }
-      else out.push({ lat: p.lat, lon: p.lon, items: [p] });
+      var c = null; out.forEach(function (x) { if (!c && hav(x, p.pos) < 150) c = x; });
+      if (c) { c.items.push(p); c.lat = c.items.reduce(function (s, q) { return s + q.pos.lat; }, 0) / c.items.length; c.lon = c.items.reduce(function (s, q) { return s + q.pos.lon; }, 0) / c.items.length; c.d = c.items.reduce(function (s, q) { return s + q.pos.d; }, 0) / c.items.length; c.est = c.est && p.pos.est; }
+      else out.push({ lat: p.pos.lat, lon: p.pos.lon, d: p.pos.d, ele: p.pos.ele, est: p.pos.est, items: [p] });
     });
     return out;
   }
   function rebuildDots(lang) {
-    var L0 = layers[lang]; if (!L0) return;
+    var L0 = layers[lang]; if (!L0 || !window.gr52Data) return;
     L0.group.clearLayers();
-    var list = photos.filter(function (p) { return p.lat != null && p.lon != null && (L0.scope == null || dayOf(p) === L0.scope); });
+    var list = [];
+    photos.forEach(function (p) { if (L0.scope != null && dayOf(p) !== L0.scope) return; var pos = place(p); if (pos) list.push({ p: p, pos: pos }); });
+    var marks = [];
     clusterize(list).forEach(function (c, k) {
-      var id = lang + '-' + (L0.scope == null ? 'all' : L0.scope) + '-' + k; clusters[id] = c.items;
-      var m = L.marker([c.lat, c.lon], { icon: L.divIcon({ className: 'photodot', html: '<span>' + (c.items.length > 1 ? c.items.length : '') + '</span>', iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -14] }), zIndexOffset: 700, keyboard: false });
-      m.bindPopup('<div class="popthumbs">' + c.items.map(function (p) { return '<a href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '" data-cluster="' + id + '"><img src="' + BASE + esc(p.thumb) + '" alt=""></a>'; }).join('') + '</div>', { maxWidth: 260 });
+      var id = lang + '-' + (L0.scope == null ? 'all' : L0.scope) + '-' + k, items = c.items.map(function (x) { return x.p; }); clusters[id] = items;
+      var m = L.marker([c.lat, c.lon], { icon: L.divIcon({ className: 'photodot' + (c.est ? ' est' : ''), html: '<span>' + (items.length > 1 ? items.length : '') + '</span>', iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -14] }), zIndexOffset: 700, keyboard: false });
+      m.bindPopup('<div class="popthumbs">' + items.map(function (p) { return '<a href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '" data-cluster="' + id + '"><img src="' + BASE + esc(p.thumb) + '" alt=""></a>'; }).join('') + '</div>', { maxWidth: 260 });
       L0.group.addLayer(m);
+      var pt = window.gr52Map.nearest({ lat: c.lat, lon: c.lon }).pt;
+      marks.push({ d: pt.d, ele: pt.ele, est: c.est, label: items.length > 1 ? String(items.length) : '', onClick: function () { open(items, 0); } });
     });
+    var app = window.gr52Map.app(lang); if (app) app.setMarks(marks);
   }
   document.addEventListener('trek:scope', function (e) {
     var d = e.detail;
@@ -74,15 +114,18 @@
     rebuildDots(d.lang);
   });
 
-  /* ---- lightbox ---- */
+  /* ---- lightbox: arrows, keys, swipe sideways, swipe down to close, download ---- */
   var lb = document.getElementById('lightbox'), cur = { list: [], i: 0 };
   function show(i) {
     var p = cur.list[i]; if (!p) return; cur.i = i;
-    var lang = visibleLang(), c = caption(p, lang);
+    var lang = visibleLang(), c = caption(p, lang), pos = place(p);
     lb.querySelector('img').src = BASE + p.file;
-    lb.querySelector('.lbcap').innerHTML = (c ? esc(c) + ' · ' : '') + (p.taken ? T[lang].taken + ' ' + esc(p.taken.replace('T', ' ').slice(0, 16)) : '') + (p.lat != null ? ' · <a href="?map=ll:' + p.lat.toFixed(5) + ',' + p.lon.toFixed(5) + '" class="focus" data-go="ll:' + p.lat.toFixed(5) + ',' + p.lon.toFixed(5) + ':' + esc(c || T[lang].photo) + '" data-day="' + (dayOf(p) == null ? '' : dayOf(p)) + '">' + T[lang].onMap + '</a>' : '');
+    var dl = lb.querySelector('.lbdl'); dl.href = p.orig ? ORIG + p.orig : BASE + p.file; dl.setAttribute('download', p.orig ? (p.name || p.orig) : (p.id + '.jpg')); dl.title = T[lang].download;
+    lb.querySelector('.lbcap').innerHTML = (c ? esc(c) + ' · ' : '') + (p.taken ? T[lang].taken + ' ' + esc(p.taken.replace('T', ' ').slice(0, 16)) : '')
+      + (pos ? ' · <a href="?map=ll:' + pos.lat.toFixed(5) + ',' + pos.lon.toFixed(5) + '" class="focus" data-go="ll:' + pos.lat.toFixed(5) + ',' + pos.lon.toFixed(5) + ':' + esc(c || T[lang].photo) + '" data-day="' + (dayOf(p) == null ? '' : dayOf(p)) + '">' + T[lang].onMap + '</a>' + (pos.est ? ' (' + T[lang].est + ')' : '') : '');
     lb.querySelector('.lbn').textContent = (i + 1) + ' / ' + cur.list.length;
     lb.querySelector('[data-lb="prev"]').disabled = i === 0; lb.querySelector('[data-lb="next"]').disabled = i === cur.list.length - 1;
+    var pre = cur.list[i + 1]; if (pre) { var img = new Image(); img.src = BASE + pre.file; }
   }
   function open(list, i) { cur.list = list; lb.hidden = false; document.body.classList.add('lbopen'); show(i); }
   function close() { lb.hidden = true; document.body.classList.remove('lbopen'); }
@@ -90,6 +133,7 @@
     lb.addEventListener('click', function (e) {
       if (e.target.closest('[data-lb="prev"]')) return show(cur.i - 1);
       if (e.target.closest('[data-lb="next"]')) return show(cur.i + 1);
+      if (e.target.closest('.lbdl')) return;
       var g = e.target.closest('a[data-go]');
       if (g) { /* close first, then navigate from the picture's day so its map opens */
         e.preventDefault(); close();
@@ -100,6 +144,13 @@
       if (e.target.closest('[data-lb="close"]') || e.target === lb) close();
     });
     document.addEventListener('keydown', function (e) { if (lb.hidden) return; if (e.key === 'Escape') close(); if (e.key === 'ArrowRight') show(cur.i + 1); if (e.key === 'ArrowLeft') show(cur.i - 1); });
+    var sx = 0, sy = 0, st0 = 0;
+    lb.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; st0 = Date.now(); }, { passive: true });
+    lb.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dx) > 50 && Math.abs(dy) < Math.abs(dx)) { var rtl = getComputedStyle(document.documentElement).direction === 'rtl'; show(cur.i + (dx < 0 ? 1 : -1) * (rtl ? -1 : 1)); }
+      else if (dy > 90 && Math.abs(dx) < 60 && Date.now() - st0 < 600) close();
+    }, { passive: true });
   }
   /* capture phase: Leaflet stops clicks inside popups before they reach the document */
   document.addEventListener('click', function (e) {
@@ -189,7 +240,7 @@
       input.value = '';
     });
   });
-  function add(p) { if (!p || !p.id) return; if (byId[p.id]) photos.splice(photos.indexOf(byId[p.id]), 1); byId[p.id] = p; photos.push(p); photos.sort(function (a, b) { return (a.taken || '') < (b.taken || '') ? -1 : 1; }); }
+  function add(p) { if (!p || !p.id) return; if (byId[p.id]) photos.splice(photos.indexOf(byId[p.id]), 1); byId[p.id] = p; photos.push(p); photos.sort(function (a, b) { return (a.taken || '9') < (b.taken || '9') ? -1 : 1; }); }
   function loadIndex() {
     return fetch(BASE + 'index.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; })
       .then(function (list) { photos = []; byId = {}; (Array.isArray(list) ? list : []).forEach(add); });

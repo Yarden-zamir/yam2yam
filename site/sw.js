@@ -1,6 +1,6 @@
 /* Offline: precache the page and its data; cache map tiles and fonts as they are used or saved. */
-var VERSION = 'yam2yam-d1bed2fbcacd';
-var PRECACHE = ["/", "/route.gpx", "/map.js?v=a99088cddc", "/trip.js?v=44f386cf54", "/vendor/leaflet.min.js?v=5c9aecfc30", "/vendor/leaflet.min.css?v=b570abbda9", "/vendor/leaflet-rotate.umd.min.js?v=543dab62fe", "/vendor/leaflet-rotate.css?v=fde9c7ff97", "/vendor/images/layers.png", "/vendor/images/layers-2x.png", "/manifest.webmanifest", "/icon.svg", "/maps/east.webp", "/maps/overview.webp", "/maps/west.webp"];
+var VERSION = 'yam2yam-b1335d59e624';
+var PRECACHE = ["/", "/route.gpx", "/map.js?v=330d650928", "/trip.js?v=44f386cf54", "/vendor/leaflet.min.js?v=5c9aecfc30", "/vendor/leaflet.min.css?v=b570abbda9", "/vendor/leaflet-rotate.umd.min.js?v=543dab62fe", "/vendor/leaflet-rotate.css?v=fde9c7ff97", "/vendor/images/layers.png", "/vendor/images/layers-2x.png", "/manifest.webmanifest", "/icon.svg", "/maps/east.webp", "/maps/overview.webp", "/maps/west.webp"];
 self.addEventListener('install', function (e) {
   /* cache: 'reload' bypasses the browser's HTTP cache, so a new version never precaches a stale file */
   e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(PRECACHE.map(function (u) { return new Request(u, { cache: 'reload' }); })); }).then(function () { return self.skipWaiting(); }));

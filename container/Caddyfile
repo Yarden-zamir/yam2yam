@@ -32,7 +32,14 @@ http:// {
 		header /*/photos/index.json Cache-Control "no-cache"
 		file_server
 	}
-	@upload path /log/*/upload
+	@orig path /log/*/orig/*
+	handle @orig {
+		uri strip_prefix /log
+		root * /data
+		header Cache-Control "public, max-age=86400"
+		file_server
+	}
+	@upload path /log/*/upload /log/*/reindex
 	handle @upload {
 		request_body {
 			max_size 160MB

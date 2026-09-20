@@ -247,9 +247,10 @@ a.daylink:hover{color:var(--lake)}
 #backbubble:hover{border-color:var(--mark)}
 [dir="rtl"] #backbubble{font-family:"Heebo",sans-serif}
 /* trip log: picture grid, inline pictures, lightbox, photo dots, upload */
-.gallery{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:72vh;overflow-y:auto;padding:2px;-webkit-overflow-scrolling:touch}
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:start;max-height:72vh;overflow-y:auto;padding:2px;-webkit-overflow-scrolling:touch}
+.gallery .col{display:flex;flex-direction:column;gap:6px;min-width:0}
 .gallery .muted{grid-column:1/-1;color:var(--muted);font-size:13.5px;margin:4px 0}
-.tile{position:relative;display:block;aspect-ratio:4/3;overflow:hidden;background:var(--line);border-radius:3px}
+.tile{position:relative;display:block;overflow:hidden;background:var(--line);border-radius:3px}
 .tile img{width:100%;height:100%;object-fit:cover;display:block}
 .tile span{position:absolute;left:0;right:0;bottom:0;padding:14px 8px 5px;font:12px "IBM Plex Sans",sans-serif;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.6));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .photoref{display:block;margin:10px 0}
@@ -267,6 +268,10 @@ body.lbopen{overflow:hidden}
 .photodot{background:#fff;border:2px solid var(--mark);border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.4);display:grid;place-items:center;box-sizing:border-box}
 .photodot span{font:700 11px "IBM Plex Mono",monospace;color:var(--mark)}
 .photodot span:empty::before{content:"";display:block;width:10px;height:8px;border:2px solid var(--mark);border-radius:2px;box-sizing:border-box}
+.photodot.est{border-style:dashed}
+#lightbox .lbdl{position:absolute;top:12px;left:12px;color:#fff;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.4);border-radius:50%;width:40px;height:40px;font-size:22px;line-height:38px;text-align:center;text-decoration:none}
+#lightbox img{touch-action:pan-y;user-select:none;-webkit-user-select:none}
+body:has(.locbar) #backbubble{left:78px;transform:none;max-width:calc(100vw - 92px)}
 .popthumbs{display:flex;gap:4px;flex-wrap:wrap;max-width:240px} .popthumbs a{display:block;width:74px;height:56px;overflow:hidden;border-radius:2px;background:var(--line)} .popthumbs img{width:100%;height:100%;object-fit:cover;display:block}
 .upload{margin:12px 0} .upbtn{display:inline-block;font:600 14px "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:9px 14px;cursor:pointer} .upbtn:hover{border-color:var(--mark)}
 .uplist{font:13px "IBM Plex Mono",monospace;color:var(--muted);margin-top:8px} .uplist div{padding:2px 0}
@@ -274,8 +279,7 @@ body.lbopen{overflow:hidden}
 .wxh .wxrow{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline} .wxh .wxk{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
 .wxh canvas{width:100%;height:150px;display:block;background:var(--ground);border:1px solid var(--line);margin-top:8px}
 [lang="he"] .wxh .wxk,[lang="he"] .upbtn,[lang="he"] .tile span{font-family:"Heebo",sans-serif;letter-spacing:0;text-transform:none}
-/* rotation: plugin compass plus 15° step buttons */
-.leaflet-control-rotatebtns a{font-size:18px;line-height:30px;text-decoration:none}
+/* rotation: two-finger twist; the plugin's compass shows once turned and resets north */
 .livemap .leaflet-control-rotate{border-radius:4px;box-shadow:0 1px 5px rgba(0,0,0,.4)}
 </style>
 

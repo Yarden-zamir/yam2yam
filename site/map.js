@@ -18,7 +18,7 @@
       offRoute: 'off route', toNext: 'to', ascent: 'ascent',
       descent: 'descent', total: 'Route', day: 'Day', km: 'km', m: 'm', offline: 'Offline: page, GPX and saved tiles are available.',
       alt: 'alt', loading: 'Loading GPX…', retry: 'retry in', ready: 'GPX loaded: ', tracks: 'tracks', wpts: 'waypoints',
-      rotL: 'Rotate left', rotR: 'Rotate right', north: 'North up', me: 'Your position', back: '← Back to', top: 'the top'
+      me: 'Your position', back: '← Back to', top: 'the top'
     },
     he: {
       nights: 'לילות, בקתות, סיום', water: 'מים', passes: 'מעברים ופסגות', side: 'פסגות סטיות צד',
@@ -28,7 +28,7 @@
       offRoute: 'מחוץ למסלול', toNext: 'עד', ascent: 'עלייה',
       descent: 'ירידה', total: 'המסלול', day: 'יום', km: 'ק"מ', m: 'מ\'', offline: 'אופליין: הדף, ה-GPX והאריחים השמורים זמינים.',
       alt: 'גובה', loading: 'טוען GPX…', retry: 'ניסיון נוסף בעוד', ready: 'GPX נטען: ', tracks: 'מסלולים', wpts: 'נקודות',
-      rotL: 'סובב שמאלה', rotR: 'סובב ימינה', north: 'צפון למעלה', me: 'המיקום שלכם', back: '→ חזרה אל', top: 'ראש הדף'
+      me: 'המיקום שלכם', back: '→ חזרה אל', top: 'ראש הדף'
     }
   };
   var CAT = { Night: 'nights', Flag: 'nights', Lodging: 'nights', Restaurant: 'nights', Water: 'water', Summit: 'passes',
@@ -155,27 +155,15 @@
     var T = I18N[lang];
     var mapEl = container.querySelector('.livemap');
     var status = container.querySelector('.mapstatus');
-    var canRotate = typeof L.Map.prototype.setBearing === 'function';
-    var opts = { scrollWheelZoom: false, zoomSnap: 0.5 };
-    if (canRotate) { opts.rotate = true; opts.touchRotate = true; opts.dragRotate = true; opts.shiftKeyRotate = true; opts.rotateControl = { position: 'topleft', behavior: 'reset', closeOnZeroBearing: false }; }
+    var canRotate = typeof L.Map.prototype.setBearing === 'function', coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+    /* fingers do the zooming and turning on a phone; the compass appears once the map is turned, to reset north */
+    var opts = { scrollWheelZoom: false, zoomSnap: 0.5, zoomControl: !coarse };
+    if (canRotate) { opts.rotate = true; opts.touchRotate = true; opts.dragRotate = true; opts.shiftKeyRotate = true; opts.rotateControl = { position: 'topleft', behavior: 'reset', closeOnZeroBearing: true }; }
     var map = L.map(mapEl, opts);
     /* points that must sit exactly on a spot are markers in the marker pane: the rotation plugin keeps
        that pane upright and re-places its markers on every turn; a custom pane would be left behind */
     function pin(ll, cls, size, z) { return L.marker(ll, { icon: L.divIcon({ className: cls, iconSize: [size, size], iconAnchor: [size / 2, size / 2], popupAnchor: [0, -size / 2], html: '' }), zIndexOffset: z, keyboard: false }); }
     L.tileLayer(TILES, { maxZoom: 17, crossOrigin: true, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, SRTM &middot; &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)' }).addTo(map);
-    if (canRotate) {
-      /* two-finger twist or right-drag rotates; these buttons do it in 15° steps; the compass (plugin) resets north */
-      var Rot = L.Control.extend({ onAdd: function () {
-        var bar = L.DomUtil.create('div', 'leaflet-bar leaflet-control-rotatebtns');
-        [['rotL', '↺', -15], ['rotR', '↻', 15]].forEach(function (b) {
-          var a = L.DomUtil.create('a', '', bar); a.href = '#'; a.textContent = b[1]; a.title = T[b[0]]; a.setAttribute('role', 'button'); a.setAttribute('aria-label', T[b[0]]);
-          L.DomEvent.on(a, 'click', function (e) { L.DomEvent.stop(e); map.setBearing(map.getBearing() + b[2]); });
-        });
-        L.DomEvent.disableClickPropagation(bar);
-        return bar;
-      } });
-      map.addControl(new Rot({ position: 'topleft' }));
-    }
 
     var overlays = {}, routeGroup = L.featureGroup();
     data.tracks.forEach(function (t) {
@@ -230,7 +218,7 @@
     }
 
     /* elevation profile of the current scope; the position dot is drawn from the same state as the map marker */
-    var canvas = container.querySelector('canvas.profile'), hoverMarker = null;
+    var canvas = container.querySelector('canvas.profile'), hoverMarker = null, marks = [], markPos = [];
     function drawProfile(hoverX) {
       var dpr = window.devicePixelRatio || 1, W = canvas.clientWidth, H = canvas.clientHeight;
       if (!W || !H) return;
@@ -263,6 +251,15 @@
         ctx.fillStyle = ink; ctx.textAlign = i === ns.length - 1 ? 'right' : i === 0 ? 'left' : 'center';
         ctx.fillText(n.w.name.split(' · ')[0].replace('NIGHT ', 'N'), px, py - 9);
       });
+      markPos = [];
+      marks.forEach(function (m) {
+        if (m.d < from || m.d > to) return;
+        var px = x(m.d), py = y(m.ele == null ? minE : m.ele) - 11; markPos.push({ x: px, y: py, m: m });
+        ctx.beginPath(); ctx.arc(px, py, 7, 0, 7); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = m.color || mark; ctx.lineWidth = m.est ? 1.5 : 2; if (m.est) ctx.setLineDash([2, 2]); ctx.stroke(); ctx.setLineDash([]); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(px, py + 7); ctx.lineTo(px, y(m.ele == null ? minE : m.ele)); ctx.strokeStyle = m.color || mark; ctx.stroke();
+        if (m.label) { ctx.fillStyle = m.color || mark; ctx.font = '700 9px IBM Plex Mono, monospace'; ctx.textAlign = 'center'; ctx.fillText(m.label, px, py + 3); ctx.font = '500 11px IBM Plex Sans, sans-serif'; }
+        else { ctx.fillStyle = m.color || mark; ctx.fillRect(px - 3.5, py - 2.5, 7, 5); }
+      });
       if (me && me.near && me.near.pt.d >= from && me.near.pt.d <= to) {
         var mx = x(me.near.pt.d), my = y(me.near.pt.ele == null ? minE : me.near.pt.ele);
         ctx.beginPath(); ctx.arc(mx, my, 6.5, 0, 7); ctx.fillStyle = ME; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1;
@@ -281,6 +278,11 @@
     function hover(ev) { var r = canvas.getBoundingClientRect(); var cx = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; drawProfile(cx); if (ev.touches) ev.preventDefault(); }
     canvas.addEventListener('mousemove', hover); canvas.addEventListener('touchstart', hover, { passive: false }); canvas.addEventListener('touchmove', hover, { passive: false });
     canvas.addEventListener('mouseleave', function () { drawProfile(null); if (hoverMarker) { map.removeLayer(hoverMarker); hoverMarker = null; } });
+    canvas.addEventListener('click', function (ev) {
+      var r = canvas.getBoundingClientRect(), cx = ev.clientX - r.left, cy = ev.clientY - r.top, hit = null;
+      markPos.forEach(function (p) { if (Math.hypot(p.x - cx, p.y - cy) < 14 && (!hit || Math.hypot(p.x - cx, p.y - cy) < Math.hypot(hit.x - cx, hit.y - cy))) hit = p; });
+      if (hit && hit.m.onClick) hit.m.onClick(hit.m);
+    });
     stats(); drawProfile(null);
     window.addEventListener('resize', function () { drawProfile(null); });
 
@@ -402,7 +404,8 @@
       if (scope !== n) setScope(n, true); else drawProfile(null);
     }
     apps[lang] = { map: map, focus: focus, pick: pick, box: container, status: status, claim: claim, refreshMe: refreshMe, panToMe: panToMe,
-      redraw: function () { map.invalidateSize(); drawProfile(null); }, hostEl: function () { return host; } };
+      redraw: function () { map.invalidateSize(); drawProfile(null); }, hostEl: function () { return host; }, scope: function () { return scope; },
+      setMarks: function (list) { marks = list || []; drawProfile(null); } };
     refreshMe();
     return apps[lang];
   }
@@ -488,7 +491,10 @@
     visibleApp: function () { return appFor(visibleLang()); },
     nearest: function (p) { return route ? nearestOnRoute(route, p) : null; },
     dayRange: function (n) { return route ? dayRange(n) : null; }, nightOf: nightOf, nights: function () { return NIGHTS; },
-    showTab: showTab, openDay: openDay, hav: hav,
+    showTab: showTab, openDay: openDay, hav: hav, app: function (lang) { return apps[lang] || null; },
+    /* the route point nearest to a waypoint or track name, or at a distance along the route */
+    routePointAt: function (d) { if (!route) return null; var a = 0, b = route.pts.length - 1; while (a < b) { var mid = (a + b) >> 1; if (route.pts[mid].d < d) a = mid + 1; else b = mid; } return route.pts[a]; },
+    findPlace: function (q) { if (!data) return null; var nq = norm(q), w = null; data.wpts.forEach(function (x) { if (!w && norm(x.name).indexOf(nq) >= 0) w = x; }); return w ? nearestOnRoute(route, w) : null; },
     /* one position for every map and profile */
     showPosition: function (lat, lon, acc) {
       if (!route) return;
@@ -563,6 +569,25 @@
     focusVisible(q, m ? +m[1] : null);
   }
   var bb = document.getElementById('backbubble'); if (bb) bb.addEventListener('click', back);
+  /* swipe sideways on a day card to move between its tabs; the map and sliders keep their own gestures */
+  (function () {
+    var sx = 0, sy = 0, stage = null;
+    document.addEventListener('touchstart', function (e) {
+      var t = e.target; stage = null;
+      if (!t.closest || t.closest('.livemap, input, canvas, #lightbox')) return;
+      stage = t.closest('.stage[data-day]'); if (!stage) return;
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener('touchend', function (e) {
+      if (!stage) return;
+      var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy, st = stage; stage = null;
+      if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
+      var tabs = Array.prototype.slice.call(st.querySelectorAll('.tabs [data-tab]')), i = tabs.findIndex(function (b) { return b.classList.contains('on'); });
+      var rtl = getComputedStyle(st).direction === 'rtl', step = (dx < 0 ? 1 : -1) * (rtl ? -1 : 1), j = i + step;
+      if (j < 0 || j >= tabs.length) return;
+      showTab(st, tabs[j].getAttribute('data-tab'));
+    }, { passive: true });
+  })();
   window.gr52Nav = { go: go, back: back };
   document.addEventListener('click', function (e) {
     if (!e.target.closest) return;
