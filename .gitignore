@@ -2,7 +2,9 @@
 /Caddyfile
 .DS_Store
 .tiles/
+checks/
 src/body.html
+site/log/*/photos/
+site/log/*/orig/
 research/osm.json
 research/waypoints.proposed.json
-checks/

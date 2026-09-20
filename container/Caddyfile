@@ -23,5 +23,23 @@ http:// {
 	header /maps/* Cache-Control "public, max-age=604800"
 	header @gpx Content-Type application/gpx+xml
 	header @gpx Content-Disposition attachment
-	file_server
+	# trip logs: pictures live on the volume shared with the uploader, uploads go to it
+	@photos path /log/*/photos/*
+	handle @photos {
+		uri strip_prefix /log
+		root * /data
+		header Cache-Control "public, max-age=86400"
+		header /*/photos/index.json Cache-Control "no-cache"
+		file_server
+	}
+	@upload path /log/*/upload
+	handle @upload {
+		request_body {
+			max_size 160MB
+		}
+		reverse_proxy uploader:8080
+	}
+	handle {
+		file_server
+	}
 }

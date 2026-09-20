@@ -152,7 +152,8 @@ def render(content_path: Path, trek: dict) -> str:
     parts = [f'<div class="langbar"><button id="langbtn" type="button">{LANG_META[first]["button"]}</button></div>',
              f'<div class="locbar"><button id="locfab" type="button" data-act="snapshot" aria-label="{esc(LANG_META[first]["snapshot"])}" title="{esc(LANG_META[first]["snapshot"])}" {labels}>'
              '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>'
-             '<span id="loctoast" role="status" hidden></span></div>', ""]
+             '<span id="loctoast" role="status" hidden></span></div>',
+             '<button id="backbubble" type="button" hidden></button>', ""]
     for lang in trek["languages"]:
         if lang not in c:
             raise SystemExit(f"content.yaml has no '{lang}' block")

@@ -10,8 +10,12 @@ services:
       KITSHN_DEFAULT_SOCKET: ${KITSHN_DEFAULT_SOCKET}
     volumes:
       - ${KITSHN_SOCKET_DIR}:${KITSHN_SOCKET_DIR}
+      - logdata:/data:ro
     networks:
       - kitshn-edge
+      - default
+    depends_on:
+      - uploader
     healthcheck:
       test: ["CMD", "test", "-S", "${KITSHN_DEFAULT_SOCKET}"]
       interval: 30s
@@ -19,6 +23,17 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
+
+  # trip-log pictures: receives uploads, resizes, keeps the index; shares the volume with the site
+  uploader:
+    build: ./uploader
+    pull_policy: build
+    volumes:
+      - logdata:/data
+    restart: unless-stopped
+
+volumes:
+  logdata:
 
 networks:
   kitshn-edge:

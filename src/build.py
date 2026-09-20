@@ -170,10 +170,34 @@ page = (
     + "</head>\n<body>\n"
     + body
     + "\n"
-    + bust((SRC / "scripts.html").read_text())
+    + bust((SRC / "scripts.html").read_text().replace("{{APP}}", '<script src="/trip.js" defer></script>'))
     + "</body>\n</html>\n"
 )
 (SITE / "index.html").write_text(page)
+
+# trip logs, unlisted: site/log/<user>/ from log/<user>/log.yaml (pictures come from the upload volume at runtime)
+if (ROOT / "log").exists():
+    from render_log import render as render_log  # noqa: E402
+
+    for log_yaml in sorted((ROOT / "log").glob("*/log.yaml")):
+        log_body, log_cfg = render_log(log_yaml, TREK, ROOT / "content.yaml")
+        log_page = (
+            SHELL_HEAD.format(lang=TREK.get("languages", ["en"])[0], description=TREK["description"].replace('"', "&quot;"))
+            + '<meta name="robots" content="noindex, nofollow">\n'
+            + head
+            + theme_style()
+            + config_script()
+            + "<script>window.LOG=" + json.dumps(log_cfg, ensure_ascii=False) + ";</script>\n"
+            + "</head>\n<body>\n"
+            + link_places(log_body)
+            + "\n"
+            + bust((SRC / "scripts.html").read_text().replace("{{APP}}", '<script src="/log.js" defer></script>'))
+            + "</body>\n</html>\n"
+        )
+        out = SITE / "log" / log_cfg["user"]
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "index.html").write_text(log_page)
+        print(f"wrote site/log/{log_cfg['user']}/index.html ({len(log_page) // 1024} KB, unlisted)")
 
 # favicon: the trail's blaze in the accent colour (a two-band mark, as on the trail signs)
 _accent = TREK.get("accent", "#C8322B")
@@ -199,10 +223,10 @@ host = TREK["hostname"]
     + "\n{%- endif %} {\n    reverse_proxy unix//{{ paths.default_socket }}\n}\n"
 )
 
-precache = ["/", "/" + Path(TREK["gpx"]).name] + [f"{u}?v={_vhash(SITE / u.lstrip('/'))}" for u in ("/map.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css", "/vendor/leaflet-rotate.umd.min.js", "/vendor/leaflet-rotate.css")] + [
+precache = ["/", "/" + Path(TREK["gpx"]).name] + [f"{u}?v={_vhash(SITE / u.lstrip('/'))}" for u in ("/map.js", "/trip.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css", "/vendor/leaflet-rotate.umd.min.js", "/vendor/leaflet-rotate.css")] + [
             "/vendor/images/layers.png", "/vendor/images/layers-2x.png", "/manifest.webmanifest", "/icon.svg"]
 precache += sorted("/maps/" + p.name for p in (SITE / "maps").glob("*.webp")) if (SITE / "maps").exists() else []
-files = sorted(p for p in SITE.rglob("*") if p.is_file() and p.name != "sw.js")
+files = sorted(p for p in SITE.rglob("*") if p.is_file() and p.name != "sw.js" and "/photos/" not in p.as_posix() and "/orig/" not in p.as_posix())
 digest = hashlib.sha256()
 for p in files:
     digest.update(p.relative_to(ROOT).as_posix().encode())
