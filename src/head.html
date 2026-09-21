@@ -253,11 +253,24 @@ a.daylink:hover{color:var(--lake)}
 .tile{position:relative;display:block;overflow:hidden;background:var(--line);border-radius:3px}
 .tile img{width:100%;height:100%;object-fit:cover;display:block}
 .tile span{position:absolute;left:0;right:0;bottom:0;padding:14px 8px 5px;font:12px "IBM Plex Sans",sans-serif;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.6));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.photoref{display:block;margin:10px 0}
-.inpic{display:block;max-width:420px;border-radius:3px;overflow:hidden;background:var(--line)}
-.inpic img{width:100%;display:block}
-.inpic span{display:block;font-size:12.5px;color:var(--muted);padding:4px 0}
+.photoref{display:block;margin:12px 0}
+.photos{display:block}
+.inpic{display:block;text-decoration:none;color:inherit}
+.inpic img{display:block;max-width:100%;max-height:78vh;width:auto;height:auto;margin:0 auto;border-radius:3px;background:var(--line)}
+.inpic span{display:block;font-size:12.5px;color:var(--muted);padding:4px 0;text-align:center;text-decoration:none}
 .pane[data-pane="log"] p{max-width:72ch}
+.tile img{transition:transform .25s ease} .tile:hover img{transform:scale(1.03)} .tile,.inpic,.popthumbs a{cursor:zoom-in}
+/* desktop: a wider log page, the whole grid in three columns, pictures in the text side by side */
+.logpage .wrap{max-width:1240px}
+@media (min-width:900px){
+  .logpage .gallery{max-height:none;overflow:visible;gap:8px}
+  .logpage .stage .livemap{height:min(70vh,640px)}
+  .logpage .stage canvas.profile{height:200px}
+  .photos{display:flex;gap:10px;align-items:flex-start}
+  .photos .photoref{flex:1 1 0;min-width:0;margin:0}
+  .photos .inpic img{max-height:60vh;width:100%;object-fit:cover;aspect-ratio:4/3}
+  .photoref:not(.photos .photoref) .inpic img{max-height:72vh}
+}
 #lightbox{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;flex-direction:column;padding:12px}
 #lightbox img{max-width:100%;max-height:calc(100vh - 90px);object-fit:contain;display:block}
 #lightbox .lbx,#lightbox .lbp{position:absolute;color:#fff;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.4);border-radius:50%;width:40px;height:40px;font-size:26px;line-height:36px;cursor:pointer;padding:0}

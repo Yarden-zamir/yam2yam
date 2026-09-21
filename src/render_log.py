@@ -36,7 +36,8 @@ def logtxt(s) -> str:
             out.append("".join(f'<span class="photoref" data-photo="{esc(i.strip())}"></span>' for i in arg.split(",")))
         pos = m.end()
     out.append(txt(s[pos:]))
-    return "".join(out)
+    html = "".join(out)
+    return re.sub(r'((?:<span class="photoref"[^>]*></span>\s*){2,})', r'<span class="photos">\1</span>', html)
 
 
 def _lang(v, lang):

@@ -188,7 +188,7 @@ if (ROOT / "log").exists():
             + theme_style()
             + config_script()
             + "<script>window.LOG=" + json.dumps(log_cfg, ensure_ascii=False) + ";</script>\n"
-            + "</head>\n<body>\n"
+            + "</head>\n<body class=\"logpage\">\n"
             + link_places(log_body)
             + "\n"
             + bust((SRC / "scripts.html").read_text().replace("{{APP}}", '<script src="/log.js" defer></script>'))

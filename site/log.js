@@ -59,16 +59,21 @@
   }
 
   /* ---- galleries: two columns filled by height, so different shapes leave no holes ---- */
-  function grid(list, lang) {
-    var cols = [[], []], h = [0, 0];
-    list.forEach(function (p) { var k = h[0] <= h[1] ? 0 : 1; cols[k].push(tile(p, lang)); h[k] += p.w && p.h ? p.h / p.w : 0.75; });
-    return '<div class="col">' + cols[0].join('') + '</div><div class="col">' + cols[1].join('') + '</div>';
+  function colsFor(g) { return g.clientWidth > 700 ? 3 : 2; }
+  function grid(list, lang, n) {
+    var cols = [], h = [];
+    for (var i = 0; i < n; i++) { cols.push([]); h.push(0); }
+    list.forEach(function (p) { var k = 0; h.forEach(function (v, i) { if (v < h[k]) k = i; }); cols[k].push(tile(p, lang)); h[k] += p.w && p.h ? p.h / p.w : 0.75; });
+    return cols.map(function (c) { return '<div class="col">' + c.join('') + '</div>'; }).join('');
   }
+  var relayout = null;
+  window.addEventListener('resize', function () { clearTimeout(relayout); relayout = setTimeout(function () { var changed = false; document.querySelectorAll('.gallery').forEach(function (g) { if (g._cols && g._cols !== colsFor(g) && g._list && g._list.length) changed = true; }); if (changed) render(); }, 200); });
   function render() {
     document.querySelectorAll('.gallery').forEach(function (g) {
       var lang = langOf(g), key = g.getAttribute('data-day'), list = photos.filter(function (p) { var d = dayOf(p); return key === 'none' ? d == null : d === +key; });
-      g._list = list;
-      g.innerHTML = list.length ? grid(list, lang) : (key === 'none' ? '' : '<p class="muted">' + T[lang].none + '</p>');
+      g._list = list; g._cols = colsFor(g);
+      g.style.gridTemplateColumns = 'repeat(' + g._cols + ',1fr)';
+      g.innerHTML = list.length ? grid(list, lang, g._cols) : (key === 'none' ? '' : '<p class="muted">' + T[lang].none + '</p>');
       var sec = g.closest('.undated'); if (sec) sec.hidden = !list.length;
       var badge = g.closest('.stage') && g.closest('.stage').querySelector('[data-tab="pics"] .badge'); if (badge) { badge.textContent = list.length ? String(list.length) : ''; badge.hidden = !list.length; }
     });
