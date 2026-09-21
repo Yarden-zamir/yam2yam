@@ -80,7 +80,7 @@
     document.querySelectorAll('.photoref').forEach(function (s) {
       var p = byId[s.getAttribute('data-photo')]; if (!p) { s.innerHTML = ''; return; }
       var lang = langOf(s), c = caption(p, lang);
-      s.innerHTML = '<a class="inpic" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"><img src="' + BASE + esc(p.thumb) + '" alt="' + esc(c) + '" loading="lazy">' + (c ? '<span>' + esc(c) + '</span>' : '') + '</a>';
+      s.innerHTML = '<a class="inpic ' + (p.w && p.h && p.h > p.w ? 'port' : 'land') + '" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"><img src="' + BASE + esc(p.file) + '" alt="' + esc(c) + '" loading="lazy"' + (p.w && p.h ? ' width="' + p.w + '" height="' + p.h + '"' : '') + '>' + (c ? '<span>' + esc(c) + '</span>' : '') + '</a>';
     });
     Object.keys(layers).forEach(function (lang) { rebuildDots(lang); });
   }

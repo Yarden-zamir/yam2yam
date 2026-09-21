@@ -40,6 +40,25 @@ def logtxt(s) -> str:
     return re.sub(r'((?:<span class="photoref"[^>]*></span>\s*){2,})', r'<span class="photos">\1</span>', html)
 
 
+_PHOTO_BLOCK = re.compile(r'(<span class="photos">.*?</span>|<span class="photoref"[^>]*></span>)', re.S)
+
+
+def blocks(paragraph) -> str:
+    """A paragraph with pictures becomes text paragraphs and picture blocks side by side, so a
+    picture is never trapped inside the paragraph's measure and can span the whole card."""
+    out = []
+    for piece in _PHOTO_BLOCK.split(logtxt(paragraph)):
+        if not piece.strip():
+            continue
+        if piece.startswith('<span class="photos">'):
+            out.append('      <div class="photos">' + piece[len('<span class="photos">'):-len("</span>")] + "</div>")
+        elif piece.startswith('<span class="photoref"'):
+            out.append("      " + piece.replace("<span", "<div", 1).replace("</span>", "</div>", 1))
+        else:
+            out.append(f"      <p>{piece.strip()}</p>")
+    return "\n".join(out)
+
+
 def _lang(v, lang):
     return v.get(lang) if isinstance(v, dict) else v
 
@@ -76,7 +95,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
                   + ('<span class="badge" hidden></span>' if key == "pics" else "") + "</button>" for key, name in zip(("pics", "log", "map", "wx"), M["tabs"])) + "</div>",
               f'    <div class="pane" data-pane="pics" role="tabpanel"><div class="gallery" data-day="{n}"></div></div>',
               '    <div class="pane" data-pane="log" role="tabpanel" hidden>']
-        o += [f"      <p>{logtxt(p)}</p>" for p in text]
+        o += [blocks(p) for p in text]
         o += ["    </div>",
               f'    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="{n}"><button type="button" class="mapclaim">{M["show_map"]}</button></div></div>',
               f'    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wxh" data-day="{n}"></div></div>',
