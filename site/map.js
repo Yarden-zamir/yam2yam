@@ -491,6 +491,7 @@
     visibleApp: function () { return appFor(visibleLang()); },
     nearest: function (p) { return route ? nearestOnRoute(route, p) : null; },
     dayRange: function (n) { return route ? dayRange(n) : null; }, nightOf: nightOf, nights: function () { return NIGHTS; },
+    dayStats: function (n) { if (!route) return null; var r = dayRange(n), c = climb(route, r.from, r.to); return { km: (r.to - r.from) / 1000, ascent: c.ascent, descent: c.descent }; },
     showTab: showTab, openDay: openDay, hav: hav, app: function (lang) { return apps[lang] || null; },
     /* the route point nearest to a waypoint or track name, or at a distance along the route */
     routePointAt: function (d) { if (!route) return null; var a = 0, b = route.pts.length - 1; while (a < b) { var mid = (a + b) >> 1; if (route.pts[mid].d < d) a = mid + 1; else b = mid; } return route.pts[a]; },

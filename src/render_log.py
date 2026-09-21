@@ -63,7 +63,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
         pd = plan_days.get(n, {})
         label = _lang(d.get("label"), lang) or pd.get("label", "")
         title = _lang(d.get("title"), lang) or pd.get("title", "")
-        stats = _lang(d.get("stats"), lang) or pd.get("stats") or []
+        stats = _lang(d.get("stats"), lang) or []
         text = _lang(d.get("text"), lang) or []
         text = text if isinstance(text, list) else [text]
         o += [f'<div class="stage" id="{prefix}d{n}" data-day="{n}" data-date="{d["date"]}">',

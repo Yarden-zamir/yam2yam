@@ -246,8 +246,19 @@
       .then(function (list) { photos = []; byId = {}; (Array.isArray(list) ? list : []).forEach(add); });
   }
 
+  /* the route's climb for each walking day, after the chips written in the log */
+  function routeChips() {
+    var G = window.gr52Map;
+    document.querySelectorAll('.stage[data-day] .stats').forEach(function (st) {
+      var n = +st.closest('.stage').getAttribute('data-day'), s = G.dayStats(n);
+      if (!s || s.km < 0.2 || st.querySelector('.auto')) return;
+      var chip = document.createElement('span'); chip.className = 'auto'; chip.textContent = '+' + Math.round(s.ascent).toLocaleString('en') + ' / −' + Math.round(s.descent).toLocaleString('en') + ' m';
+      st.appendChild(chip);
+    });
+  }
+
   /* ---- boot ---- */
   loadIndex().then(render);
-  function onGpx() { weather(); render(); }
+  function onGpx() { weather(); render(); routeChips(); }
   if (window.gr52Data) onGpx(); else document.addEventListener('trek:gpx', onGpx);
 })();
