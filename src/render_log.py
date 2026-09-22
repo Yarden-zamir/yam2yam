@@ -15,10 +15,10 @@ from render import LANG_META, esc, txt
 LOG_META = {
     "en": {"tabs": ["Pictures", "Log", "Map", "Weather"], "days_h": "Days", "map_h": "Whole route", "upload_h": "Upload pictures",
            "upload_hint": "Pictures go straight into this log. The date and place come from the picture itself; captions and the day can be set afterwards in the log file.",
-           "pick": "Choose pictures", "undated": "Undated pictures", "eyebrow": "Trip log", "show_all": "Show the whole route here", "show_map": "Show the map here"},
+           "pick": "Choose pictures", "undated": "Undated pictures", "eyebrow": "Trip log", "show_all": "Show the whole route here", "show_map": "Show the map here", "outro_h": "Wrap-up"},
     "he": {"tabs": ["תמונות", "יומן", "מפה", "מזג אוויר"], "days_h": "הימים", "map_h": "כל המסלול", "upload_h": "העלאת תמונות",
            "upload_hint": "התמונות נכנסות ישירות ליומן הזה. התאריך והמקום נלקחים מהתמונה עצמה; כיתוב ויום אפשר לקבוע אחר כך בקובץ היומן.",
-           "pick": "בחרו תמונות", "undated": "תמונות בלי תאריך", "eyebrow": "יומן מסע", "show_all": "הצג את כל המסלול כאן", "show_map": "הצג את המפה כאן"},
+           "pick": "בחרו תמונות", "undated": "תמונות בלי תאריך", "eyebrow": "יומן מסע", "show_all": "הצג את כל המסלול כאן", "show_map": "הצג את המפה כאן", "outro_h": "לסיכום"},
 }
 _TOKEN = re.compile(r"\[\[(map|photo|photos):([^\]|]+)(?:\|([^\]]*))?\]\]")
 
@@ -101,14 +101,20 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
               f'    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wxh" data-day="{n}"></div></div>',
               "  </div>", "</div>"]
     o += [f'<div class="undated" hidden><h3>{M["undated"]}</h3><div class="gallery" data-day="none"></div></div>']
+    sec = 2
+    outro = _lang(log.get("outro"), lang) or []
+    if outro:
+        outro = outro if isinstance(outro, list) else [outro]
+        o += ["", h2(sec, "outro", M["outro_h"])] + [blocks(p) for p in outro]
+        sec += 1
     gpx = "/" + Path(trek["gpx"]).name
-    o += ["", h2(2, "map", M["map_h"]),
+    o += ["", h2(sec, "map", M["map_h"]),
           f'<div class="maphost" data-host="all"><button type="button" class="mapclaim">{M["show_all"]}</button>',
           f'<div class="mapbox" data-map="{lang}">', '  <div class="livemap" role="application" aria-label="Map"></div>',
           '  <div class="maptools"><button type="button" data-act="saveroute"></button><span class="mapstatus"></span></div>',
           '  <canvas class="profile" aria-label="Elevation profile"></canvas>', '  <p class="profstats"></p>', "</div></div>",
           f'<p><a href="{gpx}" download>{L["gpx"]}</a></p>']
-    o += ["", h2(3, "upload", M["upload_h"]), f'<p>{M["upload_hint"]}</p>',
+    o += ["", h2(sec + 1, "upload", M["upload_h"]), f'<p>{M["upload_hint"]}</p>',
           f'<div class="upload"><label class="upbtn">{M["pick"]}<input type="file" accept="image/*,.heic,.heif" multiple hidden></label><div class="uplist"></div></div>']
     o.append("</div>")
     return "\n".join(o)
