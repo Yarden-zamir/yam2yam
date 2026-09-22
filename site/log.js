@@ -8,10 +8,10 @@
   var LOG = window.LOG || {}, TREK = window.TREK || {}, USER = LOG.user || 'me', BASE = '/log/' + USER + '/photos/', ORIG = '/log/' + USER + '/orig/', UPLOAD = '/log/' + USER + '/upload';
   var T = {
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
-      source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', taken: 'taken', photo: 'picture', download: 'Download',
+      source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', taken: 'taken', photo: 'picture', photos: 'pictures', download: 'Download',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
-      source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', taken: 'צולם', photo: 'תמונה', download: 'הורדה',
+      source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', download: 'הורדה',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
   var photos = [], byId = {}, over = LOG.photos || {}, DAYS = LOG.days || {}, clusters = {}, layers = {};
@@ -224,23 +224,68 @@
     });
   }
 
-  /* ---- upload: straight to /log/<user>/upload, one file at a time, then the index is re-read ---- */
+  /* ---- upload: straight to /log/<user>/upload, one file at a time, then the index is re-read.
+     A zip (a Google Photos album download, for one) is unpacked here entry by entry; a picture's
+     sidecar JSON, when the zip has one, supplies the place and time the picture itself may lack. ---- */
+  var IMG = /\.(jpe?g|png|heic|heif|webp|avif|tiff?)$/i;
+  function localStamp(epoch) {
+    /* the picture's own time is local; a sidecar epoch becomes local time in the trek's zone */
+    try { var parts = new Intl.DateTimeFormat('en-GB', { timeZone: TREK.timezone && TREK.timezone !== 'auto' ? TREK.timezone : undefined, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(new Date(epoch * 1000)), o = {}; parts.forEach(function (p) { o[p.type] = p.value; }); return o.year + '-' + o.month + '-' + o.day + 'T' + (o.hour === '24' ? '00' : o.hour) + ':' + o.minute + ':' + o.second; } catch (e) { return null; }
+  }
+  function sidecarFields(meta) {
+    var f = {}, g = meta && (meta.geoDataExif && meta.geoDataExif.latitude ? meta.geoDataExif : meta.geoData);
+    if (g && (g.latitude || g.longitude)) { f.lat = g.latitude; f.lon = g.longitude; if (g.altitude) f.alt = g.altitude; }
+    var t = meta && meta.photoTakenTime && meta.photoTakenTime.timestamp; if (t) { var s = localStamp(+t); if (s) f.taken = s; }
+    return f;
+  }
+  function unzip(file, onEntry) {
+    if (!window.zip) return Promise.reject(new Error('zip support did not load'));
+    var reader = new zip.ZipReader(new zip.BlobReader(file));
+    return reader.getEntries().then(function (entries) {
+      var metas = {}, pics = [];
+      entries.forEach(function (e) { if (e.directory || /(^|\/)(__MACOSX|\.)/.test(e.filename)) return; var base = e.filename.split('/').pop(); if (/\.json$/i.test(base)) metas[base.toLowerCase()] = e; else if (IMG.test(base)) pics.push(e); });
+      function metaFor(base) {
+        var b = base.toLowerCase(), stem = b.replace(/\.[^.]+$/, ''), keys = Object.keys(metas);
+        var k = keys.filter(function (x) { return x === b + '.json' || x === b + '.supplemental-metadata.json' || x === stem + '.json' || (x.indexOf(b + '.') === 0 && /\.json$/.test(x)); })[0];
+        return k ? metas[k].getData(new zip.TextWriter()).then(function (t) { try { return JSON.parse(t); } catch (e) { return null; } }) : Promise.resolve(null);
+      }
+      var i = 0;
+      return (function step() {
+        if (i >= pics.length) return reader.close().then(function () { return pics.length; });
+        var e = pics[i++], base = e.filename.split('/').pop();
+        return Promise.all([e.getData(new zip.BlobWriter()), metaFor(base)]).then(function (r) { return onEntry(new File([r[0]], base), sidecarFields(r[1]), i, pics.length); }).then(step);
+      })();
+    });
+  }
+  function send(f, fields, row, lang) {
+    return new Promise(function (resolve) {
+      var fd = new FormData(); Object.keys(fields || {}).forEach(function (k) { if (fields[k] != null) fd.append(k, String(fields[k])); }); fd.append('photo', f, f.name);
+      var xhr = new XMLHttpRequest(); xhr.open('POST', UPLOAD);
+      xhr.upload.onprogress = function (e) { if (e.lengthComputable) row.textContent = f.name + ' · ' + T[lang].uploading + ' ' + Math.round(e.loaded / e.total * 100) + ' %'; };
+      xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) { try { JSON.parse(xhr.responseText).forEach(add); } catch (e) { } row.textContent = f.name + ' · ' + T[lang].done; render(); }
+        else row.textContent = f.name + ' · ' + T[lang].failed + ' (' + xhr.status + ' ' + xhr.responseText.slice(0, 80) + ')';
+        resolve();
+      };
+      xhr.onerror = function () { row.textContent = f.name + ' · ' + T[lang].failed; resolve(); };
+      xhr.send(fd);
+    });
+  }
   document.querySelectorAll('.upload input[type=file]').forEach(function (input) {
     input.addEventListener('change', function () {
       var files = Array.prototype.slice.call(input.files), list = input.closest('.upload').querySelector('.uplist'), lang = langOf(input), k = 0;
+      function rowFor(name) { var row = document.createElement('div'); row.textContent = name + ' · ' + T[lang].uploading + ' 0 %'; list.appendChild(row); return row; }
       (function next() {
         if (k >= files.length) { loadIndex().then(render); return; }
-        var f = files[k++], row = document.createElement('div'); row.textContent = f.name + ' · ' + T[lang].uploading + ' 0 %'; list.appendChild(row);
-        var fd = new FormData(); fd.append('photo', f, f.name);
-        var xhr = new XMLHttpRequest(); xhr.open('POST', UPLOAD);
-        xhr.upload.onprogress = function (e) { if (e.lengthComputable) row.textContent = f.name + ' · ' + T[lang].uploading + ' ' + Math.round(e.loaded / e.total * 100) + ' %'; };
-        xhr.onload = function () {
-          if (xhr.status >= 200 && xhr.status < 300) { try { JSON.parse(xhr.responseText).forEach(add); } catch (e) { } row.textContent = f.name + ' · ' + T[lang].done; render(); }
-          else row.textContent = f.name + ' · ' + T[lang].failed + ' (' + xhr.status + ' ' + xhr.responseText.slice(0, 80) + ')';
-          next();
-        };
-        xhr.onerror = function () { row.textContent = f.name + ' · ' + T[lang].failed; next(); };
-        xhr.send(fd);
+        var f = files[k++];
+        if (/\.zip$/i.test(f.name)) {
+          var zrow = rowFor(f.name);
+          unzip(f, function (pic, fields, n, total) { zrow.textContent = f.name + ' · ' + n + ' / ' + total; return send(pic, fields, rowFor(pic.name), lang); })
+            .then(function (n) { zrow.textContent = f.name + ' · ' + n + ' ' + T[lang].photos + ' · ' + T[lang].done; }, function (e) { zrow.textContent = f.name + ' · ' + T[lang].failed + ' (' + (e && e.message || e) + ')'; })
+            .then(next);
+          return;
+        }
+        send(f, null, rowFor(f.name), lang).then(next);
       })();
       input.value = '';
     });

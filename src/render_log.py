@@ -14,10 +14,10 @@ from render import LANG_META, esc, txt
 
 LOG_META = {
     "en": {"tabs": ["Pictures", "Log", "Map", "Weather"], "days_h": "Days", "map_h": "Whole route", "upload_h": "Upload pictures",
-           "upload_hint": "Pictures go straight into this log. The date and place come from the picture itself; captions and the day can be set afterwards in the log file.",
+           "upload_hint": "Pictures go straight into this log, one by one or as a zip (a Google Photos album download works as is). The date and place come from the picture itself; captions and the day can be set afterwards in the log file.",
            "pick": "Choose pictures", "undated": "Undated pictures", "eyebrow": "Trip log", "show_all": "Show the whole route here", "show_map": "Show the map here", "outro_h": "Wrap-up"},
     "he": {"tabs": ["תמונות", "יומן", "מפה", "מזג אוויר"], "days_h": "הימים", "map_h": "כל המסלול", "upload_h": "העלאת תמונות",
-           "upload_hint": "התמונות נכנסות ישירות ליומן הזה. התאריך והמקום נלקחים מהתמונה עצמה; כיתוב ויום אפשר לקבוע אחר כך בקובץ היומן.",
+           "upload_hint": "התמונות נכנסות ישירות ליומן הזה, אחת אחת או כקובץ zip (הורדה של אלבום מ-Google Photos עובדת כמו שהיא). התאריך והמקום נלקחים מהתמונה עצמה; כיתוב ויום אפשר לקבוע אחר כך בקובץ היומן.",
            "pick": "בחרו תמונות", "undated": "תמונות בלי תאריך", "eyebrow": "יומן מסע", "show_all": "הצג את כל המסלול כאן", "show_map": "הצג את המפה כאן", "outro_h": "לסיכום"},
 }
 _TOKEN = re.compile(r"\[\[(map|photo|photos):([^\]|]+)(?:\|([^\]]*))?\]\]")
@@ -115,7 +115,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
           '  <canvas class="profile" aria-label="Elevation profile"></canvas>', '  <p class="profstats"></p>', "</div></div>",
           f'<p><a href="{gpx}" download>{L["gpx"]}</a></p>']
     o += ["", h2(sec + 1, "upload", M["upload_h"]), f'<p>{M["upload_hint"]}</p>',
-          f'<div class="upload"><label class="upbtn">{M["pick"]}<input type="file" accept="image/*,.heic,.heif" multiple hidden></label><div class="uplist"></div></div>']
+          f'<div class="upload"><label class="upbtn">{M["pick"]}<input type="file" accept="image/*,.heic,.heif,.zip,application/zip" multiple hidden></label><div class="uplist"></div></div>']
     o.append("</div>")
     return "\n".join(o)
 

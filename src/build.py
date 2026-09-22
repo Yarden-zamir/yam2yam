@@ -191,7 +191,7 @@ if (ROOT / "log").exists():
             + "</head>\n<body class=\"logpage\">\n"
             + link_places(log_body)
             + "\n"
-            + bust((SRC / "scripts.html").read_text().replace("{{APP}}", '<script src="/log.js" defer></script>'))
+            + bust((SRC / "scripts.html").read_text().replace("{{APP}}", '<script src="/vendor/zip.min.js" defer></script>\n<script src="/log.js" defer></script>'))
             + "</body>\n</html>\n"
         )
         out = SITE / "log" / log_cfg["user"]

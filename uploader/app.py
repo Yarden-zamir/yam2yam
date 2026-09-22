@@ -60,7 +60,12 @@ def exif_info(img: Image.Image) -> dict:
     return out
 
 
-def save_photo(user: str, name: str, data: bytes) -> dict:
+def load_index(user: str) -> list:
+    index_path = DATA / user / "photos" / "index.json"
+    return json.loads(index_path.read_text()) if index_path.exists() else []
+
+
+def save_photo(user: str, name: str, data: bytes, fields: dict | None = None) -> dict:
     udir = DATA / user
     (udir / "orig").mkdir(parents=True, exist_ok=True)
     (udir / "photos").mkdir(parents=True, exist_ok=True)
@@ -70,9 +75,26 @@ def save_photo(user: str, name: str, data: bytes) -> dict:
         ext = ".jpg"
     img = Image.open(io.BytesIO(data))
     info = exif_info(img)
+    for k in ("taken", "lat", "lon", "alt"):  # a sidecar or the page may know what the picture itself lost
+        v = (fields or {}).get(k)
+        if info.get(k) is None and v not in (None, ""):
+            try:
+                info[k] = v if k == "taken" else round(float(v), 6 if k != "alt" else 0)
+            except ValueError:
+                pass
+    if info.get("taken") and not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$", str(info["taken"])):
+        info["taken"] = None
     img = ImageOps.exif_transpose(img)
     if img.mode not in ("RGB", "L"):
         img = img.convert("RGB")
+    # the same shot uploaded again (same second, same shape) keeps its id, so the log's references hold
+    if info.get("taken"):
+        for old in load_index(user):
+            if old.get("taken") == info["taken"] and old.get("w") == min(img.width, 2000 * img.width // max(img.width, img.height)) and old.get("h") == min(img.height, 2000 * img.height // max(img.width, img.height)):
+                pid = old["id"]
+                for stale in (udir / "orig").glob(pid + ".*"):
+                    stale.unlink()
+                break
     (udir / "orig" / (pid + ext)).write_bytes(data)
     web = img.copy()
     web.thumbnail((2000, 2000), Image.LANCZOS)
@@ -160,8 +182,12 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(507, {"error": "this log's picture space is full"})
         body = self.rfile.read(length)
         msg = email.parser.BytesParser(policy=email.policy.HTTP).parsebytes(b"Content-Type: " + ctype.encode() + b"\r\nMIME-Version: 1.0\r\n\r\n" + body)
-        out, errors = [], []
-        for part in msg.iter_parts() if msg.is_multipart() else []:
+        out, errors, fields = [], [], {}
+        parts = list(msg.iter_parts()) if msg.is_multipart() else []
+        for part in parts:  # plain fields first: they apply to the pictures in the same request
+            if not part.get_filename() and part.get_param("name", header="content-disposition"):
+                fields[str(part.get_param("name", header="content-disposition"))] = (part.get_payload(decode=True) or b"").decode("utf-8", "replace").strip()
+        for part in parts:
             name = part.get_filename()
             data = part.get_payload(decode=True)
             if not name or not data:
@@ -170,7 +196,7 @@ class Handler(BaseHTTPRequestHandler):
                 errors.append({"name": name, "error": "too large"})
                 continue
             try:
-                out.append(save_photo(user, name, data))
+                out.append(save_photo(user, name, data, fields))
             except Exception as e:  # a bad file must not stop the others
                 errors.append({"name": name, "error": str(e)[:120]})
         if not out and errors:
