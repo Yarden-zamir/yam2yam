@@ -8,10 +8,10 @@
   var LOG = window.LOG || {}, TREK = window.TREK || {}, USER = LOG.user || 'me', BASE = '/log/' + USER + '/photos/', ORIG = '/log/' + USER + '/orig/', UPLOAD = '/log/' + USER + '/upload';
   var T = {
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
-      source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', download: 'Download',
+      source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', layer: 'Pictures', zoomIn: 'zoom in for the pictures', download: 'Download',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
-      source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', download: 'הורדה',
+      source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', layer: 'תמונות', zoomIn: 'התקרבו כדי לראות את התמונות', download: 'הורדה',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
   var photos = [], byId = {}, over = LOG.photos || {}, DAYS = LOG.days || {}, clusters = {}, layers = {};
@@ -85,37 +85,60 @@
     Object.keys(layers).forEach(function (lang) { rebuildDots(lang); });
   }
 
-  /* ---- dots: one per group of pictures within 150 m, on the map and on the profile ---- */
-  function hav(a, b) { return window.gr52Map.hav(a, b); }
-  function clusterize(list) {
-    var out = [];
-    list.forEach(function (p) {
-      var c = null; out.forEach(function (x) { if (!c && hav(x, p.pos) < 150) c = x; });
-      if (c) { c.items.push(p); c.lat = c.items.reduce(function (s, q) { return s + q.pos.lat; }, 0) / c.items.length; c.lon = c.items.reduce(function (s, q) { return s + q.pos.lon; }, 0) / c.items.length; c.d = c.items.reduce(function (s, q) { return s + q.pos.d; }, 0) / c.items.length; c.est = c.est && p.pos.est; }
-      else out.push({ lat: p.pos.lat, lon: p.pos.lon, d: p.pos.d, ele: p.pos.ele, est: p.pos.est, items: [p] });
+  /* ---- dots on the map: one preview per group of pictures that would overlap at this zoom (up to four
+     previews split in the circle, then a count), rebuilt on every zoom; the whole-route map shows them
+     only once zoomed in. They sit in a "Pictures" overlay of the layer control. On the profile, one mark
+     per group of pictures close together along the route. ---- */
+  var ALL_MIN_ZOOM = 12, GROUP_PX = 48;
+  function small(p) { return BASE + esc(p.small || p.thumb); }
+  function clusterize(list, map) {
+    var z = map.getZoom(), out = [];
+    list.forEach(function (x) {
+      var pt = map.project([x.pos.lat, x.pos.lon], z), c = null;
+      out.forEach(function (g) { if (!c && g.pt.distanceTo(pt) < GROUP_PX) c = g; });
+      if (c) { c.items.push(x.p); c.est = c.est && x.pos.est; }
+      else out.push({ pt: pt, lat: x.pos.lat, lon: x.pos.lon, est: x.pos.est, items: [x.p] });
     });
     return out;
   }
+  function dotIcon(items, est) {
+    var n = Math.min(items.length, 4);
+    var html = '<span class="pdi n' + n + '">' + items.slice(0, n).map(function (p) { return '<img src="' + small(p) + '" alt="">'; }).join('') + '</span>' + (items.length > 1 ? '<b>' + items.length + '</b>' : '');
+    return L.divIcon({ className: 'photodot' + (est ? ' est' : ''), html: html, iconSize: [46, 46], iconAnchor: [23, 23], popupAnchor: [0, -23] });
+  }
   function rebuildDots(lang) {
     var L0 = layers[lang]; if (!L0 || !window.gr52Data) return;
+    var map = L0.map, G = window.gr52Map;
     L0.group.clearLayers();
     var list = [];
     photos.forEach(function (p) { if (L0.scope != null && dayOf(p) !== L0.scope) return; var pos = place(p); if (pos) list.push({ p: p, pos: pos }); });
-    var marks = [];
-    clusterize(list).forEach(function (c, k) {
-      var id = lang + '-' + (L0.scope == null ? 'all' : L0.scope) + '-' + k, items = c.items.map(function (x) { return x.p; }); clusters[id] = items;
-      var m = L.marker([c.lat, c.lon], { icon: L.divIcon({ className: 'photodot' + (c.est ? ' est' : ''), html: '<span>' + (items.length > 1 ? items.length : '') + '</span>', iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -14] }), zIndexOffset: 700, keyboard: false });
-      m.bindPopup('<div class="popthumbs">' + items.map(function (p) { return '<a href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '" data-cluster="' + id + '"><img src="' + BASE + esc(p.thumb) + '" alt=""></a>'; }).join('') + '</div>', { maxWidth: 260 });
+    /* while the overlay is being switched off the map still lists it as the group's home, so a marker added now would be orphaned */
+    var on = map.hasLayer(L0.group), hint = L0.hint; if (hint) hint.hidden = !(on && L0.scope == null && list.length && map.getZoom() < ALL_MIN_ZOOM);
+    if (on && !(L0.scope == null && map.getZoom() < ALL_MIN_ZOOM)) clusterize(list, map).forEach(function (c, k) {
+      var id = lang + '-' + (L0.scope == null ? 'all' : L0.scope) + '-' + k, items = c.items; clusters[id] = items;
+      var m = L.marker([c.lat, c.lon], { icon: dotIcon(items, c.est), zIndexOffset: 700, keyboard: false });
+      m.bindPopup('<div class="popthumbs">' + items.map(function (p) { return '<a href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '" data-cluster="' + id + '"><img src="' + small(p) + '" alt="" loading="lazy"></a>'; }).join('') + '</div>', { maxWidth: 260 });
       L0.group.addLayer(m);
-      var pt = window.gr52Map.nearest({ lat: c.lat, lon: c.lon }).pt;
-      marks.push({ d: pt.d, ele: pt.ele, est: c.est, label: items.length > 1 ? String(items.length) : '', onClick: function () { open(items, 0); } });
     });
-    var app = window.gr52Map.app(lang); if (app) app.setMarks(marks);
+    /* the profile: groups by distance along the route, about a sixtieth of the stretch apart */
+    var span = L0.range ? L0.range.to - L0.range.from : 0, tol = Math.max(60, span / 60), groups = [];
+    list.slice().sort(function (a, b) { return a.pos.d - b.pos.d; }).forEach(function (x) {
+      var g = groups[groups.length - 1];
+      if (g && x.pos.d - g.d0 < tol) { g.items.push(x.p); g.est = g.est && x.pos.est; } else groups.push({ d0: x.pos.d, items: [x.p], est: x.pos.est });
+    });
+    var app = G.app(lang);
+    if (app) app.setMarks(groups.map(function (g) { var pt = G.routePointAt(g.d0) || {}; return { d: g.d0, ele: pt.ele, est: g.est, label: g.items.length > 1 ? String(g.items.length) : '', onClick: function () { open(g.items, 0); } }; }));
   }
   document.addEventListener('trek:scope', function (e) {
     var d = e.detail;
-    if (!layers[d.lang]) layers[d.lang] = { group: L.layerGroup().addTo(d.map), scope: d.scope };
-    layers[d.lang].scope = d.scope;
+    if (!layers[d.lang]) {
+      var group = L.layerGroup(), app = window.gr52Map.app(d.lang);
+      if (app && app.addOverlay) app.addOverlay(T[d.lang].layer, group, true); else group.addTo(d.map);
+      var hint = document.createElement('div'); hint.className = 'maphint'; hint.textContent = T[d.lang].zoomIn; hint.hidden = true; d.map.getContainer().appendChild(hint);
+      layers[d.lang] = { group: group, map: d.map, hint: hint };
+      d.map.on('zoomend overlayadd overlayremove', function () { rebuildDots(d.lang); });
+    }
+    layers[d.lang].scope = d.scope; layers[d.lang].range = d.range;
     rebuildDots(d.lang);
   });
 
@@ -181,7 +204,7 @@
     if (r && r.to - r.from > 200) { var hi = null; D.route.pts.forEach(function (p) { if (p.d >= r.from && p.d <= r.to && p.ele != null && (!hi || p.ele > hi.ele)) hi = p; }); if (hi) pts.push({ lat: hi.lat, lon: hi.lon, ele: hi.ele }); }
     return pts;
   }
-  function dropWx(box) { var st = box.closest('.stage'), tab = st.querySelector('[data-tab="wx"]'); if (tab && tab.classList.contains('on')) window.gr52Map.showTab(st, 'pics'); if (tab) tab.remove(); box.closest('.pane').remove(); }
+  function dropWx(box) { var st = box.closest('.stage'), tab = st.querySelector('[data-tab="wx"]'); if (tab && tab.classList.contains('on')) window.gr52Map.showTab(st, 'log'); if (tab) tab.remove(); box.closest('.pane').remove(); }
   function drawHours(canvas, loc, date) {
     var hs = []; loc.hourly.time.forEach(function (t, i) { if (t.indexOf(date) === 0) hs.push({ h: +t.slice(11, 13), temp: loc.hourly.temperature_2m[i], rain: loc.hourly.precipitation[i] || 0 }); });
     var dpr = window.devicePixelRatio || 1, W = canvas.clientWidth, H = canvas.clientHeight; if (!W || !hs.length) return;

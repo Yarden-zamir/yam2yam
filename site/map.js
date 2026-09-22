@@ -185,7 +185,7 @@
     ['nights', 'water', 'passes', 'side', 'ferrata', 'escape', 'other'].forEach(function (c) {
       if (!cats[c]) return; overlays[T[c]] = cats[c]; if (DEFAULT_ON[c]) cats[c].addTo(map);
     });
-    L.control.layers(null, overlays, { collapsed: true }).addTo(map);
+    var layersCtl = L.control.layers(null, overlays, { collapsed: true }).addTo(map);
     map.fitBounds(routeGroup.getBounds(), { padding: [12, 12] });
 
     var nights = NIGHTS;
@@ -405,7 +405,8 @@
     }
     apps[lang] = { map: map, focus: focus, pick: pick, box: container, status: status, claim: claim, refreshMe: refreshMe, panToMe: panToMe,
       redraw: function () { map.invalidateSize(); drawProfile(null); }, hostEl: function () { return host; }, scope: function () { return scope; },
-      setMarks: function (list) { marks = list || []; drawProfile(null); } };
+      setMarks: function (list) { marks = list || []; drawProfile(null); },
+      addOverlay: function (name, layer, on) { layersCtl.addOverlay(layer, name); if (on) layer.addTo(map); } };
     refreshMe();
     return apps[lang];
   }

@@ -1,7 +1,7 @@
 """Render a trip log page (site/log/<user>/index.html) from log/<user>/log.yaml. Imported by build.py.
 
-The log is the trek as it happened: an intro, then one card per day with Pictures, Log, Map and
-Weather tabs. Pictures come from the user's upload folder at runtime (log.js); the text may carry
+The log is the trek as it happened: an intro, then one card per day with Log, Pictures, Map and
+Weather tabs (the log opens first). Pictures come from the user's upload folder at runtime (log.js); the text may carry
 [[map:QUERY|label]] links to the map and [[photo:ID]] pictures placed inline.
 """
 import json
@@ -14,10 +14,10 @@ import render
 from render import LANG_META, esc, txt
 
 LOG_META = {
-    "en": {"tabs": ["Pictures", "Log", "Map", "Weather"], "days_h": "Days", "map_h": "Whole route", "upload_h": "Upload pictures",
+    "en": {"tabs": ["Log", "Pictures", "Map", "Weather"], "days_h": "Days", "map_h": "Whole route", "upload_h": "Upload pictures",
            "upload_hint": "Pictures go straight into this log, one by one or as a zip (a Google Photos album download works as is). The date and place come from the picture itself; captions and the day can be set afterwards in the log file.",
            "pick": "Choose pictures", "undated": "Undated pictures", "eyebrow": "Trip log", "show_all": "Show the whole route here", "show_map": "Show the map here", "outro_h": "Wrap-up", "day": "Day"},
-    "he": {"tabs": ["תמונות", "יומן", "מפה", "מזג אוויר"], "days_h": "הימים", "map_h": "כל המסלול", "upload_h": "העלאת תמונות",
+    "he": {"tabs": ["יומן", "תמונות", "מפה", "מזג אוויר"], "days_h": "הימים", "map_h": "כל המסלול", "upload_h": "העלאת תמונות",
            "upload_hint": "התמונות נכנסות ישירות ליומן הזה, אחת אחת או כקובץ zip (הורדה של אלבום מ-Google Photos עובדת כמו שהיא). התאריך והמקום נלקחים מהתמונה עצמה; כיתוב ויום אפשר לקבוע אחר כך בקובץ היומן.",
            "pick": "בחרו תמונות", "undated": "תמונות בלי תאריך", "eyebrow": "יומן מסע", "show_all": "הצג את כל המסלול כאן", "show_map": "הצג את המפה כאן", "outro_h": "לסיכום", "day": "יום"},
 }
@@ -93,12 +93,12 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
               f'    <h3><a href="?map=day:{n}" class="daylink" data-focus="day:{n}">{txt(title)}</a></h3>',
               '    <div class="stats">' + "".join(f"<span>{txt(s)}</span>" for s in stats) + "</div>",
               '    <div class="tabs" role="tablist">' + "".join(
-                  f'<button type="button" role="tab" data-tab="{key}" class="{"on" if key == "pics" else ""}" aria-selected="{"true" if key == "pics" else "false"}">{txt(name)}'
-                  + ('<span class="badge" hidden></span>' if key == "pics" else "") + "</button>" for key, name in zip(("pics", "log", "map", "wx"), M["tabs"])) + "</div>",
-              f'    <div class="pane" data-pane="pics" role="tabpanel"><div class="gallery" data-day="{n}"></div></div>',
-              '    <div class="pane" data-pane="log" role="tabpanel" hidden>']
+                  f'<button type="button" role="tab" data-tab="{key}" class="{"on" if key == "log" else ""}" aria-selected="{"true" if key == "log" else "false"}">{txt(name)}'
+                  + ('<span class="badge" hidden></span>' if key == "pics" else "") + "</button>" for key, name in zip(("log", "pics", "map", "wx"), M["tabs"])) + "</div>",
+              '    <div class="pane" data-pane="log" role="tabpanel">']
         o += [blocks(p) for p in text]
         o += ["    </div>",
+              f'    <div class="pane" data-pane="pics" role="tabpanel" hidden><div class="gallery" data-day="{n}"></div></div>',
               f'    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="{n}"><button type="button" class="mapclaim">{M["show_map"]}</button></div></div>',
               f'    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wxh" data-day="{n}"></div></div>',
               "  </div>", "</div>"]

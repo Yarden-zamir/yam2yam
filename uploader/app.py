@@ -1,7 +1,7 @@
 """Picture upload for the trip logs. POST /log/<user>/upload with multipart field(s) "photo".
 
-Each picture is kept as uploaded (orig/), resized for the page (photos/<id>.jpg, 2000 px) and for
-the grid (photos/<id>.t.jpg, 800 px), with the time and place read from its EXIF. photos/index.json
+Each picture is kept as uploaded (orig/), resized for the page (photos/<id>.jpg, 2000 px), for the
+grid (photos/<id>.t.jpg, 800 px) and for the map dots (photos/<id>.s.jpg, a 200 px square), with the time and place read from its EXIF. photos/index.json
 lists them all and is what the page reads. Everything lives under DATA/<user>/, a volume shared
 with the Caddy container that serves /log/<user>/photos/. No access control yet: the log pages are
 unlisted, and the limits below bound what an upload can do.
@@ -102,9 +102,18 @@ def save_photo(user: str, name: str, data: bytes, fields: dict | None = None) ->
     th = img.copy()
     th.thumbnail((800, 800), Image.LANCZOS)
     th.save(udir / "photos" / (pid + ".t.jpg"), "JPEG", quality=82, optimize=True)
-    rec = {"id": pid, "file": pid + ".jpg", "thumb": pid + ".t.jpg", "orig": pid + ext, "w": web.width, "h": web.height, "name": Path(name).name[:80], **info}
+    small_preview(img, udir / "photos" / (pid + ".s.jpg"))
+    rec = {"id": pid, "file": pid + ".jpg", "thumb": pid + ".t.jpg", "small": pid + ".s.jpg", "orig": pid + ext, "w": web.width, "h": web.height, "name": Path(name).name[:80], **info}
     put_record(user, rec)
     return rec
+
+
+def small_preview(img: Image.Image, path: Path) -> None:
+    """The map's preview: the middle square of the picture, 200 px, a few KB."""
+    side = min(img.width, img.height)
+    sq = img.crop(((img.width - side) // 2, (img.height - side) // 2, (img.width - side) // 2 + side, (img.height - side) // 2 + side))
+    sq.thumbnail((200, 200), Image.LANCZOS)
+    sq.save(path, "JPEG", quality=78, optimize=True)
 
 
 def put_record(user: str, rec: dict) -> None:
@@ -120,12 +129,21 @@ def put_record(user: str, rec: dict) -> None:
 
 
 def reindex(user: str) -> list:
-    """Re-read time and place from every original (after a fix to the EXIF reading) and name the originals."""
+    """Re-read time and place from every original (after a fix to the EXIF reading), name the originals,
+    and make the small map preview where it is missing."""
     udir = DATA / user
     index_path = udir / "photos" / "index.json"
     index = json.loads(index_path.read_text()) if index_path.exists() else []
     out = []
     for rec in index:
+        small = udir / "photos" / (rec["id"] + ".s.jpg")
+        if not small.exists() and (udir / "photos" / rec["file"]).exists():
+            try:
+                small_preview(Image.open(udir / "photos" / rec["file"]), small)
+            except Exception as e:  # keep the record, note the failure
+                rec["error"] = str(e)[:80]
+        if small.exists():
+            rec["small"] = small.name
         origs = list((udir / "orig").glob(rec["id"] + ".*"))
         if origs:
             rec["orig"] = origs[0].name
