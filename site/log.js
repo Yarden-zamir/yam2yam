@@ -332,7 +332,7 @@
     document.querySelectorAll('.stage[data-day] .stats').forEach(function (st) {
       var n = +st.closest('.stage').getAttribute('data-day'), s = G.dayStats(n);
       if (!s || s.km < 0.2 || st.querySelector('.auto')) return;
-      var chip = document.createElement('span'); chip.className = 'auto'; chip.textContent = '+' + Math.round(s.ascent).toLocaleString('en') + ' / −' + Math.round(s.descent).toLocaleString('en') + ' m';
+      var chip = document.createElement('span'); chip.className = 'auto'; chip.setAttribute('dir', 'ltr'); chip.textContent = '+' + Math.round(s.ascent).toLocaleString('en') + ' / −' + Math.round(s.descent).toLocaleString('en') + ' m';
       st.appendChild(chip);
     });
   }

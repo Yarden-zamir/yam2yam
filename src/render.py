@@ -6,6 +6,7 @@ captions, the language toggle). Inline <b>, <i>, <a> and <br> in text fields are
 """
 import json
 import re
+import unicodedata
 import sys
 from pathlib import Path
 
@@ -32,9 +33,32 @@ def esc(s) -> str:
     return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") if s is not None else ""
 
 
+RTL = False  # set by render_lang while a right-to-left language is rendered
+
+
+def arrows(s: str) -> str:
+    """In a right-to-left text "A → B" must point left, unless both neighbours are Latin words, which
+    the browser lays out left to right as one run (bidi rule N1: numbers count as right-to-left)."""
+    def strong(chars):
+        for ch in chars:
+            b = unicodedata.bidirectional(ch)
+            if b == "L":
+                return "L"
+            if b in ("R", "AL", "EN", "AN"):
+                return "R"
+        return None
+    out = list(s)
+    for i, ch in enumerate(out):
+        if ch == "→" and not (strong(reversed(s[:i])) == "L" and strong(s[i + 1:]) == "L"):
+            out[i] = "←"
+    return "".join(out)
+
+
 def txt(s) -> str:
     """Text fields: keep inline <b>, <i>, <a>, <br>, <span>; escape everything else."""
     s = "" if s is None else str(s)
+    if RTL and "→" in s:
+        s = arrows(s)
     keep = re.compile(r"</?(b|i|a|br|span|em|strong)(\s[^>]*)?>")
     out, pos = [], 0
     for m in keep.finditer(s):
@@ -58,6 +82,8 @@ def ul(items) -> str:
 
 
 def render_lang(lang: str, c: dict, trek: dict, prefix: str) -> str:
+    global RTL
+    RTL = LANG_META[lang]["dir"] == "rtl"
     L = LANG_META[lang]
     h2 = lambda i, id_, title: f'<h2 id="{prefix}{id_}"><span class="k">§{i}</span>{txt(title)}</h2>'
     gpx = "/" + Path(trek["gpx"]).name

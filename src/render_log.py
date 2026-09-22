@@ -10,6 +10,7 @@ from pathlib import Path
 
 import yaml
 
+import render
 from render import LANG_META, esc, txt
 
 LOG_META = {
@@ -65,6 +66,7 @@ def _lang(v, lang):
 
 def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str) -> str:
     L, M = LANG_META[lang], LOG_META[lang]
+    render.RTL = L["dir"] == "rtl"
     h2 = lambda i, id_, title: f'<h2 id="{prefix}{id_}"><span class="k">§{i}</span>{txt(title)}</h2>'
     plan_days = {int(d["n"]): d for d in (plan or {}).get("days", [])}
     intro = _lang(log.get("intro"), lang) or []

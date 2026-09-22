@@ -314,7 +314,7 @@
     function show(s) {
       if (!samples.length || !Hh) { canvas.hidden = true; return; }
       var sim = simulate(day, card, N, samples, sIdx, ctx.locs, date, s);
-      out.textContent = fmtH(s) + ' → ' + L.arrive + ' ' + fmtH(sim.arrive) + (sim.arrive > sim.sunset ? ' (' + L.afterSunset + ')' : '') + ' · ' + sim.risk + ' ' + L.exposed;
+      out.textContent = fmtH(s) + (lang === 'he' ? ' ← ' : ' → ') + L.arrive + ' ' + fmtH(sim.arrive) + (sim.arrive > sim.sunset ? ' (' + L.afterSunset + ')' : '') + ' · ' + sim.risk + ' ' + L.exposed;
       drawDay(canvas, L, day, sim, ens, date, N);
       evBox.innerHTML = sim.events.length ? '<div class="wxk">' + L.events + '</div>' + sim.events.slice(0, 6).map(function (e) { e.date = date; return '<div class="wxev ' + e.kind + (e.exposed ? ' exp' : '') + '">' + eventText(L, e) + '</div>'; }).join('') : '<div class="wxev ok">' + L.noevents + '</div>';
       read.textContent = (ens ? ens.members + ' ' + L.members + ' · ' : '') + ((window.TREK && window.TREK.weatherModelLabel) || 'Open-Meteo');
