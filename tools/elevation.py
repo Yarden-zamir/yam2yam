@@ -30,7 +30,7 @@ tree = ET.parse(path)
 root = tree.getroot()
 todo = []
 for trk in root.findall("g:trk", ns):
-    if trk.findtext("g:name", namespaces=ns).startswith("BOUNDARY"):
+    if "BOUNDARY" in (trk.findtext("g:name", namespaces=ns) or ""):
         continue
     todo += [p for p in trk.iter(f"{{{NS}}}trkpt") if p.find("g:ele", ns) is None]
 wp = [w for w in root.findall("g:wpt", ns) if w.find("g:ele", ns) is None]

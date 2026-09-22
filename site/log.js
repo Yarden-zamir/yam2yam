@@ -8,10 +8,10 @@
   var LOG = window.LOG || {}, TREK = window.TREK || {}, USER = LOG.user || 'me', BASE = '/log/' + USER + '/photos/', ORIG = '/log/' + USER + '/orig/', UPLOAD = '/log/' + USER + '/upload';
   var T = {
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
-      source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', taken: 'taken', photo: 'picture', photos: 'pictures', download: 'Download',
+      source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', download: 'Download',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
-      source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', download: 'הורדה',
+      source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', download: 'הורדה',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
   var photos = [], byId = {}, over = LOG.photos || {}, DAYS = LOG.days || {}, clusters = {}, layers = {};
@@ -257,40 +257,70 @@
       })();
     });
   }
-  function send(f, fields, row, lang) {
+  function send(f, fields, row, lang, tries) {
+    /* one picture; a failed transfer is tried again twice before the row says so, with the reason */
+    tries = tries == null ? 2 : tries;
     return new Promise(function (resolve) {
       var fd = new FormData(); Object.keys(fields || {}).forEach(function (k) { if (fields[k] != null) fd.append(k, String(fields[k])); }); fd.append('photo', f, f.name);
       var xhr = new XMLHttpRequest(); xhr.open('POST', UPLOAD);
       xhr.upload.onprogress = function (e) { if (e.lengthComputable) row.textContent = f.name + ' · ' + T[lang].uploading + ' ' + Math.round(e.loaded / e.total * 100) + ' %'; };
+      function fail(why) {
+        if (tries > 0) { row.textContent = f.name + ' · ' + T[lang].retry; setTimeout(function () { send(f, fields, row, lang, tries - 1).then(resolve); }, 1500); return; }
+        row.textContent = f.name + ' · ' + T[lang].failed + (why ? ' (' + why + ')' : ''); row.className = 'bad'; resolve(false);
+      }
       xhr.onload = function () {
-        if (xhr.status >= 200 && xhr.status < 300) { try { JSON.parse(xhr.responseText).forEach(add); } catch (e) { } row.textContent = f.name + ' · ' + T[lang].done; render(); }
-        else row.textContent = f.name + ' · ' + T[lang].failed + ' (' + xhr.status + ' ' + xhr.responseText.slice(0, 80) + ')';
-        resolve();
+        if (xhr.status >= 200 && xhr.status < 300) { try { JSON.parse(xhr.responseText).forEach(add); } catch (e) { } row.textContent = f.name + ' · ' + T[lang].done; render(); resolve(true); }
+        else if (xhr.status === 422 || xhr.status === 400) fail(xhr.status + ' ' + xhr.responseText.slice(0, 80));
+        else fail(xhr.status + ' ' + xhr.responseText.slice(0, 80));
       };
-      xhr.onerror = function () { row.textContent = f.name + ' · ' + T[lang].failed; resolve(); };
+      xhr.onerror = function () { fail(''); };
       xhr.send(fd);
     });
   }
+  /* what the log already holds: the file name, or the second it was taken (the picture itself or its sidecar) */
+  function known(name, fields) {
+    var n = (name || '').toLowerCase(), t = fields && fields.taken;
+    return photos.some(function (p) { return (p.name || '').toLowerCase() === n || (t && p.taken === t); });
+  }
+  function pool(items, n, work) {
+    /* run work(item) over the list, n at a time, in order of start */
+    var i = 0, results = [];
+    function next() { if (i >= items.length) return Promise.resolve(); var k = i++; return Promise.resolve(work(items[k], k)).then(function (r) { results[k] = r; return next(); }); }
+    var lanes = []; for (var j = 0; j < Math.min(n, items.length); j++) lanes.push(next());
+    return Promise.all(lanes).then(function () { return results; });
+  }
+  var PARALLEL = 3;
   document.querySelectorAll('.upload input[type=file]').forEach(function (input) {
     input.addEventListener('change', function () {
-      var files = Array.prototype.slice.call(input.files), list = input.closest('.upload').querySelector('.uplist'), lang = langOf(input), k = 0;
+      var files = Array.prototype.slice.call(input.files), list = input.closest('.upload').querySelector('.uplist'), lang = langOf(input);
       function rowFor(name) { var row = document.createElement('div'); row.textContent = name + ' · ' + T[lang].uploading + ' 0 %'; list.appendChild(row); return row; }
-      (function next() {
-        if (k >= files.length) { loadIndex().then(render); return; }
-        var f = files[k++];
-        if (/\.zip$/i.test(f.name)) {
-          var zrow = rowFor(f.name);
-          unzip(f, function (pic, fields, n, total) { zrow.textContent = f.name + ' · ' + n + ' / ' + total; return send(pic, fields, rowFor(pic.name), lang); })
-            .then(function (n) { zrow.textContent = f.name + ' · ' + n + ' ' + T[lang].photos + ' · ' + T[lang].done; }, function (e) { zrow.textContent = f.name + ' · ' + T[lang].failed + ' (' + (e && e.message || e) + ')'; })
-            .then(next);
-          return;
-        }
-        send(f, null, rowFor(f.name), lang).then(next);
-      })();
+      function summary(row, name, sent, skipped, failed) {
+        row.textContent = name + ' · ' + sent + ' ' + T[lang].photos + ' · ' + T[lang].done + (skipped ? ' · ' + skipped + ' ' + T[lang].skipped : '') + (failed ? ' · ' + failed + ' ' + T[lang].failed : '');
+      }
+      var zips = files.filter(function (f) { return /\.zip$/i.test(f.name); }), pics = files.filter(function (f) { return !/\.zip$/i.test(f.name); });
+      var onlyNew = pics.filter(function (f) { return !known(f.name, null); }), skippedLoose = pics.length - onlyNew.length;
+      var loose = onlyNew.length ? pool(onlyNew, PARALLEL, function (f) { return send(f, null, rowFor(f.name), lang); }) : Promise.resolve([]);
+      loose.then(function (res) {
+        if (pics.length) { var r = rowFor(''); summary(r, T[lang].photos, res.filter(Boolean).length, skippedLoose, res.filter(function (x) { return x === false; }).length); }
+        return zips.reduce(function (chain, z) {
+          return chain.then(function () {
+            var zrow = rowFor(z.name), sent = 0, skipped = 0, failed = 0, queue = [];
+            /* the zip is read entry by entry; what the log already has is skipped, the rest goes up three at a time */
+            return unzip(z, function (pic, fields, n, total) {
+              zrow.textContent = z.name + ' · ' + n + ' / ' + total + (skipped ? ' · ' + skipped + ' ' + T[lang].skipped : '');
+              if (known(pic.name, fields)) { skipped++; return; }
+              var p = pool([pic], 1, function (f) { return send(f, fields, rowFor(f.name), lang); }).then(function (r) { if (r[0]) sent++; else failed++; });
+              queue.push(p); p.then(function () { queue.splice(queue.indexOf(p), 1); });
+              return queue.length >= PARALLEL ? Promise.race(queue) : null;
+            }).then(function () { return Promise.all(queue); })
+              .then(function () { summary(zrow, z.name, sent, skipped, failed); }, function (e) { zrow.textContent = z.name + ' · ' + T[lang].failed + ' (' + (e && e.message || e) + ')'; });
+          });
+        }, Promise.resolve());
+      }).then(function () { loadIndex().then(render); });
       input.value = '';
     });
   });
-  function add(p) { if (!p || !p.id) return; if (byId[p.id]) photos.splice(photos.indexOf(byId[p.id]), 1); byId[p.id] = p; photos.push(p); photos.sort(function (a, b) { return (a.taken || '9') < (b.taken || '9') ? -1 : 1; }); }
+  function add(p) { if (!p || !p.id) return; if (over[p.id] && over[p.id].hide) return; if (byId[p.id]) photos.splice(photos.indexOf(byId[p.id]), 1); byId[p.id] = p; photos.push(p); photos.sort(function (a, b) { return (a.taken || '9') < (b.taken || '9') ? -1 : 1; }); }
   function loadIndex() {
     return fetch(BASE + 'index.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; })
       .then(function (list) { photos = []; byId = {}; (Array.isArray(list) ? list : []).forEach(add); });

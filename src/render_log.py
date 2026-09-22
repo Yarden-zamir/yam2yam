@@ -15,10 +15,10 @@ from render import LANG_META, esc, txt
 LOG_META = {
     "en": {"tabs": ["Pictures", "Log", "Map", "Weather"], "days_h": "Days", "map_h": "Whole route", "upload_h": "Upload pictures",
            "upload_hint": "Pictures go straight into this log, one by one or as a zip (a Google Photos album download works as is). The date and place come from the picture itself; captions and the day can be set afterwards in the log file.",
-           "pick": "Choose pictures", "undated": "Undated pictures", "eyebrow": "Trip log", "show_all": "Show the whole route here", "show_map": "Show the map here", "outro_h": "Wrap-up"},
+           "pick": "Choose pictures", "undated": "Undated pictures", "eyebrow": "Trip log", "show_all": "Show the whole route here", "show_map": "Show the map here", "outro_h": "Wrap-up", "day": "Day"},
     "he": {"tabs": ["תמונות", "יומן", "מפה", "מזג אוויר"], "days_h": "הימים", "map_h": "כל המסלול", "upload_h": "העלאת תמונות",
            "upload_hint": "התמונות נכנסות ישירות ליומן הזה, אחת אחת או כקובץ zip (הורדה של אלבום מ-Google Photos עובדת כמו שהיא). התאריך והמקום נלקחים מהתמונה עצמה; כיתוב ויום אפשר לקבוע אחר כך בקובץ היומן.",
-           "pick": "בחרו תמונות", "undated": "תמונות בלי תאריך", "eyebrow": "יומן מסע", "show_all": "הצג את כל המסלול כאן", "show_map": "הצג את המפה כאן", "outro_h": "לסיכום"},
+           "pick": "בחרו תמונות", "undated": "תמונות בלי תאריך", "eyebrow": "יומן מסע", "show_all": "הצג את כל המסלול כאן", "show_map": "הצג את המפה כאן", "outro_h": "לסיכום", "day": "יום"},
 }
 _TOKEN = re.compile(r"\[\[(map|photo|photos):([^\]|]+)(?:\|([^\]]*))?\]\]")
 
@@ -76,7 +76,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
     if intro:
         o.append(f'  <p class="lede">{logtxt(intro[0])}</p>')
         o += [f"  <p>{logtxt(p)}</p>" for p in intro[1:]]
-    o += ['  <nav class="toc" aria-label="Days">' + "".join(f'<a href="#{prefix}d{int(d["n"])}">D{int(d["n"])}</a>' for d in log["days"]) + f'<a href="#{prefix}map">{M["map_h"]}</a><a href="#{prefix}upload">{M["upload_h"]}</a></nav>', "</header>", ""]
+    o += ['  <nav class="toc" aria-label="Days">' + "".join(f'<a href="#{prefix}d{int(d["n"])}">{M["day"]} {int(d["n"])}</a>' for d in log["days"]) + f'<a href="#{prefix}map">{M["map_h"]}</a><a href="#{prefix}upload">{M["upload_h"]}</a></nav>', "</header>", ""]
     o.append(h2(1, "days", M["days_h"]))
     for d in log["days"]:
         n = int(d["n"])
@@ -87,7 +87,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
         text = _lang(d.get("text"), lang) or []
         text = text if isinstance(text, list) else [text]
         o += [f'<div class="stage" id="{prefix}d{n}" data-day="{n}" data-date="{d["date"]}">',
-              f'  <div class="d"><a href="?map=day:{n}" data-focus="day:{n}">D{n}<small>{txt(label)}</small></a></div>', "  <div>",
+              f'  <div class="d"><a href="?map=day:{n}" data-focus="day:{n}">{M["day"]} {n}<small>{txt(label)}</small></a></div>', "  <div>",
               f'    <h3><a href="?map=day:{n}" class="daylink" data-focus="day:{n}">{txt(title)}</a></h3>',
               '    <div class="stats">' + "".join(f"<span>{txt(s)}</span>" for s in stats) + "</div>",
               '    <div class="tabs" role="tablist">' + "".join(

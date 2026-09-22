@@ -8,3 +8,4 @@ site/log/*/photos/
 site/log/*/orig/
 research/osm.json
 research/waypoints.proposed.json
+__pycache__/
