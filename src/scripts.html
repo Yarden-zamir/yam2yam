@@ -18,7 +18,16 @@
   try{fromUrl=new URL(location.href).searchParams.get('lang')}catch(e){}
   try{saved=localStorage.getItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang')||'en'}catch(e){}
   apply(fromUrl==='he'||fromUrl==='en'?fromUrl:saved,false);
-  btn.addEventListener('click',function(){apply(en.hidden?'en':'he',true)});
+  btn.addEventListener('click',function(){apply(en.hidden?'en':'he',true);if(window.gr52Mast)window.gr52Mast.refresh();});
+})();
+(function(){/* the cover masthead: --sbw lets it span the viewport exactly; on scroll the picture drifts at 0.4x and the masthead fades out */
+  var de=document.documentElement,still=matchMedia('(prefers-reduced-motion: reduce)').matches,raf=0;
+  function sbw(){de.style.setProperty('--sbw',(window.innerWidth-de.clientWidth)+'px');}
+  function frame(){raf=0;var y=window.scrollY||0;document.querySelectorAll('.mast').forEach(function(m){var h=m.offsetHeight;if(!h)return;var t=Math.min(y,h);m.style.setProperty('--py',(t*0.4).toFixed(1)+'px');m.style.setProperty('--pf',Math.max(0,1-t/(h*0.9)).toFixed(3));});}
+  function tick(){if(!raf)raf=requestAnimationFrame(frame);}
+  sbw();window.addEventListener('resize',function(){sbw();tick();});
+  if(!still){window.addEventListener('scroll',tick,{passive:true});document.addEventListener('DOMContentLoaded',tick);tick();}
+  window.gr52Mast={refresh:tick};
 
 })();
 </script>

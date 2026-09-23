@@ -150,17 +150,20 @@ header{position:relative;overflow:hidden}
     repeating-radial-gradient(ellipse 40% 30% at 55% 10%, var(--line) 0 1px, transparent 1px 20px);
   -webkit-mask-image:linear-gradient(#000 40%,transparent);mask-image:linear-gradient(#000 40%,transparent)}
 header > *{position:relative}
-/* cover picture (cover: in log.yaml, or cover in trek.json): the eyebrow and title sit on a masthead over the picture, the rest of the header follows below */
-header.cover{padding-top:0}
-.mast{--ink:#fff;--muted:rgba(255,255,255,.86);--line:rgba(255,255,255,.55);color:#fff;position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;min-height:var(--cover-h,min(60vh,560px));margin:0 -20px 18px;padding:64px 20px 16px}
+/* cover picture (cover: in log.yaml, or cover in trek.json): a full-width masthead with the eyebrow and title over the picture; the rest of the header follows below.
+   It spans the viewport from inside the column (--sbw is the scrollbar width, set by the page script); on scroll the picture drifts slower than the page (--py) and the masthead fades (--pf). */
+html{overflow-x:hidden;overflow-x:clip}
+header.cover{padding-top:0;overflow:visible} header.cover .topo{inset:0}
+.mast{--ink:#fff;--muted:rgba(255,255,255,.86);--line:rgba(255,255,255,.55);color:#fff;position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;min-height:var(--cover-h,min(60vh,560px));
+  margin:0 calc(50% - 50vw + var(--sbw,0px) / 2) 18px;padding:64px calc(50vw - 50% - var(--sbw,0px) / 2) 16px;opacity:var(--pf,1)}
 body:not(.logpage) .mast{--cover-h:min(46vh,420px)}
-.mast .coverimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% var(--cover-y,50%);z-index:-2;margin:0}
+.mast .coverimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% var(--cover-y,50%);z-index:-2;margin:0;transform:translate3d(0,var(--py,0px),0);will-change:transform}
 .mast::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,.45) 70%,rgba(0,0,0,.75) 100%)}
 .mast .eyebrow,.mast h1{text-shadow:0 1px 3px rgba(0,0,0,.55)}
 .mast h1{margin-bottom:0}
 .mast .balise,.mast h1::after{border-color:rgba(255,255,255,.6)}
-@media (max-width:760px){.mast{margin:0 -14px 14px;padding:28px 14px 12px;min-height:var(--cover-h,min(52vh,460px))}}
-@media (min-width:1040px){.mast{border-radius:6px}}
+@media (max-width:760px){.mast{margin:0 calc(50% - 50vw + var(--sbw,0px) / 2) 14px;padding:28px calc(50vw - 50% - var(--sbw,0px) / 2) 12px;min-height:var(--cover-h,min(52vh,460px))}}
+@media (prefers-reduced-motion:reduce){.mast .coverimg{transform:none} .mast{opacity:1}}
 h1{position:relative;display:inline-block}
 h1::after{content:"";display:block;height:6px;margin-top:10px;background:linear-gradient(90deg,var(--mark) 0 50%,#fff 50% 100%);border:1px solid var(--line);width:120px}
 h2::before{content:"";width:34px;height:16px;flex:none;align-self:center;background:linear-gradient(var(--mark) 0 50%,#fff 50% 100%);border:1px solid var(--line)}
@@ -664,7 +667,16 @@ body:has(.locbar) #backbubble{left:78px;transform:none;max-width:calc(100vw - 92
   try{fromUrl=new URL(location.href).searchParams.get('lang')}catch(e){}
   try{saved=localStorage.getItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang')||'en'}catch(e){}
   apply(fromUrl==='he'||fromUrl==='en'?fromUrl:saved,false);
-  btn.addEventListener('click',function(){apply(en.hidden?'en':'he',true)});
+  btn.addEventListener('click',function(){apply(en.hidden?'en':'he',true);if(window.gr52Mast)window.gr52Mast.refresh();});
+})();
+(function(){/* the cover masthead: --sbw lets it span the viewport exactly; on scroll the picture drifts at 0.4x and the masthead fades out */
+  var de=document.documentElement,still=matchMedia('(prefers-reduced-motion: reduce)').matches,raf=0;
+  function sbw(){de.style.setProperty('--sbw',(window.innerWidth-de.clientWidth)+'px');}
+  function frame(){raf=0;var y=window.scrollY||0;document.querySelectorAll('.mast').forEach(function(m){var h=m.offsetHeight;if(!h)return;var t=Math.min(y,h);m.style.setProperty('--py',(t*0.4).toFixed(1)+'px');m.style.setProperty('--pf',Math.max(0,1-t/(h*0.9)).toFixed(3));});}
+  function tick(){if(!raf)raf=requestAnimationFrame(frame);}
+  sbw();window.addEventListener('resize',function(){sbw();tick();});
+  if(!still){window.addEventListener('scroll',tick,{passive:true});document.addEventListener('DOMContentLoaded',tick);tick();}
+  window.gr52Mast={refresh:tick};
 
 })();
 </script>

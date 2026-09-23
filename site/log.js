@@ -245,6 +245,7 @@
       mast.style.setProperty('--cover-y', LOG.cover && LOG.cover.photo === EDITS.cover ? LOG.cover.y : '50%');
       h.classList.add('cover');
     });
+    if (window.gr52Mast) window.gr52Mast.refresh();
   }
   function applyPhotoEdits() {
     applyCover();
