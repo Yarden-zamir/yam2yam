@@ -328,23 +328,24 @@
       render();
     });
   }
-  /* the editor: the day's paragraphs in a textarea, blank lines between them */
+  /* the editor: the day's paragraphs in a textarea, blank lines between them; body.editing hides the dot rail meanwhile */
+  function editing() { document.body.classList.toggle('editing', !!document.querySelector('.editor')); }
   document.addEventListener('click', function (e) {
     var b = e.target.closest('.tabs .editbtn'); if (!b) return;
     var st = b.closest('.stage'), n = +st.getAttribute('data-day'), lang = langOf(st), pane = st.querySelector('.pane[data-pane="log"]');
-    if (st.querySelector('.editor')) { st.querySelector('.editor').remove(); b.classList.remove('on'); pane.hidden = false; return; }
+    if (st.querySelector('.editor')) { st.querySelector('.editor').remove(); b.classList.remove('on'); pane.hidden = false; editing(); return; }
     window.gr52Map.showTab(st, 'log');
     var ed = document.createElement('div'); ed.className = 'editor';
     ed.innerHTML = '<textarea spellcheck="false"></textarea><div class="row"><button type="button" class="primary" data-act="save">' + T[lang].save + '</button><button type="button" data-act="cancel">' + T[lang].cancel + '</button><button type="button" data-act="pick">' + T[lang].addPic + '</button><span class="msg"></span><span class="hint">' + esc(T[lang].editHint) + '</span></div>';
     ed.querySelector('textarea').value = dayText(n, lang).join('\n\n');
-    pane.hidden = true; pane.parentNode.insertBefore(ed, pane); b.classList.add('on');
+    pane.hidden = true; pane.parentNode.insertBefore(ed, pane); b.classList.add('on'); editing();
     ed.addEventListener('click', function (ev) {
       var act = ev.target.closest('[data-act]'); if (!act) return;
-      if (act.getAttribute('data-act') === 'cancel') { ed.remove(); b.classList.remove('on'); pane.hidden = false; return; }
+      if (act.getAttribute('data-act') === 'cancel') { ed.remove(); b.classList.remove('on'); pane.hidden = false; editing(); return; }
       if (act.getAttribute('data-act') === 'pick') { pickPicture(n, lang, ed.querySelector('textarea')); return; }
       var paras = ed.querySelector('textarea').value.split(/\n\s*\n/).map(function (x) { return x.trim(); }).filter(Boolean), texts = {}; texts[lang] = paras;
       var msg = ed.querySelector('.msg'); msg.textContent = '…';
-      saveText(n, texts, lang).then(function () { ed.remove(); b.classList.remove('on'); pane.hidden = false; }, function (err) { msg.textContent = T[lang].saveFail + ' (' + (err && err.message || err) + ')'; });
+      saveText(n, texts, lang).then(function () { ed.remove(); b.classList.remove('on'); pane.hidden = false; editing(); }, function (err) { msg.textContent = T[lang].saveFail + ' (' + (err && err.message || err) + ')'; });
     });
   });
   /* the picker: the day's pictures in a grid; one tap puts its token where the cursor is */
