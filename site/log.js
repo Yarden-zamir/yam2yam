@@ -10,12 +10,12 @@
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
       source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', layer: 'Pictures', zoomIn: 'zoom in for the pictures', download: 'Download',
       edit: 'Edit', save: 'Save', cancel: 'Cancel', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
-      addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', captionEdit: 'Edit caption', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
+      inGmaps: 'Open in Google Maps', openUrl: 'Open the site', addPic: 'Add a picture…', pickHint: 'Tap a picture to put it at the cursor; the outlined ones are already in the text.', addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', captionEdit: 'Edit caption', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
       source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', layer: 'תמונות', zoomIn: 'התקרבו כדי לראות את התמונות', download: 'הורדה',
       edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
-      addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', captionEdit: 'עריכת כיתוב', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
+      inGmaps: 'פתיחה ב-Google Maps', openUrl: 'פתיחת האתר', addPic: 'הוספת תמונה…', pickHint: 'הקישו על תמונה כדי להציב אותה במקום הסמן; המסומנות כבר בטקסט.', addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', captionEdit: 'עריכת כיתוב', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
   var photos = [], hiddenPics = [], byId = {}, over = LOG.photos || {}, DAYS = LOG.days || {}, clusters = {}, layers = {};
@@ -97,7 +97,7 @@
      previews split in the circle, then a count), rebuilt on every zoom; the whole-route map shows them
      only once zoomed in. They sit in a "Pictures" overlay of the layer control. On the profile, one mark
      per group of pictures close together along the route. ---- */
-  var ALL_MIN_ZOOM = 12, GROUP_PX = 48;
+  var ALL_MIN_ZOOM = 12, GROUP_PX = 48, DOT = 46;
   function small(p) { return BASE + esc(p.small || p.thumb); }
   function clusterize(list, map) {
     var z = map.getZoom(), out = [];
@@ -112,7 +112,7 @@
   function dotIcon(items, est) {
     var n = Math.min(items.length, 4);
     var html = '<span class="pdi n' + n + '">' + items.slice(0, n).map(function (p) { return '<img src="' + small(p) + '" alt="">'; }).join('') + '</span>' + (items.length > 1 ? '<b>' + items.length + '</b>' : '');
-    return L.divIcon({ className: 'photodot' + (est ? ' est' : ''), html: html, iconSize: [46, 46], iconAnchor: [23, 23], popupAnchor: [0, -23] });
+    return L.divIcon({ className: 'photodot' + (est ? ' est' : ''), html: html, iconSize: [DOT, DOT], iconAnchor: [DOT / 2, DOT / 2], popupAnchor: [0, -DOT / 2] });
   }
   function rebuildDots(lang) {
     var L0 = layers[lang]; if (!L0 || !window.gr52Data) return;
@@ -125,7 +125,7 @@
     if (on && !(L0.scope == null && map.getZoom() < ALL_MIN_ZOOM)) clusterize(list, map).forEach(function (c, k) {
       var id = lang + '-' + (L0.scope == null ? 'all' : L0.scope) + '-' + k, items = c.items; clusters[id] = items;
       var m = L.marker([c.lat, c.lon], { icon: dotIcon(items, c.est), zIndexOffset: 700, keyboard: false });
-      m.bindPopup('<div class="popthumbs">' + items.map(function (p) { return '<a href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '" data-cluster="' + id + '"><img src="' + small(p) + '" alt="" loading="lazy"></a>'; }).join('') + '</div>', { maxWidth: 260 });
+      m.bindPopup('<div class="popthumbs">' + items.map(function (p) { return '<a href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '" data-cluster="' + id + '"><img src="' + BASE + esc(p.thumb) + '" alt="" loading="lazy"></a>'; }).join('') + '</div>', { maxWidth: 330 });
       L0.group.addLayer(m);
     });
     /* the profile: groups by distance along the route, about a sixtieth of the stretch apart */
@@ -229,7 +229,7 @@
     var d = DAYS[n] && DAYS[n].text; return d && d[lang] ? d[lang].slice() : [];
   }
   /* the same rendering as src/render_log.py: tokens to links and picture blocks, a paragraph per block */
-  var KEEP = /<\/?(b|i|a|br|span|em|strong)(\s[^>]*)?>/g, TOKEN = /\[\[(map|photo|photos|gmaps):([^\]|]+)(?:\|([^\]]*))?\]\]/g, PHOTO_RUN = /(?:\s*\[\[photos?:[^\]]+\]\])+\s*/g;
+  var KEEP = /<\/?(b|i|a|br|span|em|strong)(\s[^>]*)?>/g, TOKEN = /\[\[(map|photo|photos|gmaps|url):([^\]|]+)(?:\|([^\]]*))?\]\]/g, GMAPS = 'https://www.google.com/maps/search/?api=1&query=', PHOTO_RUN = /(?:\s*\[\[photos?:[^\]]+\]\])+\s*/g;
   function escAll(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function strongOf(chars) { for (var i = 0; i < chars.length; i++) { var ch = chars[i]; if (/[A-Za-zÀ-ɏ]/.test(ch)) return 'L'; if (/[֐-׿؀-ۿ0-9]/.test(ch)) return 'R'; } return null; }
   function arrows(s) { var out = s.split(''); for (var i = 0; i < out.length; i++) if (out[i] === '→' && !(strongOf(s.slice(0, i).split('').reverse()) === 'L' && strongOf(s.slice(i + 1)) === 'L')) out[i] = '←'; return out.join(''); }
@@ -244,12 +244,23 @@
     while ((m = TOKEN.exec(s))) {
       out += txt(s.slice(pos, m.index), lang);
       var kind = m[1], arg = m[2].trim(), label = (m[3] || '').trim();
-      if (kind === 'map') out += '<a href="?map=' + esc(arg) + '" class="focus" data-focus="' + esc(arg) + '">' + txt(label || arg, lang) + '</a>';
-      else if (kind === 'gmaps') out += '<a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(arg) + '" class="gm" target="_blank" rel="noopener">' + txt(label || arg, lang) + '</a>';
+      if (kind === 'map' || kind === 'gmaps' || kind === 'url') out += linkHtml(linkSpecs(kind, arg), label, lang);
       else out += arg.split(',').map(function (i) { return '<span class="photoref" data-photo="' + esc(i.trim()) + '"></span>'; }).join('');
       pos = m.index + m[0].length;
     }
     return out + txt(s.slice(pos), lang);
+  }
+  function linkSpecs(kind, arg) {
+    var out = [];
+    arg.split(';').forEach(function (part, i) { part = part.trim(); var m = /^(map|gmaps|url):(.+)$/.exec(part), k = m ? m[1] : (i === 0 ? kind : null), q = (m ? m[2] : part).trim(); if (k && q) out.push({ k: k, q: q }); });
+    return out;
+  }
+  function linkHref(sp) { return sp.k === 'map' ? '?map=' + esc(sp.q) : sp.k === 'gmaps' ? GMAPS + encodeURIComponent(sp.q) : esc(sp.q); }
+  function linkHtml(specs, label, lang) {
+    var icons = specs.map(function (sp) { return '<i class="' + sp.k + '"></i>'; }).join(''), s0 = specs[0], text = txt(label || s0.q, lang);
+    if (specs.length === 1) return s0.k === 'map' ? '<a href="?map=' + esc(s0.q) + '" class="lk map focus" data-focus="' + esc(s0.q) + '">' + icons + text + '</a>'
+      : '<a href="' + linkHref(s0) + '" class="lk ' + (s0.k === 'gmaps' ? 'gm' : 'url') + '" target="_blank" rel="noopener">' + icons + text + '</a>';
+    return '<a href="' + linkHref(s0) + '" class="lk multi" data-links="' + esc(JSON.stringify(specs)) + '">' + icons + text + '</a>';
   }
   function blocks(para, lang) {
     var s = para == null ? '' : String(para), out = [], pos = 0, m; PHOTO_RUN.lastIndex = 0;
@@ -281,17 +292,37 @@
     if (st.querySelector('.editor')) { st.querySelector('.editor').remove(); b.classList.remove('on'); pane.hidden = false; return; }
     window.gr52Map.showTab(st, 'log');
     var ed = document.createElement('div'); ed.className = 'editor';
-    ed.innerHTML = '<textarea spellcheck="false"></textarea><div class="row"><button type="button" class="primary" data-act="save">' + T[lang].save + '</button><button type="button" data-act="cancel">' + T[lang].cancel + '</button><span class="msg"></span><span class="hint">' + esc(T[lang].editHint) + '</span></div>';
+    ed.innerHTML = '<textarea spellcheck="false"></textarea><div class="row"><button type="button" class="primary" data-act="save">' + T[lang].save + '</button><button type="button" data-act="cancel">' + T[lang].cancel + '</button><button type="button" data-act="pick">' + T[lang].addPic + '</button><span class="msg"></span><span class="hint">' + esc(T[lang].editHint) + '</span></div>';
     ed.querySelector('textarea').value = dayText(n, lang).join('\n\n');
     pane.hidden = true; pane.parentNode.insertBefore(ed, pane); b.classList.add('on');
     ed.addEventListener('click', function (ev) {
       var act = ev.target.closest('[data-act]'); if (!act) return;
       if (act.getAttribute('data-act') === 'cancel') { ed.remove(); b.classList.remove('on'); pane.hidden = false; return; }
+      if (act.getAttribute('data-act') === 'pick') { pickPicture(n, lang, ed.querySelector('textarea')); return; }
       var paras = ed.querySelector('textarea').value.split(/\n\s*\n/).map(function (x) { return x.trim(); }).filter(Boolean), texts = {}; texts[lang] = paras;
       var msg = ed.querySelector('.msg'); msg.textContent = '…';
       saveText(n, texts, lang).then(function () { ed.remove(); b.classList.remove('on'); pane.hidden = false; }, function (err) { msg.textContent = T[lang].saveFail + ' (' + (err && err.message || err) + ')'; });
     });
   });
+  /* the picker: the day's pictures in a grid; one tap puts its token where the cursor is */
+  function pickPicture(n, lang, ta) {
+    var list = photos.filter(function (p) { return dayOf(p) === n; }), used = ta.value;
+    var sh = sheetWrap.querySelector('.sheet'); sh.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+    sh.innerHTML = '<div class="who"><span>' + esc(T[lang].pickHint) + '</span></div><div class="pick">' + list.map(function (p) { return '<a href="#" data-pick="' + esc(p.id) + '" class="' + (used.indexOf('[[photo:' + p.id + ']]') >= 0 ? 'used' : '') + '" title="' + esc(caption(p, lang) || when(p)) + '"><img src="' + small(p) + '" alt="" loading="lazy"></a>'; }).join('') + '</div><button type="button" data-k="cancel" class="cancel">' + T[lang].cancel + '</button>';
+    sheetWrap.hidden = false;
+    sh.onclick = function (ev) {
+      var a = ev.target.closest('a[data-pick]');
+      if (a) {
+        ev.preventDefault(); sheetWrap.hidden = true;
+        var tok = '[[photo:' + a.getAttribute('data-pick') + ']]', s0 = ta.selectionStart != null ? ta.selectionStart : ta.value.length, s1 = ta.selectionEnd != null ? ta.selectionEnd : s0;
+        var before = ta.value.slice(0, s0), after = ta.value.slice(s1);
+        var ins = (before && !/\s$/.test(before) ? ' ' : '') + tok + (after && !/^\s/.test(after) ? ' ' : '');
+        ta.value = before + ins + after; ta.focus(); ta.selectionStart = ta.selectionEnd = before.length + ins.length;
+        return;
+      }
+      if (ev.target.closest('[data-k="cancel"]')) sheetWrap.hidden = true;
+    };
+  }
   /* a picture in or out of the day's text, in every language; a hidden picture; a caption */
   var PHOTO_TOKEN = function (id) { return new RegExp('\\s*\\[\\[photo:' + id + '\\]\\]', 'g'); };
   function inLog(n, id) { return Object.keys(DAYS[n] ? DAYS[n].text || {} : {}).concat(Object.keys(EDITS.days[n] && EDITS.days[n].text || {})).some(function (lang) { return dayText(n, lang).some(function (p) { return p.indexOf('[[photo:' + id + ']]') >= 0; }); }); }
@@ -333,6 +364,22 @@
       if (done) done.catch(function (err) { alert(T[lang].saveFail + ' (' + (err && err.message || err) + ')'); });
     };
   }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a.lk.multi'); if (!a) return;
+    e.preventDefault(); e.stopPropagation();
+    var lang = langOf(a), specs = []; try { specs = JSON.parse(a.getAttribute('data-links')); } catch (err) { }
+    var sh = sheetWrap.querySelector('.sheet'); sh.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+    sh.innerHTML = '<div class="who"><span>' + esc(a.textContent) + '</span></div><div class="chips">' + specs.map(function (sp) {
+      var t = T[lang][sp.k === 'map' ? 'onMap' : sp.k === 'gmaps' ? 'inGmaps' : 'openUrl'];
+      return sp.k === 'map' ? '<a href="?map=' + esc(sp.q) + '" class="lk map" data-go="' + esc(sp.q) + '"><i class="map"></i>' + t + '</a>' : '<a href="' + linkHref(sp) + '" class="lk ' + (sp.k === 'gmaps' ? 'gm' : 'url') + '" target="_blank" rel="noopener"><i class="' + sp.k + '"></i>' + t + '</a>';
+    }).join('') + '</div><button type="button" data-k="cancel" class="cancel">' + T[lang].cancel + '</button>';
+    sheetWrap.hidden = false;
+    sh.onclick = function (ev) {
+      var g = ev.target.closest('a[data-go]'); if (g) { ev.preventDefault(); sheetWrap.hidden = true; if (window.gr52Nav) window.gr52Nav.go(g.getAttribute('data-go'), a); return; }
+      if (ev.target.closest('a.lk')) { sheetWrap.hidden = true; return; }
+      if (ev.target.closest('[data-k="cancel"]')) sheetWrap.hidden = true;
+    };
+  }, true);
   var pressTimer = null, pressed = null, pressStart = null;
   function pressTarget(e) { var a = e.target.closest && e.target.closest('a[data-photo]'); return a && !a.closest('#lightbox') && !a.closest('.leaflet-popup') ? a : null; }
   document.addEventListener('pointerdown', function (e) {

@@ -67,14 +67,14 @@ _SKIP_CLOSE = ("</a>", "</h1>", "</button>", "</title>", "</summary>", "</captio
 
 
 def link_places(html: str) -> str:
-    """Wrap place names (trek.json "places") in map links, in text only, never inside anchors or headings."""
+    """Wrap place names (trek.json "places") in map chips, in text only, never inside anchors or headings."""
     if not _TERM_RE:
         return html
     out, pos, skip = [], 0, 0
     for m in _TAG_RE.finditer(html):
         text = html[pos : m.start()]
         if skip == 0:
-            text = _TERM_RE.sub(lambda t: f'<a href="#map" class="focus" data-focus="{PLACES[t.group(0)]}">{t.group(0)}</a>', text)
+            text = _TERM_RE.sub(lambda t: f'<a href="#map" class="lk map focus" data-focus="{PLACES[t.group(0)]}"><i class="map"></i>{t.group(0)}</a>', text)
         out.append(text)
         tag = m.group(0)
         low = tag.lower()

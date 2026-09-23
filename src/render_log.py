@@ -22,22 +22,49 @@ LOG_META = {
            "upload_hint": "התמונות נכנסות ישירות ליומן הזה, אחת אחת או כקובץ zip (הורדה של אלבום מ-Google Photos עובדת כמו שהיא). התאריך והמקום נלקחים מהתמונה עצמה; כיתוב ויום אפשר לקבוע אחר כך בקובץ היומן.",
            "pick": "בחרו תמונות", "undated": "תמונות בלי תאריך", "eyebrow": "יומן מסע", "show_all": "הצג את כל המסלול כאן", "show_map": "הצג את המפה כאן", "outro_h": "לסיכום", "day": "יום", "edit": "עריכה"},
 }
-_TOKEN = re.compile(r"\[\[(map|photo|photos|gmaps):([^\]|]+)(?:\|([^\]]*))?\]\]")
+_TOKEN = re.compile(r"\[\[(map|photo|photos|gmaps|url):([^\]|]+)(?:\|([^\]]*))?\]\]")
 GMAPS = "https://www.google.com/maps/search/?api=1&query="
+LINK_KINDS = ("map", "gmaps", "url")
+
+
+def link_specs(kind: str, arg: str) -> list:
+    """[[map:Q;gmaps:Q2;url:U|label]] → [(kind, query), ...]: a place that is also a business, or has a site."""
+    out = []
+    for i, part in enumerate(arg.split(";")):
+        part = part.strip()
+        m = re.match(r"^(map|gmaps|url):(.+)$", part)
+        k, q = (m.group(1), m.group(2).strip()) if m else (kind if i == 0 else None, part)
+        if k and q:
+            out.append((k, q))
+    return out
+
+
+def link_href(k: str, q: str) -> str:
+    return f"?map={esc(q)}" if k == "map" else GMAPS + quote(q) if k == "gmaps" else esc(q)
+
+
+def link_html(specs: list, label: str) -> str:
+    """A chip with an icon per kind; several kinds make one chip that opens a chooser (log.js)."""
+    icons = "".join(f'<i class="{k}"></i>' for k, _ in specs)
+    k0, q0 = specs[0]
+    if len(specs) == 1:
+        if k0 == "map":
+            return f'<a href="?map={esc(q0)}" class="lk map focus" data-focus="{esc(q0)}">{icons}{txt(label or q0)}</a>'
+        return f'<a href="{link_href(k0, q0)}" class="lk {"gm" if k0 == "gmaps" else "url"}" target="_blank" rel="noopener">{icons}{txt(label or q0)}</a>'
+    data = json.dumps([{"k": k, "q": q} for k, q in specs], ensure_ascii=False).replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;")
+    return f'<a href="{link_href(k0, q0)}" class="lk multi" data-links="{data}">{icons}{txt(label or q0)}</a>'
 
 
 def logtxt(s) -> str:
     """Text with the log tokens: [[map:QUERY|label]] → map link, [[gmaps:PLACE|label]] → Google Maps link,
-    [[photo:ID]] → picture placed here."""
+    [[url:URL|label]] → a site; kinds joined with ";" make one chip that offers each; [[photo:ID]] → picture."""
     out, pos = [], 0
     s = "" if s is None else str(s)
     for m in _TOKEN.finditer(s):
         out.append(txt(s[pos:m.start()]))
         kind, arg, label = m.group(1), m.group(2).strip(), (m.group(3) or "").strip()
-        if kind == "map":
-            out.append(f'<a href="?map={esc(arg)}" class="focus" data-focus="{esc(arg)}">{txt(label or arg)}</a>')
-        elif kind == "gmaps":  # a business: the place on Google Maps, in a new tab
-            out.append(f'<a href="{GMAPS}{quote(arg)}" class="gm" target="_blank" rel="noopener">{txt(label or arg)}</a>')
+        if kind in LINK_KINDS:
+            out.append(link_html(link_specs(kind, arg), label))
         else:
             out.append("".join(f'<span class="photoref" data-photo="{esc(i.strip())}"></span>' for i in arg.split(",")))
         pos = m.end()
@@ -101,7 +128,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
         o += [f'<div class="stage" id="{prefix}d{n}" data-day="{n}" data-date="{d["date"]}">',
               f'  <div class="d"><a href="?map=day:{n}" data-focus="day:{n}">{M["day"]} {n}<small>{txt(label)}</small></a></div>', "  <div>",
               f'    <h3><a href="?map=day:{n}" class="daylink" data-focus="day:{n}">{txt(title)}</a></h3>',
-              '    <div class="stats">' + "".join(f"<span>{txt(s)}</span>" for s in stats) + "</div>",
+              '    <div class="stats">' + "".join(f"<span>{logtxt(s)}</span>" for s in stats) + "</div>",
               '    <div class="tabs" role="tablist">' + "".join(
                   f'<button type="button" role="tab" data-tab="{key}" class="{"on" if key == "log" else ""}" aria-selected="{"true" if key == "log" else "false"}">{txt(name)}'
                   + ('<span class="badge" hidden></span>' if key == "pics" else "") + "</button>" for key, name in zip(("log", "pics", "map", "wx"), M["tabs"]))
