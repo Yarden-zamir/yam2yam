@@ -255,7 +255,7 @@
       marks.forEach(function (m) {
         if (m.d < from || m.d > to) return;
         var px = x(m.d), py = y(m.ele == null ? minE : m.ele) - 11; markPos.push({ x: px, y: py, m: m });
-        ctx.beginPath(); ctx.arc(px, py, 7, 0, 7); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = m.color || mark; ctx.lineWidth = m.est ? 1.5 : 2; if (m.est) ctx.setLineDash([2, 2]); ctx.stroke(); ctx.setLineDash([]); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(px, py, 7, 0, 7); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = m.color || mark; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1;
         ctx.beginPath(); ctx.moveTo(px, py + 7); ctx.lineTo(px, y(m.ele == null ? minE : m.ele)); ctx.strokeStyle = m.color || mark; ctx.stroke();
         if (m.label) { ctx.fillStyle = m.color || mark; ctx.font = '700 9px IBM Plex Mono, monospace'; ctx.textAlign = 'center'; ctx.fillText(m.label, px, py + 3); ctx.font = '500 11px IBM Plex Sans, sans-serif'; }
         else { ctx.fillStyle = m.color || mark; ctx.fillRect(px - 3.5, py - 2.5, 7, 5); }

@@ -351,8 +351,10 @@
       if (!isDone && bar) { bar.remove(); c.classList.remove('open'); }
     });
   }
-  function applySnapshot(pos) {
+  function applySnapshot(pos, quiet) {
+    /* quiet: a background refresh, so no toast and no scrolling the page to the map */
     var me = { lat: pos.coords.latitude, lon: pos.coords.longitude }, near = window.gr52Map.nearest(me), now = Date.now();
+    ctx.lastFix = now;
     window.gr52Map.showPosition(me.lat, me.lon, pos.coords.accuracy);
     var snaps = lsGet(((window.TREK && window.TREK.slug) || 'trek') + '-snaps', []); snaps.push({ t: now, lat: me.lat, lon: me.lon, d: near.pt.d, off: near.dist }); if (snaps.length > 50) snaps = snaps.slice(-50); lsSet(((window.TREK && window.TREK.slug) || 'trek') + '-snaps', snaps);
     var day = null, short = null, cur = curLang();
@@ -376,9 +378,26 @@
       if (lang === cur) short = text.split(' · ').slice(1, 5).join(' · ');
       if (card) { var box = card.querySelector('.snapbox') || document.createElement('div'); box.className = 'snapbox'; box.textContent = text; if (!box.parentNode) (card.querySelector('.tabs') || card.querySelector('.wx')).insertAdjacentElement('beforebegin', box); }
     });
+    if (quiet) return;
     toast(short);
     window.gr52Map.reveal(day ? day.n : null);
+    startWatch();
   }
+  /* once a position was asked for, keep it fresh: the browser's watch while the page is open, and a
+     refresh (at most once a minute) when the page stops scrolling or comes back to the front */
+  var watchId = null, lastRefresh = 0;
+  function startWatch() {
+    if (watchId != null || !navigator.geolocation) return;
+    try { watchId = navigator.geolocation.watchPosition(function (p) { if (Date.now() - lastRefresh > 20000) { lastRefresh = Date.now(); applySnapshot(p, true); } }, function () { }, { enableHighAccuracy: true, maximumAge: 30000 }); } catch (e) { }
+  }
+  function refreshQuiet() {
+    if (!ctx.lastFix || !navigator.geolocation || Date.now() - lastRefresh < 60000 || document.hidden) return;
+    lastRefresh = Date.now();
+    navigator.geolocation.getCurrentPosition(function (p) { applySnapshot(p, true); }, function () { }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 });
+  }
+  var scrollTimer = null;
+  window.addEventListener('scroll', function () { clearTimeout(scrollTimer); scrollTimer = setTimeout(refreshQuiet, 400); }, { passive: true });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) refreshQuiet(); });
   window.gr52PickOnMap = function () {
     var app = window.gr52Map.ensureVisible() || window.gr52Map.visibleApp(); if (!app) return;
     var L = T[curLang()].snap;

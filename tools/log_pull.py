@@ -38,6 +38,7 @@ edits = r.json()
 yaml = YAML()
 yaml.preserve_quotes = True
 yaml.width = 4096
+yaml.indent(mapping=2, sequence=4, offset=2)  # the layout the files use, so the diff shows only the edits
 path = ROOT / "log" / user / "log.yaml"
 doc = yaml.load(path.read_text(encoding="utf-8"))
 changed = 0
