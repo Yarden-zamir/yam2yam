@@ -550,12 +550,14 @@
       .then(function (list) { photos = []; hiddenPics = []; byId = {}; (Array.isArray(list) ? list : []).forEach(add); });
   }
 
-  /* the route's climb for each walking day, after the chips written in the log */
+  /* the route's distance (unless the log gives one) and climb for each walking day, around the chips written in the log */
   function routeChips() {
     var G = window.gr52Map;
     document.querySelectorAll('.stage[data-day] .stats').forEach(function (st) {
       var n = +st.closest('.stage').getAttribute('data-day'), s = G.dayStats(n);
       if (!s || s.km < 0.2 || st.querySelector('.auto')) return;
+      var lang = langOf(st), hasKm = Array.prototype.some.call(st.querySelectorAll('.st'), function (x) { return /km|ק"מ/.test(x.textContent); });
+      if (!hasKm) { var km = document.createElement('span'); km.className = 'auto'; km.setAttribute('dir', 'ltr'); km.textContent = '≈' + s.km.toFixed(s.km < 10 ? 1 : 0) + ' ' + (lang === 'he' ? 'ק"מ' : 'km'); st.insertBefore(km, st.firstChild); }
       var chip = document.createElement('span'); chip.className = 'auto'; chip.setAttribute('dir', 'ltr'); chip.textContent = '+' + Math.round(s.ascent).toLocaleString('en') + ' / −' + Math.round(s.descent).toLocaleString('en') + ' m';
       st.appendChild(chip);
     });
