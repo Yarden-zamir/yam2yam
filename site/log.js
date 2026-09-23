@@ -123,7 +123,7 @@
     /* while the overlay is being switched off the map still lists it as the group's home, so a marker added now would be orphaned */
     var on = map.hasLayer(L0.group), hint = L0.hint; if (hint) hint.hidden = !(on && L0.scope == null && list.length && map.getZoom() < ALL_MIN_ZOOM);
     if (on && !(L0.scope == null && map.getZoom() < ALL_MIN_ZOOM)) clusterize(list, map).forEach(function (c, k) {
-      var id = lang + '-' + (L0.scope == null ? 'all' : L0.scope) + '-' + k, items = c.items; clusters[id] = items;
+      var id = lang + '-' + (L0.scope == null ? 'all' : L0.scope) + '-' + c.items[0].id, items = c.items; clusters[id] = items; /* keyed by the first picture, so an open popup still finds its group after the map re-clusters */
       var m = L.marker([c.lat, c.lon], { icon: dotIcon(items, c.est), zIndexOffset: 700, keyboard: false });
       m.bindPopup('<div class="popthumbs">' + items.map(function (p) { return '<a href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '" data-cluster="' + id + '"><img src="' + BASE + esc(p.thumb) + '" alt="" loading="lazy"></a>'; }).join('') + '</div>', { maxWidth: 330 });
       L0.group.addLayer(m);
@@ -200,7 +200,7 @@
         if (window.gr52Nav) window.gr52Nav.go(g.getAttribute('data-go'), st || g);
         return;
       }
-      if (e.target.closest('[data-lb="close"]') || e.target === lb) close();
+      if (e.target.closest('[data-lb="close"]') || !e.target.closest('img,button,a,.lbcap,.lbnav')) close();
     });
     document.addEventListener('keydown', function (e) { if (lb.hidden) return; if (e.key === 'Escape') close(); if (e.key === 'ArrowRight') show(cur.i + 1); if (e.key === 'ArrowLeft') show(cur.i - 1); });
     var sx = 0, sy = 0, st0 = 0;
@@ -218,7 +218,8 @@
     var id = a.getAttribute('data-photo'), list;
     if (a.getAttribute('data-cluster')) list = clusters[a.getAttribute('data-cluster')] || [byId[id]];
     else { var st = a.closest('.stage'), g = st ? st.querySelector('.gallery') : a.closest('.gallery'); list = (g && g._list && g._list.length) ? g._list : [byId[id]]; }
-    var i = 0; list.forEach(function (p, k) { if (p.id === id) i = k; });
+    var i = -1; list.forEach(function (p, k) { if (p.id === id) i = k; });
+    if (i < 0) { list = [byId[id]]; i = 0; } /* a stale group (the map re-clustered since the popup opened): show the picture that was clicked */
     open(list, i);
   }, true);
 
@@ -424,7 +425,7 @@
       if (ev.target.closest('[data-k="cancel"]')) hideSheet();
     };
   }, true);
-  var pressTimer = null, pressed = null, pressStart = null;
+  var pressTimer = null, pressed = null, pressStart = null, pressEnd = 0;
   function pressTarget(e) { var a = e.target.closest && e.target.closest('a[data-photo]'); return a && !a.closest('#lightbox') && !a.closest('.leaflet-popup') ? a : null; }
   document.addEventListener('pointerdown', function (e) {
     var a = pressTarget(e); if (!a || e.button > 0) return;
@@ -432,8 +433,9 @@
     clearTimeout(pressTimer); pressTimer = setTimeout(function () { pressed = a; openSheet(a); }, 550);
   }, true);
   document.addEventListener('pointermove', function (e) { if (pressTimer && pressStart && Math.hypot(e.clientX - pressStart[0], e.clientY - pressStart[1]) > 12) { clearTimeout(pressTimer); pressTimer = null; } }, true);
-  ['pointerup', 'pointercancel'].forEach(function (t) { document.addEventListener(t, function () { clearTimeout(pressTimer); pressTimer = null; }, true); });
-  document.addEventListener('click', function (e) { if (pressed) { e.preventDefault(); e.stopPropagation(); pressed = null; } }, true);
+  ['pointerup', 'pointercancel'].forEach(function (t) { document.addEventListener(t, function () { clearTimeout(pressTimer); pressTimer = null; if (pressed) pressEnd = Date.now(); }, true); });
+  /* the click that follows a long press is swallowed, but only the one right after it: a tap outside the sheet a moment later must close it */
+  document.addEventListener('click', function (e) { var swallow = pressed && Date.now() - pressEnd < 500; pressed = null; if (swallow) { e.preventDefault(); e.stopPropagation(); } }, true);
   document.addEventListener('contextmenu', function (e) { var a = pressTarget(e); if (a) { e.preventDefault(); clearTimeout(pressTimer); pressTimer = null; openSheet(a); } });
 
   /* ---- weather history: the night spot and the day's high point on that date (ERA5) ---- */

@@ -169,7 +169,7 @@ def render(log_path: Path, trek: dict, plan_path: Path | None) -> tuple[str, dic
     first = trek["languages"][0]
     parts = [f'<div class="langbar"><button id="langbtn" type="button">{LANG_META[first]["button"]}</button></div>',
              '<button id="backbubble" type="button" hidden></button>',
-             '<div id="lightbox" hidden><button type="button" class="lbx" data-lb="close" aria-label="Close">×</button><button type="button" class="lbp" data-lb="prev" aria-label="Previous">‹</button><img alt=""><button type="button" class="lbp" data-lb="next" aria-label="Next">›</button><a class="lbdl" download aria-label="Download">⤓</a><div class="lbcap"></div><div class="lbn"></div></div>', ""]
+             '<div id="lightbox" hidden><button type="button" class="lbx" data-lb="close" aria-label="Close">×</button><img alt=""><a class="lbdl" download aria-label="Download">⤓</a><div class="lbcap"></div><div class="lbnav"><button type="button" class="lbp" data-lb="prev" aria-label="Previous">‹</button><div class="lbn"></div><button type="button" class="lbp" data-lb="next" aria-label="Next">›</button></div></div>', ""]
     for lang in trek["languages"]:
         parts.append(render_lang(lang, log, trek, plan.get(lang), "" if lang == first else lang + "-"))
         parts.append("")
