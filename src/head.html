@@ -239,6 +239,9 @@ a.daylink:hover{color:var(--lake)}
 .tabs .badge{font:600 11px "IBM Plex Mono",monospace;background:var(--warn-soft);border:1px solid var(--warn);color:var(--ink);border-radius:9px;padding:0 6px;line-height:16px}
 .tabs .badge.bad{background:var(--mark-soft);border-color:var(--mark)}
 .tabs .editbtn{margin-inline-start:auto;font-size:16px;padding:6px 10px;color:var(--muted)} .tabs .editbtn:hover{color:var(--ink)} .tabs .editbtn.on{color:var(--mark)}
+/* the intro and the wrap-up carry a pencil of their own */
+.secblock{position:relative;padding-inline-end:34px} .secblock > .editbtn{position:absolute;inset-inline-end:0;top:0;font:16px "IBM Plex Sans",sans-serif;padding:4px 8px;color:var(--muted);background:none;border:0;cursor:pointer} .secblock > .editbtn:hover{color:var(--ink)} .secblock > .editbtn.on{color:var(--mark)}
+[data-section="intro"] .sectext > p:first-child{font-size:19px;max-width:62ch;color:var(--ink)}
 .editor{margin:8px 0 14px} .editor textarea{width:100%;min-height:260px;box-sizing:border-box;font:14px/1.5 "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:10px;resize:vertical}
 .editor .row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap} .editor .hint{font:12px "IBM Plex Mono",monospace;color:var(--muted);flex:1 1 100%} .editor .msg{font:12px "IBM Plex Mono",monospace;color:var(--muted)}
 .editor button,.sheet button{font:600 13px "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:8px 14px;cursor:pointer} .editor button.primary{background:var(--mark);border-color:var(--mark);color:#fff}
@@ -316,6 +319,7 @@ body.editing .dots{display:none}  /* not while a day's text is being edited */
 .inpic img{display:block;height:auto;margin:0 auto;border-radius:3px;background:var(--line);aspect-ratio:var(--ar,auto);max-width:100%;width:min(100%,calc(85vh * var(--ar,1.5)))}
 .inpic span{display:block;font-size:12.5px;color:var(--muted);padding:4px 0;text-align:center;text-decoration:none}
 .pane[data-pane="log"] p{max-width:72ch}
+.pane.pressing{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .tile,.inpic{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none} .tile img,.inpic img{-webkit-user-drag:none}
 .tile img{transition:transform .25s ease} .tile:hover img{transform:scale(1.03)} .tile,.inpic,.popthumbs a{cursor:zoom-in}
 /* desktop: a wider log page, the whole grid in three columns, pictures in the text side by side */

@@ -68,6 +68,12 @@ if "cover" in edits:  # the cover picture: an id, or null when it was removed on
     elif not edits["cover"] and "cover" in doc:
         del doc["cover"]
         changed += 1
+for kind in ("intro", "outro"):
+    for lang, paras in (edits.get(kind) or {}).items():
+        if not isinstance(doc.get(kind), dict):
+            doc[kind] = {}
+        doc[kind][lang] = [DQ(p) for p in paras]
+        changed += 1
 photos = doc.setdefault("photos", {})
 for pid, e in (edits.get("photos") or {}).items():
     rec = photos.get(pid) if pid in photos else photos.get(int(pid)) if pid.isdigit() else None

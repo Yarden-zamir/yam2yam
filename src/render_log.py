@@ -114,9 +114,8 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
          f'  <div class="eyebrow"><span class="balise"></span>{txt(_lang(log.get("eyebrow"), lang) or M["eyebrow"])} · {esc(log["user"])}</div>',
          f'  <h1>{txt(_lang(log.get("title"), lang) or trek["name"])}</h1>', mast_close]
     o = [x for x in o if x != ""]
-    if intro:
-        o.append(f'  <p class="lede">{logtxt(intro[0])}</p>')
-        o += [f"  <p>{logtxt(p)}</p>" for p in intro[1:]]
+    pencil = f'<button type="button" class="editbtn" data-edit title="{M["edit"]}" aria-label="{M["edit"]}">✎</button>'
+    o.append('  <div class="secblock" data-section="intro"><div class="sectext">' + "".join(blocks(p) for p in intro) + '</div>' + pencil + '</div>')
     o += ['  <nav class="toc" aria-label="Days">' + "".join(f'<a href="#{prefix}d{int(d["n"])}">{M["day"]} {int(d["n"])}</a>' for d in log["days"]) + f'<a href="#{prefix}map">{M["map_h"]}</a><a href="#{prefix}upload">{M["upload_h"]}</a></nav>', "</header>", ""]
     o.append(h2(1, "days", M["days_h"]))
     for d in log["days"]:
@@ -145,10 +144,9 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
     o += [f'<div class="undated" hidden><h3>{M["undated"]}</h3><div class="gallery" data-day="none"></div></div>']
     sec = 2
     outro = _lang(log.get("outro"), lang) or []
-    if outro:
-        outro = outro if isinstance(outro, list) else [outro]
-        o += ["", h2(sec, "outro", M["outro_h"])] + [blocks(p) for p in outro]
-        sec += 1
+    outro = outro if isinstance(outro, list) else [outro]
+    o += ["", h2(sec, "outro", M["outro_h"]), '<div class="secblock" data-section="outro"><div class="sectext">' + "".join(blocks(p) for p in outro) + '</div>' + pencil + '</div>']
+    sec += 1
     gpx = "/" + Path(trek["gpx"]).name
     o += ["", h2(sec, "map", M["map_h"]),
           f'<div class="maphost" data-host="all"><button type="button" class="mapclaim">{M["show_all"]}</button>',
@@ -177,7 +175,10 @@ def render(log_path: Path, trek: dict, plan_path: Path | None) -> tuple[str, dic
         t = _lang(d.get("text"), lang) or []
         return [str(x) for x in (t if isinstance(t, list) else [t])]
     cfg = {"user": log["user"], "days": {int(d["n"]): {"date": d["date"], "anchors": d.get("anchors") or [], "text": {lang: paras(d, lang) for lang in trek["languages"]}} for d in log["days"]},
-           "photos": {str(k): v for k, v in (log.get("photos") or {}).items()}, "cover": render_mod.cover_of(log.get("cover"), log["user"])}
+           "photos": {str(k): v for k, v in (log.get("photos") or {}).items()}, "cover": render_mod.cover_of(log.get("cover"), log["user"]),
+           "places": trek.get("places", {}),
+           "intro": {lang: [str(x) for x in (lambda v: v if isinstance(v, list) else [v] if v else [])(_lang(log.get("intro"), lang))] for lang in trek["languages"]},
+           "outro": {lang: [str(x) for x in (lambda v: v if isinstance(v, list) else [v] if v else [])(_lang(log.get("outro"), lang))] for lang in trek["languages"]}}  # the page script links these names when it redraws an edited day, as src/build.py does at build time
     return "\n".join(parts), cfg
 
 

@@ -85,6 +85,7 @@
       var badge = g.closest('.stage') && g.closest('.stage').querySelector('[data-tab="pics"] .badge'); if (badge) { badge.textContent = list.length ? String(list.length) : ''; badge.hidden = !list.length; }
     });
     document.querySelectorAll('.stage[data-day]').forEach(function (st) { var n = +st.getAttribute('data-day'); if (EDITS.days[n] && EDITS.days[n].text && EDITS.days[n].text[langOf(st)] && !st._edited) redrawLog(st); });
+    document.querySelectorAll('[data-section]').forEach(function (el) { var k = el.getAttribute('data-section'); if (EDITS[k] && EDITS[k][langOf(el)] && !el._edited) redrawSection(el); });
     document.querySelectorAll('.photoref').forEach(function (s) {
       var p = byId[s.getAttribute('data-photo')]; if (!p) { s.innerHTML = ''; return; }
       if (over[p.id] && over[p.id].hide) { s.innerHTML = ''; s.hidden = true; return; }  /* a hidden picture leaves the text too; its token stays, so unhiding brings it back */
@@ -273,6 +274,17 @@
     if (e) return e.slice();
     var d = DAYS[n] && DAYS[n].text; return d && d[lang] ? d[lang].slice() : [];
   }
+  /* the text of a day (a number) or of the intro / outro (its name), edits first */
+  function textOf(key, lang) {
+    if (typeof key === 'number') return dayText(key, lang);
+    var e = EDITS[key] && EDITS[key][lang]; if (e) return e.slice();
+    var s = LOG[key] && LOG[key][lang]; return s ? s.slice() : [];
+  }
+  function redrawSection(el) {
+    var kind = el.getAttribute('data-section'), lang = langOf(el), box = el.querySelector('.sectext'); if (!box) return;
+    box.innerHTML = linkPlaces(textOf(kind, lang).map(function (p) { return blocks(p, lang); }).join('\n'));
+    el._edited = true;
+  }
   /* the same rendering as src/render_log.py: tokens to links and picture blocks, a paragraph per block */
   var KEEP = /<\/?(b|i|a|br|span|em|strong)(\s[^>]*)?>/g, TOKEN = /\[\[(map|photo|photos|gmaps|url):([^\]|]+)(?:\|([^\]]*))?\]\]/g, GMAPS = 'https://www.google.com/maps/search/?api=1&query=', PHOTO_RUN = /(?:\s*\[\[photos?:[^\]]+\]\])+\s*/g;
   function escAll(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -319,40 +331,102 @@
     var tail = s.slice(pos).trim(); if (tail) out.push('<p>' + logtxt(tail, lang) + '</p>');
     return out.join('\n');
   }
+  /* place names become map chips in redrawn text, as build.py does for the built page: text only, never inside anchors, headings or chips */
+  var PLACES = LOG.places || {}, PLACE_RE = Object.keys(PLACES).length ? new RegExp(Object.keys(PLACES).sort(function (a, b) { return b.length - a.length; }).map(function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|'), 'g') : null;
+  function linkPlaces(html) {
+    if (!PLACE_RE) return html;
+    var out = [], pos = 0, skip = 0, m, tag = /<[^>]+>/g;
+    while ((m = tag.exec(html))) {
+      var text = html.slice(pos, m.index);
+      if (!skip) text = text.replace(PLACE_RE, function (t) { return '<a href="#map" class="lk k-map focus" data-focus="' + esc(PLACES[t]) + '"><i class="ic-map"></i>' + t + '</a>'; });
+      out.push(text);
+      var low = m[0].toLowerCase();
+      if (/^<(a[\s>]|h[123]|button|summary|caption|span class="st")/.test(low)) skip++;
+      else if (/^<\/(a|h[123]|button|summary|caption|span)>/.test(low)) skip = Math.max(0, skip - 1);
+      out.push(m[0]); pos = m.index + m[0].length;
+    }
+    out.push(html.slice(pos));
+    return out.join('');
+  }
   function redrawLog(st) {
     var n = +st.getAttribute('data-day'), lang = langOf(st), pane = st.querySelector('.pane[data-pane="log"]');
-    pane.innerHTML = dayText(n, lang).map(function (p) { return blocks(p, lang); }).join('\n');
+    pane.innerHTML = linkPlaces(dayText(n, lang).map(function (p) { return blocks(p, lang); }).join('\n'));
     st._edited = true;
   }
-  function saveText(n, texts, lang) {
-    return postEdit({ day: n, text: texts }, lang).then(function () {
-      document.querySelectorAll('.stage[data-day="' + n + '"]').forEach(function (st) { st._edited = false; redrawLog(st); });
+  function saveText(key, texts, lang) {
+    var body = typeof key === 'number' ? { day: key, text: texts } : { section: key, text: texts };
+    return postEdit(body, lang).then(function () {
+      if (typeof key === 'number') document.querySelectorAll('.stage[data-day="' + key + '"]').forEach(function (st) { st._edited = false; redrawLog(st); });
+      else document.querySelectorAll('[data-section="' + key + '"]').forEach(function (el) { el._edited = false; redrawSection(el); });
       render();
     });
   }
   /* the editor: the day's paragraphs in a textarea, blank lines between them; body.editing hides the dot rail meanwhile */
   function editing() { document.body.classList.toggle('editing', !!document.querySelector('.editor')); }
   document.addEventListener('click', function (e) {
-    var b = e.target.closest('.tabs .editbtn'); if (!b) return;
-    var st = b.closest('.stage'), n = +st.getAttribute('data-day'), lang = langOf(st), pane = st.querySelector('.pane[data-pane="log"]');
-    if (st.querySelector('.editor')) { st.querySelector('.editor').remove(); b.classList.remove('on'); pane.hidden = false; editing(); return; }
-    window.gr52Map.showTab(st, 'log');
+    var b = e.target.closest('.editbtn'); if (!b) return;
+    openEditor(b.closest('.stage, [data-section]'), null);
+  });
+  /* opens (or closes) the day's editor; `at` is a character position in the text to put the caret on */
+  function openEditor(st, at) {
+    if (!st) return;
+    var isDay = st.hasAttribute('data-day'), n = isDay ? +st.getAttribute('data-day') : st.getAttribute('data-section'), lang = langOf(st);
+    var b = isDay ? st.querySelector('.tabs .editbtn') : st.querySelector(':scope > .editbtn'), pane = isDay ? st.querySelector('.pane[data-pane="log"]') : st.querySelector('.sectext');
+    if (!b || !pane) return;
+    if (st.querySelector('.editor')) {
+      if (at == null) { st.querySelector('.editor').remove(); b.classList.remove('on'); pane.hidden = false; editing(); }
+      else caretTo(st.querySelector('.editor textarea'), at);
+      return;
+    }
+    if (isDay) window.gr52Map.showTab(st, 'log');
     var ed = document.createElement('div'); ed.className = 'editor';
     ed.innerHTML = '<textarea spellcheck="false"></textarea><div class="row"><button type="button" class="primary" data-act="save">' + T[lang].save + '</button><button type="button" data-act="cancel">' + T[lang].cancel + '</button><button type="button" data-act="pick">' + T[lang].addPic + '</button><span class="msg"></span><span class="hint">' + esc(T[lang].editHint) + '</span></div>';
-    ed.querySelector('textarea').value = dayText(n, lang).join('\n\n');
+    ed.querySelector('textarea').value = textOf(n, lang).join('\n\n');
     pane.hidden = true; pane.parentNode.insertBefore(ed, pane); b.classList.add('on'); editing();
+    if (at != null) caretTo(ed.querySelector('textarea'), at);
     ed.addEventListener('click', function (ev) {
       var act = ev.target.closest('[data-act]'); if (!act) return;
       if (act.getAttribute('data-act') === 'cancel') { ed.remove(); b.classList.remove('on'); pane.hidden = false; editing(); return; }
-      if (act.getAttribute('data-act') === 'pick') { pickPicture(n, lang, ed.querySelector('textarea')); return; }
+      if (act.getAttribute('data-act') === 'pick') { pickPicture(isDay ? n : null, lang, ed.querySelector('textarea')); return; }
       var paras = ed.querySelector('textarea').value.split(/\n\s*\n/).map(function (x) { return x.trim(); }).filter(Boolean), texts = {}; texts[lang] = paras;
       var msg = ed.querySelector('.msg'); msg.textContent = '…';
       saveText(n, texts, lang).then(function () { ed.remove(); b.classList.remove('on'); pane.hidden = false; editing(); }, function (err) { msg.textContent = T[lang].saveFail + ' (' + (err && err.message || err) + ')'; });
     });
-  });
+  }
+  function caretTo(ta, at) {
+    if (!ta) return; at = Math.max(0, Math.min(ta.value.length, at));
+    var v = ta.value; ta.value = v.slice(0, at); var h = ta.scrollHeight; ta.value = v;  /* the height of the text above the caret, to scroll it into the middle */
+    ta.focus(); ta.setSelectionRange(at, at); ta.scrollTop = Math.max(0, h - ta.clientHeight / 2);
+  }
+  /* long press on the day's text: the editor opens with the caret where the finger was. The rendered paragraph is found
+     in the day's source by its words, and the visible offset is walked back through the tokens to a source offset. */
+  var TOKEN_OR_TAG = /\[\[([a-z]+):([^\]|]*)(?:\|([^\]]*))?\]\]|<[^>]+>/g;
+  function visibleText(para) { return String(para).replace(TOKEN_OR_TAG, function (_, k, q, label) { return k == null ? '' : /^photos?$/.test(k) ? '' : (label != null ? label : q); }); }
+  function sourceOffset(para, vis) {
+    var re = new RegExp(TOKEN_OR_TAG.source, 'g'), pos = 0, seen = 0, m;
+    while ((m = re.exec(para))) {
+      var plain = m.index - pos; if (seen + plain >= vis) return pos + (vis - seen); seen += plain;
+      var lab = m[1] == null || /^photos?$/.test(m[1]) ? 0 : (m[3] != null ? m[3] : m[2]).length; if (seen + lab > vis) return m.index; seen += lab;
+      pos = m.index + m[0].length;
+    }
+    return Math.min(para.length, pos + Math.max(0, vis - seen));
+  }
+  function squash(s) { return String(s).replace(/[\s\u200e\u200f]+/g, ' ').replace(/[→←]/g, '').trim(); }
+  function editAt(p, x, y) {
+    var st = p.closest('.stage, [data-section]'); if (!st) return;
+    var lang = langOf(st), paras = textOf(st.hasAttribute('data-day') ? +st.getAttribute('data-day') : st.getAttribute('data-section'), lang);
+    var node = null, off = 0;
+    try { if (document.caretPositionFromPoint) { var cp = document.caretPositionFromPoint(x, y); if (cp) { node = cp.offsetNode; off = cp.offset; } } else if (document.caretRangeFromPoint) { var cr = document.caretRangeFromPoint(x, y); if (cr) { node = cr.startContainer; off = cr.startOffset; } } } catch (e) { }
+    var inP = 0; if (node && p.contains(node)) { var r = document.createRange(); r.setStart(p, 0); r.setEnd(node, off); inP = squash(r.toString()).length; }
+    var head = squash(p.textContent).slice(0, 40), idx = -1, segStart = 0, total = 0;
+    for (var i = 0; i < paras.length && idx < 0; i++) { var vis = squash(visibleText(paras[i])); var k = head ? vis.indexOf(head) : -1; if (k >= 0) { idx = i; segStart = k; } }
+    if (idx < 0) { openEditor(st, 0); return; }
+    for (var j = 0; j < idx; j++) total += paras[j].length + 2;
+    openEditor(st, total + sourceOffset(paras[idx], segStart + inP));
+  }
   /* the picker: the day's pictures in a grid; one tap puts its token where the cursor is */
   function pickPicture(n, lang, ta) {
-    var list = photos.filter(function (p) { return dayOf(p) === n; }), used = ta.value;
+    var list = photos.filter(function (p) { return n == null || dayOf(p) === n; }), used = ta.value;  /* the intro and outro may use any picture */
     var sh = sheetWrap.querySelector('.sheet'); sh.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
     sh.innerHTML = '<div class="who"><span>' + esc(T[lang].pickHint) + '</span></div><div class="pick">' + list.map(function (p) { return '<a href="#" data-pick="' + esc(p.id) + '" class="' + (used.indexOf('[[photo:' + p.id + ']]') >= 0 ? 'used' : '') + '" title="' + esc(caption(p, lang) || when(p)) + '"><img src="' + small(p) + '" alt="" loading="lazy"></a>'; }).join('') + '</div><button type="button" data-k="cancel" class="cancel">' + T[lang].cancel + '</button>';
     showSheet();
@@ -430,16 +504,23 @@
   }, true);
   var pressTimer = null, pressed = null, pressStart = null, pressEnd = 0;
   function pressTarget(e) { var a = e.target.closest && e.target.closest('a[data-photo]'); return a && !a.closest('#lightbox') && !a.closest('.leaflet-popup') ? a : null; }
+  function textTarget(e) { var p = e.target.closest && e.target.closest('.pane[data-pane="log"] p, .sectext p'); var box = p && p.closest('.stage, [data-section]'); return p && box && !e.target.closest('a, .photoref, .editor') && box.querySelector('.editbtn') ? p : null; }
+  var lastPointer = 'mouse';
   document.addEventListener('pointerdown', function (e) {
-    var a = pressTarget(e); if (!a || e.button > 0) return;
-    pressed = null; pressStart = [e.clientX, e.clientY];
-    clearTimeout(pressTimer); pressTimer = setTimeout(function () { pressed = a; openSheet(a); }, 550);
+    lastPointer = e.pointerType || 'mouse';
+    var a = pressTarget(e), p = a ? null : textTarget(e); if ((!a && !p) || e.button > 0) return;
+    pressed = null; pressStart = [e.clientX, e.clientY]; var x = e.clientX, y = e.clientY;
+    if (p && lastPointer !== 'mouse') p.closest('.pane').classList.add('pressing');  /* no text selection while the finger rests */
+    clearTimeout(pressTimer); pressTimer = setTimeout(function () { pressed = a || p; if (a) openSheet(a); else editAt(p, x, y); }, 550);
   }, true);
   document.addEventListener('pointermove', function (e) { if (pressTimer && pressStart && Math.hypot(e.clientX - pressStart[0], e.clientY - pressStart[1]) > 12) { clearTimeout(pressTimer); pressTimer = null; } }, true);
-  ['pointerup', 'pointercancel'].forEach(function (t) { document.addEventListener(t, function () { clearTimeout(pressTimer); pressTimer = null; if (pressed) pressEnd = Date.now(); }, true); });
+  ['pointerup', 'pointercancel'].forEach(function (t) { document.addEventListener(t, function () { clearTimeout(pressTimer); pressTimer = null; if (pressed) pressEnd = Date.now(); document.querySelectorAll('.pane.pressing').forEach(function (el) { el.classList.remove('pressing'); }); }, true); });
   /* the click that follows a long press is swallowed, but only the one right after it: a tap outside the sheet a moment later must close it */
   document.addEventListener('click', function (e) { var swallow = pressed && Date.now() - pressEnd < 500; pressed = null; if (swallow) { e.preventDefault(); e.stopPropagation(); } }, true);
-  document.addEventListener('contextmenu', function (e) { var a = pressTarget(e); if (a) { e.preventDefault(); clearTimeout(pressTimer); pressTimer = null; openSheet(a); } });
+  document.addEventListener('contextmenu', function (e) {
+    var a = pressTarget(e); if (a) { e.preventDefault(); clearTimeout(pressTimer); pressTimer = null; openSheet(a); return; }
+    var p = lastPointer !== 'mouse' ? textTarget(e) : null; if (p) { e.preventDefault(); clearTimeout(pressTimer); pressTimer = null; pressed = p; pressEnd = Date.now(); editAt(p, e.clientX, e.clientY); }  /* the phone's own long press, ahead of our timer */
+  });
 
   /* ---- weather history: the night spot and the day's high point on that date (ERA5) ---- */
   var ARCHIVE = 'https://archive-api.open-meteo.com/v1/archive';

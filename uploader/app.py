@@ -178,8 +178,8 @@ def load_edits(user: str) -> dict:
 
 def apply_edit(user: str, body: dict) -> dict:
     """Edits made on the page, kept beside the pictures and read by the page on load: a day's text
-    per language, a picture's caption or whether it is hidden, the cover picture (an id, null to
-    remove it). tools/log_pull.py folds them into log.yaml."""
+    per language, the intro or outro per language, a picture's caption or whether it is hidden, the
+    cover picture (an id, null to remove it). tools/log_pull.py folds them into log.yaml."""
     with LOCK:
         e = load_edits(user)
         if "day" in body:
@@ -187,6 +187,11 @@ def apply_edit(user: str, body: dict) -> dict:
             for lang, paras in (body.get("text") or {}).items():
                 if re.match(r"^[a-z]{2}$", str(lang)) and isinstance(paras, list):
                     d.setdefault("text", {})[lang] = [str(x)[:20000] for x in paras][:200]
+        if body.get("section") in ("intro", "outro"):
+            sec = e.setdefault(body["section"], {})
+            for lang, paras in (body.get("text") or {}).items():
+                if re.match(r"^[a-z]{2}$", str(lang)) and isinstance(paras, list):
+                    sec[lang] = [str(x)[:20000] for x in paras][:200]
         if "photo" in body:
             pid = str(body["photo"])
             if not re.match(r"^[a-f0-9]{12}$", pid):
