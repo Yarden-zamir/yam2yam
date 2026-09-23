@@ -28,6 +28,8 @@ services:
   uploader:
     build: ./uploader
     pull_policy: build
+    environment:
+      LOG_EDIT_KEY: ${LOG_EDIT_KEY:-}   # set it to require a key for edits made on the log page
     volumes:
       - logdata:/data
     restart: unless-stopped

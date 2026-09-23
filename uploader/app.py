@@ -1,4 +1,6 @@
-"""Picture upload for the trip logs. POST /log/<user>/upload with multipart field(s) "photo".
+"""Picture upload and page edits for the trip logs. POST /log/<user>/upload with multipart field(s) "photo";
+POST /log/<user>/edit with a JSON edit (a day's text, a picture's caption or hidden flag), kept in
+photos/edits.json which the page reads on load.
 
 Each picture is kept as uploaded (orig/), resized for the page (photos/<id>.jpg, 2000 px), for the
 grid (photos/<id>.t.jpg, 800 px) and for the map dots (photos/<id>.s.jpg, a 200 px square), with the time and place read from its EXIF. photos/index.json
@@ -14,6 +16,7 @@ import json
 import os
 import re
 import threading
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -30,6 +33,7 @@ DATA = Path(os.environ.get("LOG_DATA", "/data"))
 MAX_FILE = int(os.environ.get("LOG_MAX_FILE_MB", "40")) * 1024 * 1024
 MAX_USER = int(os.environ.get("LOG_MAX_USER_GB", "5")) * 1024 * 1024 * 1024
 USER_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,38}$")
+EDIT_KEY = os.environ.get("LOG_EDIT_KEY", "")  # when set, edits need this key (X-Log-Key); uploads stay open
 LOCK = threading.Lock()
 Image.MAX_IMAGE_PIXELS = 80_000_000
 
@@ -160,6 +164,46 @@ def reindex(user: str) -> list:
     return out
 
 
+def edits_path(user: str) -> Path:
+    return DATA / user / "photos" / "edits.json"
+
+
+def load_edits(user: str) -> dict:
+    p = edits_path(user)
+    e = json.loads(p.read_text()) if p.exists() else {}
+    e.setdefault("days", {})
+    e.setdefault("photos", {})
+    return e
+
+
+def apply_edit(user: str, body: dict) -> dict:
+    """Edits made on the page, kept beside the pictures and read by the page on load: a day's text
+    per language, a picture's caption or whether it is hidden. tools/log_pull.py folds them into log.yaml."""
+    with LOCK:
+        e = load_edits(user)
+        if "day" in body:
+            d = e["days"].setdefault(str(int(body["day"])), {})
+            for lang, paras in (body.get("text") or {}).items():
+                if re.match(r"^[a-z]{2}$", str(lang)) and isinstance(paras, list):
+                    d.setdefault("text", {})[lang] = [str(x)[:20000] for x in paras][:200]
+        if "photo" in body:
+            pid = str(body["photo"])
+            if not re.match(r"^[a-f0-9]{12}$", pid):
+                raise ValueError("bad picture id")
+            p = e["photos"].setdefault(pid, {})
+            if "hide" in body:
+                p["hide"] = bool(body["hide"])
+            if isinstance(body.get("caption"), dict):
+                p.setdefault("caption", {}).update({str(k): str(v)[:500] for k, v in body["caption"].items() if re.match(r"^[a-z]{2}$", str(k))})
+        e["updated"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        path = edits_path(user)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(e, ensure_ascii=False, indent=0))
+        tmp.replace(path)
+        return e
+
+
 def used_bytes(user: str) -> int:
     d = DATA / user
     return sum(p.stat().st_size for p in d.rglob("*") if p.is_file()) if d.exists() else 0
@@ -186,12 +230,22 @@ class Handler(BaseHTTPRequestHandler):
         self._json(405, {"error": "POST pictures to /log/<user>/upload"})
 
     def do_POST(self):
-        m = re.match(r"^/log/([^/]+)/(upload|reindex)/?$", self.path.split("?")[0])
+        m = re.match(r"^/log/([^/]+)/(upload|reindex|edit)/?$", self.path.split("?")[0])
         if not m or not USER_RE.match(m.group(1)):
             return self._json(404, {"error": "unknown log"})
         user = m.group(1)
         if m.group(2) == "reindex":
             return self._json(200, reindex(user))
+        if m.group(2) == "edit":
+            if EDIT_KEY and self.headers.get("X-Log-Key", "") != EDIT_KEY:
+                return self._json(403, {"error": "edit key needed"})
+            n = int(self.headers.get("Content-Length") or 0)
+            if n <= 0 or n > 2_000_000:
+                return self._json(400, {"error": "send a JSON edit"})
+            try:
+                return self._json(200, apply_edit(user, json.loads(self.rfile.read(n).decode("utf-8"))))
+            except (ValueError, TypeError, KeyError) as e:
+                return self._json(400, {"error": str(e)[:120]})
         length = int(self.headers.get("Content-Length") or 0)
         ctype = self.headers.get("Content-Type") or ""
         if length <= 0 or length > MAX_FILE * 4 or not ctype.startswith("multipart/form-data"):

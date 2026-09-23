@@ -9,12 +9,17 @@
   var T = {
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
       source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', layer: 'Pictures', zoomIn: 'zoom in for the pictures', download: 'Download',
+      edit: 'Edit', save: 'Save', cancel: 'Cancel', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
+      addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', captionEdit: 'Edit caption', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
       source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', layer: 'תמונות', zoomIn: 'התקרבו כדי לראות את התמונות', download: 'הורדה',
+      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
+      addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', captionEdit: 'עריכת כיתוב', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
-  var photos = [], byId = {}, over = LOG.photos || {}, DAYS = LOG.days || {}, clusters = {}, layers = {};
+  var photos = [], hiddenPics = [], byId = {}, over = LOG.photos || {}, DAYS = LOG.days || {}, clusters = {}, layers = {};
+  var EDITS = { days: {}, photos: {} }, EDITS_URL = BASE + 'edits.json', EDIT_URL = '/log/' + USER + '/edit';
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
   function langOf(el) { var w = el.closest('[lang]'); return w ? w.getAttribute('lang') : 'en'; }
   function visibleLang() { var w = document.querySelector('.wrap[lang]:not([hidden])'); return w ? w.getAttribute('lang') : 'en'; }
@@ -73,10 +78,13 @@
       var lang = langOf(g), key = g.getAttribute('data-day'), list = photos.filter(function (p) { var d = dayOf(p); return key === 'none' ? d == null : d === +key; });
       g._list = list; g._cols = colsFor(g);
       g.style.gridTemplateColumns = 'repeat(' + g._cols + ',1fr)';
-      g.innerHTML = list.length ? grid(list, lang, g._cols) : (key === 'none' ? '' : '<p class="muted">' + T[lang].none + '</p>');
+      var hid = hiddenPics.filter(function (p) { var d = dayOf(p); return key === 'none' ? d == null : d === +key; });
+      g.innerHTML = (list.length ? grid(list, lang, g._cols) : (key === 'none' ? '' : '<p class="muted">' + T[lang].none + '</p>'))
+        + (hid.length ? '<details class="hiddenpics"><summary>' + hid.length + ' ' + T[lang].hidden + '</summary><div class="gallery hid">' + hid.map(function (p) { return tile(p, lang).replace('class="tile"', 'class="tile hid"'); }).join('') + '</div></details>' : '');
       var sec = g.closest('.undated'); if (sec) sec.hidden = !list.length;
       var badge = g.closest('.stage') && g.closest('.stage').querySelector('[data-tab="pics"] .badge'); if (badge) { badge.textContent = list.length ? String(list.length) : ''; badge.hidden = !list.length; }
     });
+    document.querySelectorAll('.stage[data-day]').forEach(function (st) { var n = +st.getAttribute('data-day'); if (EDITS.days[n] && EDITS.days[n].text && EDITS.days[n].text[langOf(st)] && !st._edited) redrawLog(st); });
     document.querySelectorAll('.photoref').forEach(function (s) {
       var p = byId[s.getAttribute('data-photo')]; if (!p) { s.innerHTML = ''; return; }
       var lang = langOf(s), c = caption(p, lang);
@@ -190,6 +198,152 @@
     var i = 0; list.forEach(function (p, k) { if (p.id === id) i = k; });
     open(list, i);
   }, true);
+
+  /* ---- editing on the page: a day's text, a picture in or out of the log, hidden, captions.
+     Edits go to /log/<user>/edit and come back in photos/edits.json, which is read on load and laid over
+     the built page; tools/log_pull.py folds them into log.yaml. ---- */
+  function loadEdits() {
+    return fetch(EDITS_URL, { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      .then(function (e) { if (e && typeof e === 'object') EDITS = e; EDITS.days = EDITS.days || {}; EDITS.photos = EDITS.photos || {}; applyPhotoEdits(); });
+  }
+  function applyPhotoEdits() {
+    Object.keys(EDITS.photos).forEach(function (id) {
+      var e = EDITS.photos[id], o = over[id] = over[id] || {};
+      if ('hide' in e) o.hide = !!e.hide;
+      if (e.caption) { var c = o.caption; o.caption = Object.assign({}, typeof c === 'object' && c ? c : (c ? { en: c, he: c } : {}), e.caption); }
+    });
+  }
+  var editKey = null;
+  try { editKey = localStorage.getItem('log-edit-key'); } catch (e) { }
+  function postEdit(body, lang) {
+    var h = { 'Content-Type': 'application/json' }; if (editKey) h['X-Log-Key'] = editKey;
+    return fetch(EDIT_URL, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) {
+      if (r.status === 403) { var k = prompt(T[lang].keyPrompt); if (k == null) throw new Error('no key'); editKey = k; try { localStorage.setItem('log-edit-key', k); } catch (e) { } return postEdit(body, lang); }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (e) { EDITS = e; EDITS.days = EDITS.days || {}; EDITS.photos = EDITS.photos || {}; applyPhotoEdits(); return e; });
+  }
+  function dayText(n, lang) {
+    var e = EDITS.days[n] && EDITS.days[n].text && EDITS.days[n].text[lang];
+    if (e) return e.slice();
+    var d = DAYS[n] && DAYS[n].text; return d && d[lang] ? d[lang].slice() : [];
+  }
+  /* the same rendering as src/render_log.py: tokens to links and picture blocks, a paragraph per block */
+  var KEEP = /<\/?(b|i|a|br|span|em|strong)(\s[^>]*)?>/g, TOKEN = /\[\[(map|photo|photos|gmaps):([^\]|]+)(?:\|([^\]]*))?\]\]/g, PHOTO_RUN = /(?:\s*\[\[photos?:[^\]]+\]\])+\s*/g;
+  function escAll(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function strongOf(chars) { for (var i = 0; i < chars.length; i++) { var ch = chars[i]; if (/[A-Za-zÀ-ɏ]/.test(ch)) return 'L'; if (/[֐-׿؀-ۿ0-9]/.test(ch)) return 'R'; } return null; }
+  function arrows(s) { var out = s.split(''); for (var i = 0; i < out.length; i++) if (out[i] === '→' && !(strongOf(s.slice(0, i).split('').reverse()) === 'L' && strongOf(s.slice(i + 1)) === 'L')) out[i] = '←'; return out.join(''); }
+  function txt(s, lang) {
+    s = s == null ? '' : String(s); if (lang === 'he' && s.indexOf('→') >= 0) s = arrows(s);
+    var out = '', pos = 0, m; KEEP.lastIndex = 0;
+    while ((m = KEEP.exec(s))) { out += escAll(s.slice(pos, m.index)) + m[0]; pos = m.index + m[0].length; }
+    return out + escAll(s.slice(pos));
+  }
+  function logtxt(s, lang) {
+    var out = '', pos = 0, m; TOKEN.lastIndex = 0;
+    while ((m = TOKEN.exec(s))) {
+      out += txt(s.slice(pos, m.index), lang);
+      var kind = m[1], arg = m[2].trim(), label = (m[3] || '').trim();
+      if (kind === 'map') out += '<a href="?map=' + esc(arg) + '" class="focus" data-focus="' + esc(arg) + '">' + txt(label || arg, lang) + '</a>';
+      else if (kind === 'gmaps') out += '<a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(arg) + '" class="gm" target="_blank" rel="noopener">' + txt(label || arg, lang) + '</a>';
+      else out += arg.split(',').map(function (i) { return '<span class="photoref" data-photo="' + esc(i.trim()) + '"></span>'; }).join('');
+      pos = m.index + m[0].length;
+    }
+    return out + txt(s.slice(pos), lang);
+  }
+  function blocks(para, lang) {
+    var s = para == null ? '' : String(para), out = [], pos = 0, m; PHOTO_RUN.lastIndex = 0;
+    while ((m = PHOTO_RUN.exec(s))) {
+      var text = s.slice(pos, m.index).trim(); if (text) out.push('<p>' + logtxt(text, lang) + '</p>');
+      var ids = []; m[0].replace(/\[\[photos?:([^\]|]+)/g, function (_, x) { x.split(',').forEach(function (i) { if (i.trim()) ids.push(i.trim()); }); });
+      if (ids.length > 1) out.push('<div class="photos">' + ids.map(function (i) { return '<span class="photoref" data-photo="' + esc(i) + '"></span>'; }).join('') + '</div>');
+      else if (ids.length) out.push('<div class="photoref" data-photo="' + esc(ids[0]) + '"></div>');
+      pos = m.index + m[0].length;
+    }
+    var tail = s.slice(pos).trim(); if (tail) out.push('<p>' + logtxt(tail, lang) + '</p>');
+    return out.join('\n');
+  }
+  function redrawLog(st) {
+    var n = +st.getAttribute('data-day'), lang = langOf(st), pane = st.querySelector('.pane[data-pane="log"]');
+    pane.innerHTML = dayText(n, lang).map(function (p) { return blocks(p, lang); }).join('\n');
+    st._edited = true;
+  }
+  function saveText(n, texts, lang) {
+    return postEdit({ day: n, text: texts }, lang).then(function () {
+      document.querySelectorAll('.stage[data-day="' + n + '"]').forEach(function (st) { st._edited = false; redrawLog(st); });
+      render();
+    });
+  }
+  /* the editor: the day's paragraphs in a textarea, blank lines between them */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.tabs .editbtn'); if (!b) return;
+    var st = b.closest('.stage'), n = +st.getAttribute('data-day'), lang = langOf(st), pane = st.querySelector('.pane[data-pane="log"]');
+    if (st.querySelector('.editor')) { st.querySelector('.editor').remove(); b.classList.remove('on'); pane.hidden = false; return; }
+    window.gr52Map.showTab(st, 'log');
+    var ed = document.createElement('div'); ed.className = 'editor';
+    ed.innerHTML = '<textarea spellcheck="false"></textarea><div class="row"><button type="button" class="primary" data-act="save">' + T[lang].save + '</button><button type="button" data-act="cancel">' + T[lang].cancel + '</button><span class="msg"></span><span class="hint">' + esc(T[lang].editHint) + '</span></div>';
+    ed.querySelector('textarea').value = dayText(n, lang).join('\n\n');
+    pane.hidden = true; pane.parentNode.insertBefore(ed, pane); b.classList.add('on');
+    ed.addEventListener('click', function (ev) {
+      var act = ev.target.closest('[data-act]'); if (!act) return;
+      if (act.getAttribute('data-act') === 'cancel') { ed.remove(); b.classList.remove('on'); pane.hidden = false; return; }
+      var paras = ed.querySelector('textarea').value.split(/\n\s*\n/).map(function (x) { return x.trim(); }).filter(Boolean), texts = {}; texts[lang] = paras;
+      var msg = ed.querySelector('.msg'); msg.textContent = '…';
+      saveText(n, texts, lang).then(function () { ed.remove(); b.classList.remove('on'); pane.hidden = false; }, function (err) { msg.textContent = T[lang].saveFail + ' (' + (err && err.message || err) + ')'; });
+    });
+  });
+  /* a picture in or out of the day's text, in every language; a hidden picture; a caption */
+  var PHOTO_TOKEN = function (id) { return new RegExp('\\s*\\[\\[photo:' + id + '\\]\\]', 'g'); };
+  function inLog(n, id) { return Object.keys(DAYS[n] ? DAYS[n].text || {} : {}).concat(Object.keys(EDITS.days[n] && EDITS.days[n].text || {})).some(function (lang) { return dayText(n, lang).some(function (p) { return p.indexOf('[[photo:' + id + ']]') >= 0; }); }); }
+  function togglePhoto(n, id, on, lang) {
+    var texts = {}, langs = Object.keys(T);
+    langs.forEach(function (l) {
+      var paras = dayText(n, l).map(function (p) { return p.replace(PHOTO_TOKEN(id), ''); }).map(function (p) { return p.trim(); }).filter(Boolean);
+      if (on) { if (paras.length) paras[paras.length - 1] += ' [[photo:' + id + ']]'; else paras.push('[[photo:' + id + ']]'); }
+      texts[l] = paras;
+    });
+    return saveText(n, texts, lang);
+  }
+  function setHidden(id, hide, lang) { return postEdit({ photo: id, hide: hide }, lang).then(function () { return loadIndex(); }).then(render); }
+  function editCaption(id, lang) {
+    var p = byId[id]; if (!p) return;
+    var c = prompt(T[lang].captionPrompt, caption(p, lang)); if (c == null) return;
+    var cap = {}; cap[lang] = c;
+    postEdit({ photo: id, caption: cap }, lang).then(render);
+  }
+  /* long press (or right click) on a picture opens the sheet */
+  var sheetWrap = document.createElement('div'); sheetWrap.id = 'sheetwrap'; sheetWrap.hidden = true; sheetWrap.innerHTML = '<div class="sheet" role="menu"></div>'; document.body.appendChild(sheetWrap);
+  sheetWrap.addEventListener('click', function (e) { if (e.target === sheetWrap) sheetWrap.hidden = true; });
+  function openSheet(a) {
+    var id = a.getAttribute('data-photo'), p = byId[id]; if (!p) return;
+    var st = a.closest('.stage'), lang = langOf(a), n = st ? +st.getAttribute('data-day') : dayOf(p), hidden = !!(over[id] && over[id].hide), inline = !!a.closest('.photoref'), items = [];
+    if (n != null && !hidden) items.push({ k: inline || inLog(n, id) ? 'remove' : 'add', t: T[lang][inline || inLog(n, id) ? 'removeLog' : 'addLog'] });
+    items.push({ k: 'caption', t: T[lang].captionEdit });
+    items.push({ k: hidden ? 'unhide' : 'hide', t: T[lang][hidden ? 'unhide' : 'hide'], cls: hidden ? '' : 'danger' });
+    items.push({ k: 'cancel', t: T[lang].cancel, cls: 'cancel' });
+    var sh = sheetWrap.querySelector('.sheet'); sh.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+    sh.innerHTML = '<div class="who"><img src="' + small(p) + '" alt=""><span>' + esc(caption(p, lang) || when(p) || id) + '</span></div>' + items.map(function (it) { return '<button type="button" data-k="' + it.k + '" class="' + (it.cls || '') + '">' + esc(it.t) + '</button>'; }).join('');
+    sheetWrap.hidden = false;
+    sh.onclick = function (e) {
+      var b = e.target.closest('[data-k]'); if (!b) return; var k = b.getAttribute('data-k'); sheetWrap.hidden = true;
+      var done = null;
+      if (k === 'add') done = togglePhoto(n, id, true, lang); else if (k === 'remove') done = togglePhoto(n, id, false, lang);
+      else if (k === 'hide') done = setHidden(id, true, lang); else if (k === 'unhide') done = setHidden(id, false, lang);
+      else if (k === 'caption') editCaption(id, lang);
+      if (done) done.catch(function (err) { alert(T[lang].saveFail + ' (' + (err && err.message || err) + ')'); });
+    };
+  }
+  var pressTimer = null, pressed = null, pressStart = null;
+  function pressTarget(e) { var a = e.target.closest && e.target.closest('a[data-photo]'); return a && !a.closest('#lightbox') && !a.closest('.leaflet-popup') ? a : null; }
+  document.addEventListener('pointerdown', function (e) {
+    var a = pressTarget(e); if (!a || e.button > 0) return;
+    pressed = null; pressStart = [e.clientX, e.clientY];
+    clearTimeout(pressTimer); pressTimer = setTimeout(function () { pressed = a; openSheet(a); }, 550);
+  }, true);
+  document.addEventListener('pointermove', function (e) { if (pressTimer && pressStart && Math.hypot(e.clientX - pressStart[0], e.clientY - pressStart[1]) > 12) { clearTimeout(pressTimer); pressTimer = null; } }, true);
+  ['pointerup', 'pointercancel'].forEach(function (t) { document.addEventListener(t, function () { clearTimeout(pressTimer); pressTimer = null; }, true); });
+  document.addEventListener('click', function (e) { if (pressed) { e.preventDefault(); e.stopPropagation(); pressed = null; } }, true);
+  document.addEventListener('contextmenu', function (e) { var a = pressTarget(e); if (a) { e.preventDefault(); clearTimeout(pressTimer); pressTimer = null; openSheet(a); } });
 
   /* ---- weather history: the night spot and the day's high point on that date (ERA5) ---- */
   var ARCHIVE = 'https://archive-api.open-meteo.com/v1/archive';
@@ -343,10 +497,10 @@
       input.value = '';
     });
   });
-  function add(p) { if (!p || !p.id) return; if (over[p.id] && over[p.id].hide) return; if (byId[p.id]) photos.splice(photos.indexOf(byId[p.id]), 1); byId[p.id] = p; photos.push(p); photos.sort(function (a, b) { return (a.taken || '9') < (b.taken || '9') ? -1 : 1; }); }
+  function add(p) { if (!p || !p.id) return; byId[p.id] = p; [photos, hiddenPics].forEach(function (L) { for (var k = L.length - 1; k >= 0; k--) if (L[k].id === p.id) L.splice(k, 1); }); if (over[p.id] && over[p.id].hide) { hiddenPics.push(p); return; } photos.push(p); photos.sort(function (a, b) { return (a.taken || '9') < (b.taken || '9') ? -1 : 1; }); }
   function loadIndex() {
     return fetch(BASE + 'index.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; })
-      .then(function (list) { photos = []; byId = {}; (Array.isArray(list) ? list : []).forEach(add); });
+      .then(function (list) { photos = []; hiddenPics = []; byId = {}; (Array.isArray(list) ? list : []).forEach(add); });
   }
 
   /* the route's climb for each walking day, after the chips written in the log */
@@ -361,7 +515,7 @@
   }
 
   /* ---- boot ---- */
-  loadIndex().then(render);
+  loadEdits().then(loadIndex).then(render);
   function onGpx() { weather(); render(); routeChips(); }
   if (window.gr52Data) onGpx(); else document.addEventListener('trek:gpx', onGpx);
 })();

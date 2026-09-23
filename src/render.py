@@ -85,7 +85,7 @@ def render_lang(lang: str, c: dict, trek: dict, prefix: str) -> str:
     global RTL
     RTL = LANG_META[lang]["dir"] == "rtl"
     L = LANG_META[lang]
-    h2 = lambda i, id_, title: f'<h2 id="{prefix}{id_}"><span class="k">§{i}</span>{txt(title)}</h2>'
+    h2 = lambda i, id_, title: f'<h2 id="{prefix}{id_}">{txt(title)}</h2>'
     gpx = "/" + Path(trek["gpx"]).name
     o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap"{"" if lang == trek["languages"][0] else " hidden"}>', "<header>",
          '  <div class="topo" aria-hidden="true"></div>',

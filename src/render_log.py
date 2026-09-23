@@ -7,6 +7,7 @@ Weather tabs (the log opens first). Pictures come from the user's upload folder 
 import json
 import re
 from pathlib import Path
+from urllib.parse import quote
 
 import yaml
 
@@ -16,16 +17,18 @@ from render import LANG_META, esc, txt
 LOG_META = {
     "en": {"tabs": ["Log", "Pictures", "Map", "Weather"], "days_h": "Days", "map_h": "Whole route", "upload_h": "Upload pictures",
            "upload_hint": "Pictures go straight into this log, one by one or as a zip (a Google Photos album download works as is). The date and place come from the picture itself; captions and the day can be set afterwards in the log file.",
-           "pick": "Choose pictures", "undated": "Undated pictures", "eyebrow": "Trip log", "show_all": "Show the whole route here", "show_map": "Show the map here", "outro_h": "Wrap-up", "day": "Day"},
+           "pick": "Choose pictures", "undated": "Undated pictures", "eyebrow": "Trip log", "show_all": "Show the whole route here", "show_map": "Show the map here", "outro_h": "Wrap-up", "day": "Day", "edit": "Edit"},
     "he": {"tabs": ["יומן", "תמונות", "מפה", "מזג אוויר"], "days_h": "הימים", "map_h": "כל המסלול", "upload_h": "העלאת תמונות",
            "upload_hint": "התמונות נכנסות ישירות ליומן הזה, אחת אחת או כקובץ zip (הורדה של אלבום מ-Google Photos עובדת כמו שהיא). התאריך והמקום נלקחים מהתמונה עצמה; כיתוב ויום אפשר לקבוע אחר כך בקובץ היומן.",
-           "pick": "בחרו תמונות", "undated": "תמונות בלי תאריך", "eyebrow": "יומן מסע", "show_all": "הצג את כל המסלול כאן", "show_map": "הצג את המפה כאן", "outro_h": "לסיכום", "day": "יום"},
+           "pick": "בחרו תמונות", "undated": "תמונות בלי תאריך", "eyebrow": "יומן מסע", "show_all": "הצג את כל המסלול כאן", "show_map": "הצג את המפה כאן", "outro_h": "לסיכום", "day": "יום", "edit": "עריכה"},
 }
-_TOKEN = re.compile(r"\[\[(map|photo|photos):([^\]|]+)(?:\|([^\]]*))?\]\]")
+_TOKEN = re.compile(r"\[\[(map|photo|photos|gmaps):([^\]|]+)(?:\|([^\]]*))?\]\]")
+GMAPS = "https://www.google.com/maps/search/?api=1&query="
 
 
 def logtxt(s) -> str:
-    """Text with the log tokens: [[map:QUERY|label]] → map link, [[photo:ID]] → picture placed here."""
+    """Text with the log tokens: [[map:QUERY|label]] → map link, [[gmaps:PLACE|label]] → Google Maps link,
+    [[photo:ID]] → picture placed here."""
     out, pos = [], 0
     s = "" if s is None else str(s)
     for m in _TOKEN.finditer(s):
@@ -33,6 +36,8 @@ def logtxt(s) -> str:
         kind, arg, label = m.group(1), m.group(2).strip(), (m.group(3) or "").strip()
         if kind == "map":
             out.append(f'<a href="?map={esc(arg)}" class="focus" data-focus="{esc(arg)}">{txt(label or arg)}</a>')
+        elif kind == "gmaps":  # a business: the place on Google Maps, in a new tab
+            out.append(f'<a href="{GMAPS}{quote(arg)}" class="gm" target="_blank" rel="noopener">{txt(label or arg)}</a>')
         else:
             out.append("".join(f'<span class="photoref" data-photo="{esc(i.strip())}"></span>' for i in arg.split(",")))
         pos = m.end()
@@ -41,22 +46,27 @@ def logtxt(s) -> str:
     return re.sub(r'((?:<span class="photoref"[^>]*></span>\s*){2,})', r'<span class="photos">\1</span>', html)
 
 
-_PHOTO_BLOCK = re.compile(r'(<span class="photos">.*?</span>|<span class="photoref"[^>]*></span>)', re.S)
+_PHOTO_RUN = re.compile(r"(?:\s*\[\[photos?:[^\]]+\]\])+\s*")
 
 
 def blocks(paragraph) -> str:
     """A paragraph with pictures becomes text paragraphs and picture blocks side by side, so a
-    picture is never trapped inside the paragraph's measure and can span the whole card."""
-    out = []
-    for piece in _PHOTO_BLOCK.split(logtxt(paragraph)):
-        if not piece.strip():
-            continue
-        if piece.startswith('<span class="photos">'):
-            out.append('      <div class="photos">' + piece[len('<span class="photos">'):-len("</span>")] + "</div>")
-        elif piece.startswith('<span class="photoref"'):
-            out.append("      " + piece.replace("<span", "<div", 1).replace("</span>", "</div>", 1))
-        else:
-            out.append(f"      <p>{piece.strip()}</p>")
+    picture is never trapped inside the paragraph's measure and can span the whole card.
+    (log.js renders an edited paragraph the same way.)"""
+    s, out, pos = ("" if paragraph is None else str(paragraph)), [], 0
+    for m in _PHOTO_RUN.finditer(s):
+        text = s[pos:m.start()].strip()
+        if text:
+            out.append(f"      <p>{logtxt(text)}</p>")
+        ids = [i.strip() for x in re.findall(r"\[\[photos?:([^\]|]+)", m.group(0)) for i in x.split(",") if i.strip()]
+        if len(ids) > 1:
+            out.append('      <div class="photos">' + "".join(f'<span class="photoref" data-photo="{esc(i)}"></span>' for i in ids) + "</div>")
+        elif ids:
+            out.append(f'      <div class="photoref" data-photo="{esc(ids[0])}"></div>')
+        pos = m.end()
+    tail = s[pos:].strip()
+    if tail:
+        out.append(f"      <p>{logtxt(tail)}</p>")
     return "\n".join(out)
 
 
@@ -67,7 +77,7 @@ def _lang(v, lang):
 def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str) -> str:
     L, M = LANG_META[lang], LOG_META[lang]
     render.RTL = L["dir"] == "rtl"
-    h2 = lambda i, id_, title: f'<h2 id="{prefix}{id_}"><span class="k">§{i}</span>{txt(title)}</h2>'
+    h2 = lambda i, id_, title: f'<h2 id="{prefix}{id_}">{txt(title)}</h2>'
     plan_days = {int(d["n"]): d for d in (plan or {}).get("days", [])}
     intro = _lang(log.get("intro"), lang) or []
     intro = intro if isinstance(intro, list) else [intro]
@@ -94,7 +104,8 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
               '    <div class="stats">' + "".join(f"<span>{txt(s)}</span>" for s in stats) + "</div>",
               '    <div class="tabs" role="tablist">' + "".join(
                   f'<button type="button" role="tab" data-tab="{key}" class="{"on" if key == "log" else ""}" aria-selected="{"true" if key == "log" else "false"}">{txt(name)}'
-                  + ('<span class="badge" hidden></span>' if key == "pics" else "") + "</button>" for key, name in zip(("log", "pics", "map", "wx"), M["tabs"])) + "</div>",
+                  + ('<span class="badge" hidden></span>' if key == "pics" else "") + "</button>" for key, name in zip(("log", "pics", "map", "wx"), M["tabs"]))
+              + f'<button type="button" class="editbtn" data-edit title="{M["edit"]}" aria-label="{M["edit"]}">✎</button></div>',
               '    <div class="pane" data-pane="log" role="tabpanel">']
         o += [blocks(p) for p in text]
         o += ["    </div>",
@@ -133,7 +144,11 @@ def render(log_path: Path, trek: dict, plan_path: Path | None) -> tuple[str, dic
     for lang in trek["languages"]:
         parts.append(render_lang(lang, log, trek, plan.get(lang), "" if lang == first else lang + "-"))
         parts.append("")
-    cfg = {"user": log["user"], "days": {int(d["n"]): {"date": d["date"], "anchors": d.get("anchors") or []} for d in log["days"]}, "photos": log.get("photos") or {}}
+    def paras(d, lang):
+        t = _lang(d.get("text"), lang) or []
+        return [str(x) for x in (t if isinstance(t, list) else [t])]
+    cfg = {"user": log["user"], "days": {int(d["n"]): {"date": d["date"], "anchors": d.get("anchors") or [], "text": {lang: paras(d, lang) for lang in trek["languages"]}} for d in log["days"]},
+           "photos": {str(k): v for k, v in (log.get("photos") or {}).items()}}
     return "\n".join(parts), cfg
 
 
