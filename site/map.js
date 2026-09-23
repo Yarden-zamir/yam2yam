@@ -232,7 +232,8 @@
       if (!isFinite(lo)) { lo = 0; hi = 500; }
       var minE = Math.floor(lo / 500) * 500, maxE = Math.max(minE + 500, Math.ceil(hi / 500) * 500), eStep = maxE - minE > 1500 ? 1000 : 500;
       var kStep = span > 60000 ? 20 : span > 25000 ? 10 : span > 12000 ? 5 : 2;
-      var L0 = 44, R0 = 10, T0 = 12, B0 = 24;
+      ctx.font = '11px IBM Plex Mono, monospace';
+      var L0 = Math.ceil(Math.max(ctx.measureText(minE + ' ' + T.m).width, ctx.measureText(maxE + ' ' + T.m).width)) + 12, R0 = 10, T0 = 12, B0 = 24;  /* room for the widest height label, in either language */
       var x = function (d) { return L0 + (d - from) / span * (W - L0 - R0); }, y = function (e) { return T0 + (1 - (e - minE) / (maxE - minE)) * (H - T0 - B0); };
       ctx.clearRect(0, 0, W, H);
       ctx.font = '11px IBM Plex Mono, monospace'; ctx.fillStyle = muted; ctx.strokeStyle = line; ctx.lineWidth = 1;
@@ -562,7 +563,9 @@
     if (u.href !== location.href) history.replaceState(history.state, '', u);
   }
   window.addEventListener('scroll', function () { clearTimeout(atTimer); atTimer = setTimeout(noteAt, 250); }, { passive: true });
-  function bubble(from) { var b = document.getElementById('backbubble'); if (!b) return; if (!from) { b.hidden = true; return; } b.textContent = I18N[visibleLang()].back + ' ' + labelFor(from); b.hidden = false; }
+  /* the way-back bubble shows for a few seconds after a map link; the browser's back button keeps working after it has gone */
+  var bubbleTimer = null;
+  function bubble(from) { var b = document.getElementById('backbubble'); if (!b) return; clearTimeout(bubbleTimer); if (!from) { b.hidden = true; return; } b.textContent = I18N[visibleLang()].back + ' ' + labelFor(from); b.hidden = false; bubbleTimer = setTimeout(function () { b.hidden = true; }, 7000); }
   function dayOf(origin) { var st = origin && origin.closest ? origin.closest('.stage[data-day]') : null; return st ? +st.getAttribute('data-day') : null; }
   function go(q, origin) {
     var from = whereAmI(origin), u = new URL(location.href);

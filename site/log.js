@@ -88,7 +88,7 @@
     document.querySelectorAll('.photoref').forEach(function (s) {
       var p = byId[s.getAttribute('data-photo')]; if (!p) { s.innerHTML = ''; return; }
       var lang = langOf(s), c = caption(p, lang);
-      s.innerHTML = '<a class="inpic ' + (p.w && p.h && p.h > p.w ? 'port' : 'land') + '" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"><img src="' + BASE + esc(p.file) + '" alt="' + esc(c) + '" loading="lazy"' + (p.w && p.h ? ' width="' + p.w + '" height="' + p.h + '"' : '') + '>' + (c ? '<span>' + esc(c) + '</span>' : '') + '</a>';
+      s.innerHTML = '<a class="inpic ' + (p.w && p.h && p.h > p.w ? 'port' : 'land') + '" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"><img src="' + BASE + esc(p.file) + '" alt="' + esc(c) + '" loading="lazy"' + (p.w && p.h ? ' width="' + p.w + '" height="' + p.h + '" style="--ar:' + (p.w / p.h).toFixed(4) + '"' : '') + '>' + (c ? '<span>' + esc(c) + '</span>' : '') + '</a>';
     });
     Object.keys(layers).forEach(function (lang) { rebuildDots(lang); });
   }

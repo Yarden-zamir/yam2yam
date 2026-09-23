@@ -295,9 +295,8 @@ a.lk i.ic-url{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
 .photoref{display:block;margin:12px 0}
 .photos{display:block;margin:12px 0}
 .inpic{display:block;text-decoration:none;color:inherit}
-.inpic img{display:block;max-width:100%;height:auto;margin:0 auto;border-radius:3px;background:var(--line)}
-.inpic.land img{width:100%}
-.inpic.port img{width:auto;max-height:85vh}
+/* --ar (width/height) comes with the picture, so its space is reserved before it loads and the page does not jump; the width is whatever fits under 85vh */
+.inpic img{display:block;height:auto;margin:0 auto;border-radius:3px;background:var(--line);aspect-ratio:var(--ar,auto);max-width:100%;width:min(100%,calc(85vh * var(--ar,1.5)))}
 .inpic span{display:block;font-size:12.5px;color:var(--muted);padding:4px 0;text-align:center;text-decoration:none}
 .pane[data-pane="log"] p{max-width:72ch}
 .tile,.inpic{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none} .tile img,.inpic img{-webkit-user-drag:none}
@@ -310,8 +309,7 @@ a.lk i.ic-url{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
   .logpage .stage canvas.profile{height:200px}
   .photos{display:flex;gap:10px;align-items:flex-start}
   .photos .photoref{flex:1 1 0;min-width:0;margin:0}
-  .photos .inpic img{max-height:70vh;width:auto;max-width:100%}
-  .photoref:not(.photos .photoref) .inpic.port img{max-height:92vh}
+  .photos .inpic img{width:min(100%,calc(70vh * var(--ar,1.5)))}
   .logpage .pane[data-pane="log"]{max-width:none}
 }
 #lightbox{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;flex-direction:column;padding:12px}
