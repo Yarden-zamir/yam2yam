@@ -176,7 +176,7 @@
     lb.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; st0 = Date.now(); }, { passive: true });
     lb.addEventListener('touchend', function (e) {
       var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
-      if (Math.abs(dx) > 50 && Math.abs(dy) < Math.abs(dx)) { var rtl = getComputedStyle(document.documentElement).direction === 'rtl'; show(cur.i + (dx < 0 ? 1 : -1) * (rtl ? -1 : 1)); }
+      if (Math.abs(dx) > 50 && Math.abs(dy) < Math.abs(dx)) show(cur.i + (dx < 0 ? 1 : -1)); /* the next picture is to the right in both languages, like the arrow buttons */
       else if (dy > 90 && Math.abs(dx) < 60 && Date.now() - st0 < 600) close();
     }, { passive: true });
   }
