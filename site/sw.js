@@ -31,10 +31,13 @@ self.addEventListener('fetch', function (e) {
   }
   if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') { e.respondWith(cacheFirst('fonts', e.request).catch(function () { return Response.error(); })); return; }
   if (url.origin === location.origin) {
+    /* the trip log's index and edits change on the page itself: network first, the cache only offline;
+       everything else is served from the cache while the network refreshes it for next time */
+    var live = /^\/log\/[^/]+\/photos\/[^/]+\.json$/.test(url.pathname);
     e.respondWith(caches.open(VERSION).then(function (c) {
       return c.match(e.request, { ignoreSearch: true }).then(function (hit) {
         var net = fetch(e.request.url, { cache: 'no-cache', credentials: 'same-origin' }).then(function (res) { if (res && res.ok) c.put(e.request, res.clone()); return res; }).catch(function () { return hit; });
-        return hit || net;
+        return live ? net : (hit || net);
       });
     }));
   }

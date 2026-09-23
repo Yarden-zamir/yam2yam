@@ -29,8 +29,8 @@ http:// {
 		uri strip_prefix /log
 		root * /data
 		header Cache-Control "public, max-age=86400"
-		header /*/photos/index.json Cache-Control "no-cache"
-		header /*/photos/edits.json Cache-Control "no-cache"
+		# header runs before uri strip_prefix, so the matcher sees the full path
+		header /log/*/photos/*.json Cache-Control "no-cache"
 		file_server
 	}
 	@orig path /log/*/orig/*
