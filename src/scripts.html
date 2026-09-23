@@ -20,8 +20,8 @@
   apply(fromUrl==='he'||fromUrl==='en'?fromUrl:saved,false);
   btn.addEventListener('click',function(){apply(en.hidden?'en':'he',true);if(window.gr52Mast)window.gr52Mast.refresh();});
 })();
-(function(){/* the cover masthead: --sbw lets it span the viewport exactly; on scroll the picture drifts at 0.6x of the page and zooms a little, and the masthead fades once a third of it has gone */
-  var de=document.documentElement,still=matchMedia('(prefers-reduced-motion: reduce)').matches,raf=0;
+(function(){/* the cover masthead: --sbw lets it span the viewport exactly; on scroll the picture drifts at 0.6x of the page and zooms a little, and the masthead fades once a third of it has gone (in CSS where scroll-driven animations exist, here otherwise) */
+  var de=document.documentElement,still=matchMedia('(prefers-reduced-motion: reduce)').matches||(window.CSS&&CSS.supports&&CSS.supports('animation-timeline: view()')),raf=0;
   function sbw(){de.style.setProperty('--sbw',(window.innerWidth-de.clientWidth)+'px');}
   function frame(){raf=0;var y=window.scrollY||0;document.querySelectorAll('.mast').forEach(function(m){var h=m.offsetHeight;if(!h)return;var t=Math.min(y,h),k=t/h;m.style.setProperty('--py',(t*0.6).toFixed(1)+'px');m.style.setProperty('--pz',(1+k*0.12).toFixed(3));m.style.setProperty('--pf',Math.max(0,1-Math.max(0,k-0.3)/0.65).toFixed(3));});}
   function tick(){if(!raf)raf=requestAnimationFrame(frame);}

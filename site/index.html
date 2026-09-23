@@ -163,7 +163,15 @@ body:not(.logpage) .mast{--cover-h:min(46vh,420px)}
 .mast h1{margin-bottom:0}
 .mast .balise,.mast h1::after{border-color:rgba(255,255,255,.6)}
 @media (max-width:760px){.mast{margin:0 calc(50% - 50vw + var(--sbw,0px) / 2) 14px;padding:28px calc(50vw - 50% - var(--sbw,0px) / 2) 12px;min-height:var(--cover-h,min(52vh,460px))}}
-@media (prefers-reduced-motion:reduce){.mast .coverimg{transform:none} .mast{opacity:1}}
+/* where the browser can drive the animation from the scroll position itself, the drift and fade run on the compositor with no lag; the page script only steps in elsewhere */
+.mast{background:#1E2726}
+@supports (animation-timeline: view()){
+  .mast{view-timeline:--mast block;animation:mast-fade linear both;animation-timeline:--mast;animation-range:exit 0% exit 100%;opacity:1}
+  .mast .coverimg{animation:mast-drift linear both;animation-timeline:--mast;animation-range:exit 0% exit 100%;transform:none}
+}
+@keyframes mast-drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(0,60%,0) scale(1.12)}}
+@keyframes mast-fade{0%,30%{opacity:1}95%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.mast .coverimg{transform:none;animation:none} .mast{opacity:1;animation:none}}
 h1{position:relative;display:inline-block}
 h1::after{content:"";display:block;height:6px;margin-top:10px;background:linear-gradient(90deg,var(--mark) 0 50%,#fff 50% 100%);border:1px solid var(--line);width:120px}
 h2::before{content:"";width:34px;height:16px;flex:none;align-self:center;background:linear-gradient(var(--mark) 0 50%,#fff 50% 100%);border:1px solid var(--line)}
@@ -672,8 +680,8 @@ body:has(.locbar) #backbubble{left:78px;transform:none;max-width:calc(100vw - 92
   apply(fromUrl==='he'||fromUrl==='en'?fromUrl:saved,false);
   btn.addEventListener('click',function(){apply(en.hidden?'en':'he',true);if(window.gr52Mast)window.gr52Mast.refresh();});
 })();
-(function(){/* the cover masthead: --sbw lets it span the viewport exactly; on scroll the picture drifts at 0.6x of the page and zooms a little, and the masthead fades once a third of it has gone */
-  var de=document.documentElement,still=matchMedia('(prefers-reduced-motion: reduce)').matches,raf=0;
+(function(){/* the cover masthead: --sbw lets it span the viewport exactly; on scroll the picture drifts at 0.6x of the page and zooms a little, and the masthead fades once a third of it has gone (in CSS where scroll-driven animations exist, here otherwise) */
+  var de=document.documentElement,still=matchMedia('(prefers-reduced-motion: reduce)').matches||(window.CSS&&CSS.supports&&CSS.supports('animation-timeline: view()')),raf=0;
   function sbw(){de.style.setProperty('--sbw',(window.innerWidth-de.clientWidth)+'px');}
   function frame(){raf=0;var y=window.scrollY||0;document.querySelectorAll('.mast').forEach(function(m){var h=m.offsetHeight;if(!h)return;var t=Math.min(y,h),k=t/h;m.style.setProperty('--py',(t*0.6).toFixed(1)+'px');m.style.setProperty('--pz',(1+k*0.12).toFixed(3));m.style.setProperty('--pf',Math.max(0,1-Math.max(0,k-0.3)/0.65).toFixed(3));});}
   function tick(){if(!raf)raf=requestAnimationFrame(frame);}
