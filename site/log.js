@@ -152,6 +152,7 @@
 
   /* ---- lightbox: arrows, keys, swipe sideways, swipe down to close, download ---- */
   var lb = document.getElementById('lightbox'), cur = { list: [], i: 0 };
+  var sheetWrap = document.createElement('div'); sheetWrap.id = 'sheetwrap'; sheetWrap.hidden = true; sheetWrap.innerHTML = '<div class="sheet" role="menu"></div>'; document.body.appendChild(sheetWrap);
   function show(i) {
     var p = cur.list[i]; if (!p) return; cur.i = i;
     var lang = visibleLang(), c = caption(p, lang), pos = place(p);
@@ -160,11 +161,33 @@
     lb.querySelector('.lbcap').innerHTML = (c ? esc(c) + ' · ' : '') + (p.taken ? T[lang].taken + ' ' + esc(p.taken.replace('T', ' ').slice(0, 16)) : '')
       + (pos ? ' · <a href="?map=ll:' + pos.lat.toFixed(5) + ',' + pos.lon.toFixed(5) + '" class="focus" data-go="ll:' + pos.lat.toFixed(5) + ',' + pos.lon.toFixed(5) + ':' + esc(c || T[lang].photo) + '" data-day="' + (dayOf(p) == null ? '' : dayOf(p)) + '">' + T[lang].onMap + '</a>' + (pos.est ? ' (' + T[lang].est + ')' : '') : '');
     lb.querySelector('.lbn').textContent = (i + 1) + ' / ' + cur.list.length;
+    if (overlay === 'lb') { var u = new URL(location.href); if (u.searchParams.get('photo') !== p.id) { u.searchParams.set('photo', p.id); history.replaceState(history.state, '', u); } }
     lb.querySelector('[data-lb="prev"]').disabled = i === 0; lb.querySelector('[data-lb="next"]').disabled = i === cur.list.length - 1;
     var pre = cur.list[i + 1]; if (pre) { var img = new Image(); img.src = BASE + pre.file; }
   }
-  function open(list, i) { cur.list = list; lb.hidden = false; document.body.classList.add('lbopen'); show(i); }
-  function close() { lb.hidden = true; document.body.classList.remove('lbopen'); }
+  /* the lightbox and the sheet are history entries, so the phone's back button closes them instead of
+     leaving the page; the lightbox also keeps ?photo=ID in the address, so the link can be shared */
+  var overlay = null, popPending = false;
+  function pushOverlay(kind, photoId) {
+    var u = new URL(location.href); if (photoId) u.searchParams.set('photo', photoId);
+    history.pushState(Object.assign({}, history.state || {}, { overlay: kind }), '', u); overlay = kind;
+  }
+  function popOverlay() {
+    if (history.state && history.state.overlay && overlay) { popPending = true; overlay = null; history.back(); return; }
+    overlay = null; var u = new URL(location.href); if (u.searchParams.has('photo')) { u.searchParams.delete('photo'); history.replaceState(history.state, '', u); }
+  }
+  window.gr52Overlay = { onPop: function () {
+    /* the address the overlay was pushed over may be stale; note the place again once closed */
+    if (window.gr52Nav && window.gr52Nav.noteAt) setTimeout(window.gr52Nav.noteAt, 50);
+    if (popPending) { popPending = false; return true; }
+    if (!lb.hidden) { lb.hidden = true; document.body.classList.remove('lbopen'); overlay = null; return true; }
+    if (!sheetWrap.hidden) { sheetWrap.setAttribute('hidden', ''); overlay = null; return true; }
+    return false;
+  } };
+  function open(list, i, quiet) { cur.list = list; lb.hidden = false; document.body.classList.add('lbopen'); if (!quiet && overlay !== 'lb') pushOverlay('lb', list[i] && list[i].id); show(i); }
+  function close() { lb.hidden = true; document.body.classList.remove('lbopen'); popOverlay(); }
+  function showSheet() { sheetWrap.hidden = false; if (overlay !== 'sheet') pushOverlay('sheet'); }
+  function hideSheet() { sheetWrap.setAttribute('hidden', ''); popOverlay(); }
   if (lb) {
     lb.addEventListener('click', function (e) {
       if (e.target.closest('[data-lb="prev"]')) return show(cur.i - 1);
@@ -309,18 +332,18 @@
     var list = photos.filter(function (p) { return dayOf(p) === n; }), used = ta.value;
     var sh = sheetWrap.querySelector('.sheet'); sh.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
     sh.innerHTML = '<div class="who"><span>' + esc(T[lang].pickHint) + '</span></div><div class="pick">' + list.map(function (p) { return '<a href="#" data-pick="' + esc(p.id) + '" class="' + (used.indexOf('[[photo:' + p.id + ']]') >= 0 ? 'used' : '') + '" title="' + esc(caption(p, lang) || when(p)) + '"><img src="' + small(p) + '" alt="" loading="lazy"></a>'; }).join('') + '</div><button type="button" data-k="cancel" class="cancel">' + T[lang].cancel + '</button>';
-    sheetWrap.hidden = false;
+    showSheet();
     sh.onclick = function (ev) {
       var a = ev.target.closest('a[data-pick]');
       if (a) {
-        ev.preventDefault(); sheetWrap.hidden = true;
+        ev.preventDefault(); hideSheet();
         var tok = '[[photo:' + a.getAttribute('data-pick') + ']]', s0 = ta.selectionStart != null ? ta.selectionStart : ta.value.length, s1 = ta.selectionEnd != null ? ta.selectionEnd : s0;
         var before = ta.value.slice(0, s0), after = ta.value.slice(s1);
         var ins = (before && !/\s$/.test(before) ? ' ' : '') + tok + (after && !/^\s/.test(after) ? ' ' : '');
         ta.value = before + ins + after; ta.focus(); ta.selectionStart = ta.selectionEnd = before.length + ins.length;
         return;
       }
-      if (ev.target.closest('[data-k="cancel"]')) sheetWrap.hidden = true;
+      if (ev.target.closest('[data-k="cancel"]')) hideSheet();
     };
   }
   /* a picture in or out of the day's text, in every language; a hidden picture; a caption */
@@ -343,8 +366,7 @@
     postEdit({ photo: id, caption: cap }, lang).then(render);
   }
   /* long press (or right click) on a picture opens the sheet */
-  var sheetWrap = document.createElement('div'); sheetWrap.id = 'sheetwrap'; sheetWrap.hidden = true; sheetWrap.innerHTML = '<div class="sheet" role="menu"></div>'; document.body.appendChild(sheetWrap);
-  sheetWrap.addEventListener('click', function (e) { if (e.target === sheetWrap) sheetWrap.hidden = true; });
+  sheetWrap.addEventListener('click', function (e) { if (e.target === sheetWrap) hideSheet(); });
   function openSheet(a) {
     var id = a.getAttribute('data-photo'), p = byId[id]; if (!p) return;
     var st = a.closest('.stage'), lang = langOf(a), n = st ? +st.getAttribute('data-day') : dayOf(p), hidden = !!(over[id] && over[id].hide), inline = !!a.closest('.photoref'), items = [];
@@ -354,9 +376,9 @@
     items.push({ k: 'cancel', t: T[lang].cancel, cls: 'cancel' });
     var sh = sheetWrap.querySelector('.sheet'); sh.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
     sh.innerHTML = '<div class="who"><img src="' + small(p) + '" alt=""><span>' + esc(caption(p, lang) || when(p) || id) + '</span></div>' + items.map(function (it) { return '<button type="button" data-k="' + it.k + '" class="' + (it.cls || '') + '">' + esc(it.t) + '</button>'; }).join('');
-    sheetWrap.hidden = false;
+    showSheet();
     sh.onclick = function (e) {
-      var b = e.target.closest('[data-k]'); if (!b) return; var k = b.getAttribute('data-k'); sheetWrap.hidden = true;
+      var b = e.target.closest('[data-k]'); if (!b) return; var k = b.getAttribute('data-k'); hideSheet();
       var done = null;
       if (k === 'add') done = togglePhoto(n, id, true, lang); else if (k === 'remove') done = togglePhoto(n, id, false, lang);
       else if (k === 'hide') done = setHidden(id, true, lang); else if (k === 'unhide') done = setHidden(id, false, lang);
@@ -373,11 +395,11 @@
       var t = T[lang][sp.k === 'map' ? 'onMap' : sp.k === 'gmaps' ? 'inGmaps' : 'openUrl'];
       return sp.k === 'map' ? '<a href="?map=' + esc(sp.q) + '" class="lk k-map" data-go="' + esc(sp.q) + '"><i class="ic-map"></i>' + t + '</a>' : '<a href="' + linkHref(sp) + '" class="lk k-' + sp.k + '" target="_blank" rel="noopener"><i class="ic-' + sp.k + '"></i>' + t + '</a>';
     }).join('') + '</div><button type="button" data-k="cancel" class="cancel">' + T[lang].cancel + '</button>';
-    sheetWrap.hidden = false;
+    showSheet();
     sh.onclick = function (ev) {
-      var g = ev.target.closest('a[data-go]'); if (g) { ev.preventDefault(); sheetWrap.hidden = true; if (window.gr52Nav) window.gr52Nav.go(g.getAttribute('data-go'), a); return; }
-      if (ev.target.closest('a.lk')) { sheetWrap.hidden = true; return; }
-      if (ev.target.closest('[data-k="cancel"]')) sheetWrap.hidden = true;
+      var g = ev.target.closest('a[data-go]'); if (g) { ev.preventDefault(); hideSheet(); if (window.gr52Nav) window.gr52Nav.go(g.getAttribute('data-go'), a); return; }
+      if (ev.target.closest('a.lk')) { hideSheet(); return; }
+      if (ev.target.closest('[data-k="cancel"]')) hideSheet();
     };
   }, true);
   var pressTimer = null, pressed = null, pressStart = null;
@@ -564,7 +586,12 @@
   }
 
   /* ---- boot ---- */
-  loadEdits().then(loadIndex).then(render);
+  loadEdits().then(loadIndex).then(render).then(function () {
+    var id = new URL(location.href).searchParams.get('photo'), p = id && byId[id]; if (!p) return;
+    var n = dayOf(p), list = photos.filter(function (x) { return dayOf(x) === n; }), i = Math.max(0, list.indexOf(p));
+    var st = n != null && document.querySelector('.wrap:not([hidden]) .stage[data-day="' + n + '"]'); if (st) st.scrollIntoView({ block: 'start' });
+    open(list.length ? list : [p], i, true);
+  });
   function onGpx() { weather(); render(); routeChips(); }
   if (window.gr52Data) onGpx(); else document.addEventListener('trek:gpx', onGpx);
 })();

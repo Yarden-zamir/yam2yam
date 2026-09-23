@@ -633,19 +633,24 @@ body:has(.locbar) #backbubble{left:78px;transform:none;max-width:calc(100vw - 92
 <script>
 (function(){
   var btn=document.getElementById('langbtn'),en=document.getElementById('en'),he=document.getElementById('he');
-  function apply(l){
+  function apply(l,store){
     var isHe=l==='he';
     en.hidden=isHe; he.hidden=!isHe;
     btn.textContent=isHe?'English':'עברית';
     btn.setAttribute('lang',isHe?'en':'he');
     document.documentElement.setAttribute('dir',isHe?'rtl':'ltr');
     var fab=document.getElementById('locfab');if(fab){var t=fab.getAttribute('data-label-'+l)||'';fab.setAttribute('aria-label',t);fab.title=t;}
-    try{localStorage.setItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang',l)}catch(e){}
+    if(store){
+      try{localStorage.setItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang',l)}catch(e){}
+      try{var u=new URL(location.href);u.searchParams.set('lang',l);history.replaceState(history.state,'',u)}catch(e){}
+    }
   }
-  var saved='en';
+  /* a shared link carries its language; otherwise the reader's own choice */
+  var saved='en',fromUrl=null;
+  try{fromUrl=new URL(location.href).searchParams.get('lang')}catch(e){}
   try{saved=localStorage.getItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang')||'en'}catch(e){}
-  apply(saved);
-  btn.addEventListener('click',function(){apply(en.hidden?'en':'he')});
+  apply(fromUrl==='he'||fromUrl==='en'?fromUrl:saved,false);
+  btn.addEventListener('click',function(){apply(en.hidden?'en':'he',true)});
 
 })();
 </script>
@@ -655,7 +660,7 @@ if('serviceWorker' in navigator){(function(){var had=!!navigator.serviceWorker.c
 </script>
 <script src="/vendor/leaflet.min.js?v=5c9aecfc30"></script>
 <script src="/vendor/leaflet-rotate.umd.min.js?v=543dab62fe"></script>
-<script src="/map.js?v=0720ae843c" defer></script>
+<script src="/map.js?v=cf2739b156" defer></script>
 <script src="/trip.js?v=9a65a731ab" defer></script>
 </body>
 </html>

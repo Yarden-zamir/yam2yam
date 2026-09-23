@@ -558,6 +558,7 @@
     var u = new URL(location.href); if (u.searchParams.get('map') || (location.hash || '').indexOf('#map=') === 0) return;
     var w = whereOnPage();
     if (w === 'top') u.searchParams.delete('at'); else u.searchParams.set('at', w);
+    u.hash = '';  /* a #d3 from the contents list has done its job; ?at= carries the place now */
     if (u.href !== location.href) history.replaceState(history.state, '', u);
   }
   window.addEventListener('scroll', function () { clearTimeout(atTimer); atTimer = setTimeout(noteAt, 250); }, { passive: true });
@@ -577,6 +578,8 @@
     if (from) restore(from);
   }
   window.addEventListener('popstate', function (e) {
+    /* an open lightbox or sheet takes the back button first (log.js) */
+    if (window.gr52Overlay && window.gr52Overlay.onPop(e)) return;
     if (pushed > 0) pushed--;
     var s = e.state;
     if (s && s.map) { lastFrom = s.from; bubble(s.from); focusVisible(s.map, s.day != null ? s.day : null); }
@@ -618,7 +621,7 @@
       showTab(st, tabs[j].getAttribute('data-tab'));
     }, { passive: true });
   })();
-  window.gr52Nav = { go: go, back: back };
+  window.gr52Nav = { go: go, back: back, noteAt: noteAt };
   document.addEventListener('click', function (e) {
     if (!e.target.closest) return;
     var a = e.target.closest('a[data-focus]');
