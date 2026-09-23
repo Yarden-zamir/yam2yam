@@ -87,6 +87,8 @@
     document.querySelectorAll('.stage[data-day]').forEach(function (st) { var n = +st.getAttribute('data-day'); if (EDITS.days[n] && EDITS.days[n].text && EDITS.days[n].text[langOf(st)] && !st._edited) redrawLog(st); });
     document.querySelectorAll('.photoref').forEach(function (s) {
       var p = byId[s.getAttribute('data-photo')]; if (!p) { s.innerHTML = ''; return; }
+      if (over[p.id] && over[p.id].hide) { s.innerHTML = ''; s.hidden = true; return; }  /* a hidden picture leaves the text too; its token stays, so unhiding brings it back */
+      s.hidden = false;
       var lang = langOf(s), c = caption(p, lang);
       s.innerHTML = '<a class="inpic ' + (p.w && p.h && p.h > p.w ? 'port' : 'land') + '" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"><img src="' + BASE + esc(p.file) + '" alt="' + esc(c) + '" loading="lazy"' + (p.w && p.h ? ' width="' + p.w + '" height="' + p.h + '" style="--ar:' + (p.w / p.h).toFixed(4) + '"' : '') + '>' + (c ? '<span>' + esc(c) + '</span>' : '') + '</a>';
     });
