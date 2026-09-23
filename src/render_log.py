@@ -45,12 +45,12 @@ def link_href(k: str, q: str) -> str:
 
 def link_html(specs: list, label: str) -> str:
     """A chip with an icon per kind; several kinds make one chip that opens a chooser (log.js)."""
-    icons = "".join(f'<i class="{k}"></i>' for k, _ in specs)
+    icons = "".join(f'<i class="ic-{k}"></i>' for k, _ in specs)
     k0, q0 = specs[0]
     if len(specs) == 1:
         if k0 == "map":
-            return f'<a href="?map={esc(q0)}" class="lk map focus" data-focus="{esc(q0)}">{icons}{txt(label or q0)}</a>'
-        return f'<a href="{link_href(k0, q0)}" class="lk {"gm" if k0 == "gmaps" else "url"}" target="_blank" rel="noopener">{icons}{txt(label or q0)}</a>'
+            return f'<a href="?map={esc(q0)}" class="lk k-map focus" data-focus="{esc(q0)}">{icons}{txt(label or q0)}</a>'
+        return f'<a href="{link_href(k0, q0)}" class="lk k-{k0}" target="_blank" rel="noopener">{icons}{txt(label or q0)}</a>'
     data = json.dumps([{"k": k, "q": q} for k, q in specs], ensure_ascii=False).replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;")
     return f'<a href="{link_href(k0, q0)}" class="lk multi" data-links="{data}">{icons}{txt(label or q0)}</a>'
 

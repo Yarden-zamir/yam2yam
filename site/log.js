@@ -257,9 +257,9 @@
   }
   function linkHref(sp) { return sp.k === 'map' ? '?map=' + esc(sp.q) : sp.k === 'gmaps' ? GMAPS + encodeURIComponent(sp.q) : esc(sp.q); }
   function linkHtml(specs, label, lang) {
-    var icons = specs.map(function (sp) { return '<i class="' + sp.k + '"></i>'; }).join(''), s0 = specs[0], text = txt(label || s0.q, lang);
-    if (specs.length === 1) return s0.k === 'map' ? '<a href="?map=' + esc(s0.q) + '" class="lk map focus" data-focus="' + esc(s0.q) + '">' + icons + text + '</a>'
-      : '<a href="' + linkHref(s0) + '" class="lk ' + (s0.k === 'gmaps' ? 'gm' : 'url') + '" target="_blank" rel="noopener">' + icons + text + '</a>';
+    var icons = specs.map(function (sp) { return '<i class="ic-' + sp.k + '"></i>'; }).join(''), s0 = specs[0], text = txt(label || s0.q, lang);
+    if (specs.length === 1) return s0.k === 'map' ? '<a href="?map=' + esc(s0.q) + '" class="lk k-map focus" data-focus="' + esc(s0.q) + '">' + icons + text + '</a>'
+      : '<a href="' + linkHref(s0) + '" class="lk k-' + s0.k + '" target="_blank" rel="noopener">' + icons + text + '</a>';
     return '<a href="' + linkHref(s0) + '" class="lk multi" data-links="' + esc(JSON.stringify(specs)) + '">' + icons + text + '</a>';
   }
   function blocks(para, lang) {
@@ -371,7 +371,7 @@
     var sh = sheetWrap.querySelector('.sheet'); sh.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
     sh.innerHTML = '<div class="who"><span>' + esc(a.textContent) + '</span></div><div class="chips">' + specs.map(function (sp) {
       var t = T[lang][sp.k === 'map' ? 'onMap' : sp.k === 'gmaps' ? 'inGmaps' : 'openUrl'];
-      return sp.k === 'map' ? '<a href="?map=' + esc(sp.q) + '" class="lk map" data-go="' + esc(sp.q) + '"><i class="map"></i>' + t + '</a>' : '<a href="' + linkHref(sp) + '" class="lk ' + (sp.k === 'gmaps' ? 'gm' : 'url') + '" target="_blank" rel="noopener"><i class="' + sp.k + '"></i>' + t + '</a>';
+      return sp.k === 'map' ? '<a href="?map=' + esc(sp.q) + '" class="lk k-map" data-go="' + esc(sp.q) + '"><i class="ic-map"></i>' + t + '</a>' : '<a href="' + linkHref(sp) + '" class="lk k-' + sp.k + '" target="_blank" rel="noopener"><i class="ic-' + sp.k + '"></i>' + t + '</a>';
     }).join('') + '</div><button type="button" data-k="cancel" class="cancel">' + T[lang].cancel + '</button>';
     sheetWrap.hidden = false;
     sh.onclick = function (ev) {
