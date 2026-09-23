@@ -435,6 +435,7 @@
     stage.querySelectorAll('.pane').forEach(function (p) { p.hidden = p.getAttribute('data-pane') !== name; });
     if (name === 'map') claimHost(stage.querySelector('.maphost'));
     if (name === 'wx') stage.dispatchEvent(new CustomEvent('trek:wxshown', { bubbles: true }));
+    clearTimeout(atTimer); atTimer = setTimeout(noteAt, 250);
   }
   function stageOf(lang, n) { return document.querySelector('#' + lang + ' .stage[data-day="' + n + '"]'); }
   /* open a day's Map tab in the visible language, scroll to it, then focus q inside it */
@@ -535,12 +536,31 @@
     var el = from !== 'top' ? document.getElementById(from) : null;
     return el ? el.textContent.replace(/^§\d+/, '').trim().slice(0, 40) : T.top;
   }
-  function restore(from) {
-    var lang = visibleLang(), m = /^d(\d+)(?::(\w+))?$/.exec(from);
-    if (m) { var st = stageOf(lang, +m[1]); if (!st) return; if (m[2] && st.querySelector('.tabs [data-tab="' + m[2] + '"]')) showTab(st, m[2]); st.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
-    if (from === 'top') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
-    var el = document.getElementById(from); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  function restore(from, instant) {
+    var lang = visibleLang(), m = /^d(\d+)(?::(\w+))?$/.exec(from), how = instant ? 'auto' : 'smooth';
+    if (m) { var st = stageOf(lang, +m[1]); if (!st) return; if (m[2] && st.querySelector('.tabs [data-tab="' + m[2] + '"]')) showTab(st, m[2]); st.scrollIntoView({ behavior: how, block: 'start' }); return; }
+    if (from === 'top') { window.scrollTo({ top: 0, behavior: how }); return; }
+    var el = document.getElementById(from); if (el) el.scrollIntoView({ behavior: how, block: 'start' });
   }
+  /* the address follows the reader: ?at=d3:log once a scroll or a tab change settles, so a reload or
+     a shared link lands on the same card and tab. A map view keeps its own ?map= address instead. */
+  var atTimer = null;
+  function whereOnPage() {
+    var y = Math.min(window.innerHeight * 0.4, 320), best = null, bestY = -Infinity;
+    document.querySelectorAll('.wrap:not([hidden]) h2[id], .wrap:not([hidden]) .stage[data-day]').forEach(function (h) { var t = h.getBoundingClientRect().top; if (t <= y && t > bestY) { best = h; bestY = t; } });
+    if (!best) return 'top';
+    if (!best.hasAttribute('data-day')) return best.id;
+    var on = best.querySelector('.tabs .on'); return 'd' + best.getAttribute('data-day') + (on ? ':' + on.getAttribute('data-tab') : '');
+  }
+  var settling = 0;
+  function noteAt() {
+    if (Date.now() < settling) return;  /* the page is still being put back where it was */
+    var u = new URL(location.href); if (u.searchParams.get('map') || (location.hash || '').indexOf('#map=') === 0) return;
+    var w = whereOnPage();
+    if (w === 'top') u.searchParams.delete('at'); else u.searchParams.set('at', w);
+    if (u.href !== location.href) history.replaceState(history.state, '', u);
+  }
+  window.addEventListener('scroll', function () { clearTimeout(atTimer); atTimer = setTimeout(noteAt, 250); }, { passive: true });
   function bubble(from) { var b = document.getElementById('backbubble'); if (!b) return; if (!from) { b.hidden = true; return; } b.textContent = I18N[visibleLang()].back + ' ' + labelFor(from); b.hidden = false; }
   function dayOf(origin) { var st = origin && origin.closest ? origin.closest('.stage[data-day]') : null; return st ? +st.getAttribute('data-day') : null; }
   function go(q, origin) {
@@ -565,6 +585,14 @@
   function fromUrl() {
     var u = new URL(location.href), q = u.searchParams.get('map'), from = u.searchParams.get('from'), h = decodeURIComponent(location.hash || '');
     if (!q && h.indexOf('#map=') === 0) q = h.slice(5);
+    var at = u.searchParams.get('at');
+    if (!q && at) {
+      /* pictures above still load and push the page about, so the place is re-applied while they settle */
+      try { history.scrollRestoration = 'manual'; } catch (e) { }
+      settling = Date.now() + 2200; restore(at, true);
+      [500, 1200, 2000].forEach(function (ms) { setTimeout(function () { restore(at, true); }, ms); });
+      return;
+    }
     if (!q) return;
     lastFrom = from || null; bubble(lastFrom);
     var m = /^d(\d+)/.exec(from || '');
