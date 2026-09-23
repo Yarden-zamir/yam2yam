@@ -605,6 +605,57 @@
     focusVisible(q, m ? +m[1] : null);
   }
   var bb = document.getElementById('backbubble'); if (bb) bb.addEventListener('click', back);
+  /* ---- the dot rail on the left: a dot per day and a dash per section, the current one lit; tap to snap there,
+     drag along it to scrub through the page; a short buzz whenever the lit item changes ---- */
+  (function () {
+    var rail = document.createElement('nav'); rail.className = 'dots'; rail.hidden = true; rail.setAttribute('aria-label', 'Sections'); document.body.appendChild(rail);
+    var items = [], onEl = null, born = Date.now(), scrubbing = false, moved = false, scrubTimer = null, quietUntil = 0;
+    function buzz() { if (Date.now() - born < 3000 || Date.now() < quietUntil) return;  /* not while the page settles on load, nor during the glide after a tap */ try { if (navigator.vibrate) navigator.vibrate(8); } catch (e) { } }
+    function build() {
+      var lang = visibleLang(), T = I18N[lang], els = Array.prototype.slice.call(document.querySelectorAll('.wrap:not([hidden]) h2[id], .wrap:not([hidden]) .stage[data-day]'));
+      items = []; rail.innerHTML = ''; onEl = null;
+      els.forEach(function (el, i) {
+        var day = el.hasAttribute('data-day');
+        if (!day && els[i + 1] && els[i + 1].hasAttribute('data-day')) return;  /* the heading over the day cards: the days stand for it */
+        var a = document.createElement('a'), label = day ? T.day + ' ' + el.getAttribute('data-day') : el.textContent.replace(/^§\d+/, '').trim().replace(/^(.{34}[^\s]*)\s.+$/, '$1');  /* long section names end at a word */
+        a.href = '#' + (day ? 'd' + el.getAttribute('data-day') : el.id); a.className = day ? 'day' : 'sec'; a.innerHTML = '<i></i><span></span>'; a.querySelector('span').textContent = label; a.setAttribute('aria-label', label);
+        rail.appendChild(a); items.push({ el: el, a: a, day: day });
+      });
+      rail.hidden = items.length < 3; mark(false);
+    }
+    function current() {
+      var y = Math.min(window.innerHeight * 0.4, 320), best = null, bestY = -Infinity;
+      items.forEach(function (it) { var t = it.el.getBoundingClientRect().top; if (t <= y && t > bestY) { best = it; bestY = t; } });
+      if (!best && items.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) best = items[items.length - 1];
+      return best || items[0];
+    }
+    function mark(vibrate) {
+      var it = current(); if (!it || it.el === onEl) return;
+      items.forEach(function (x) { x.a.classList.toggle('on', x === it); });
+      if (onEl && vibrate) buzz();
+      onEl = it.el;
+    }
+    function jump(it, smooth) { if (!it) return; it.el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' }); }
+    function at(yy) { var best = null, bd = Infinity; items.forEach(function (it) { var r = it.a.getBoundingClientRect(), d = Math.abs((r.top + r.bottom) / 2 - yy); if (d < bd) { bd = d; best = it; } }); return best; }
+    rail.addEventListener('pointerdown', function (e) { if (e.button > 0) return; e.preventDefault(); scrubbing = true; moved = false; rail.classList.add('scrub'); clearTimeout(scrubTimer); try { rail.setPointerCapture(e.pointerId); } catch (err) { } });
+    rail.addEventListener('pointermove', function (e) {
+      if (!scrubbing) return; var it = at(e.clientY); if (!it || it.el === onEl) return;
+      moved = true; jump(it, false); items.forEach(function (x) { x.a.classList.toggle('on', x === it); }); onEl = it.el; buzz();
+    });
+    function done(e) {
+      if (!scrubbing) return; scrubbing = false;
+      if (!moved) { var it = at(e.clientY); if (it) { if (it.el !== onEl) buzz(); quietUntil = Date.now() + 1200; jump(it, true); items.forEach(function (x) { x.a.classList.toggle('on', x === it); }); onEl = it.el; } }
+      scrubTimer = setTimeout(function () { rail.classList.remove('scrub'); }, 700);
+    }
+    rail.addEventListener('pointerup', done); rail.addEventListener('pointercancel', done);
+    rail.addEventListener('click', function (e) { e.preventDefault(); });
+    var raf = 0;
+    window.addEventListener('scroll', function () { if (scrubbing || raf) return; raf = requestAnimationFrame(function () { raf = 0; mark(true); }); }, { passive: true });
+    window.addEventListener('resize', function () { mark(false); });
+    document.addEventListener('trek:lang', build);
+    build();
+    window.gr52Dots = { refresh: build };
+  })();
   /* swipe sideways on a day card to move between its tabs; the map and sliders keep their own gestures */
   (function () {
     var sx = 0, sy = 0, stage = null;

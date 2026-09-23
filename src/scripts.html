@@ -7,6 +7,7 @@
     btn.textContent=isHe?'English':'עברית';
     btn.setAttribute('lang',isHe?'en':'he');
     document.documentElement.setAttribute('dir',isHe?'rtl':'ltr');
+    document.dispatchEvent(new CustomEvent('trek:lang',{detail:l}));
     var fab=document.getElementById('locfab');if(fab){var t=fab.getAttribute('data-label-'+l)||'';fab.setAttribute('aria-label',t);fab.title=t;}
     if(store){
       try{localStorage.setItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang',l)}catch(e){}

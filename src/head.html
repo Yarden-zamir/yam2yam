@@ -282,6 +282,18 @@ a.lk i.ic-url{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
 .hoverpin{background:#fff;border:3px solid var(--mark)}
 .focusring{border:3px solid #1E6FD9;pointer-events:none}
 /* back bubble: after a map link, one tap returns to where you were */
+/* the dot rail: fixed on the left in both languages */
+.dots{position:fixed;left:2px;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;gap:1px;padding:8px 2px;direction:ltr;touch-action:none;user-select:none;-webkit-user-select:none}
+.dots::before{content:"";position:absolute;left:2px;top:2px;bottom:2px;width:22px;border-radius:12px;background:color-mix(in srgb,var(--ground) 72%,transparent);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:-1}
+.dots[hidden]{display:none}
+.dots a{display:flex;align-items:center;gap:10px;height:17px;padding:0 6px;text-decoration:none;color:var(--ink);cursor:pointer}
+.dots i{flex:none;width:6px;height:6px;border-radius:50%;background:var(--muted);opacity:.55;box-shadow:0 0 0 2px var(--ground);transition:transform .15s,opacity .15s,background .15s}
+.dots a.sec i{width:9px;height:3px;border-radius:2px}
+.dots a.on i{background:var(--mark);opacity:1;transform:scale(1.5)}
+.dots span{font:600 11.5px "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:2px 9px;white-space:nowrap;opacity:0;pointer-events:none;box-shadow:0 2px 8px -4px rgba(0,0,0,.4);transition:opacity .15s}
+.dots.scrub a.on span,.dots:not(.scrub) a:hover span{opacity:1}
+html[dir="rtl"] .dots span{font-family:"Heebo",sans-serif}
+@media print{.dots{display:none}}
 #backbubble{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:7;font:600 13px "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:8px 14px;cursor:pointer;box-shadow:0 4px 14px -4px rgba(0,0,0,.5);max-width:70vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #backbubble:hover{border-color:var(--mark)}
 [dir="rtl"] #backbubble{font-family:"Heebo",sans-serif}
