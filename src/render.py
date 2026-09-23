@@ -104,7 +104,7 @@ def render_lang(lang: str, c: dict, trek: dict, prefix: str) -> str:
         o += [f'<div class="stage" data-day="{n}" data-date="{d["date"]}"{hours}>',
               f'  <div class="d"><a href="#map" data-focus="day:{n}">D{n}<small>{txt(d["label"])}</small></a></div>', "  <div>",
               f'    <h3><a href="#map" class="daylink" data-focus="day:{n}">{txt(d["title"])}</a></h3>',
-              '    <div class="stats">' + "".join(f"<span>{txt(s)}</span>" for s in d.get("stats", [])) + "</div>",
+              '    <div class="stats">' + "".join(f'<span class="st">{txt(s)}</span>' for s in d.get("stats", [])) + "</div>",
               '    <div class="tabs" role="tablist">' + "".join(
                   f'<button type="button" role="tab" data-tab="{key}" class="{"on" if key == "plan" else ""}" aria-selected="{"true" if key == "plan" else "false"}">{txt(name)}'
                   + ('<span class="badge" hidden></span>' if key == "wx" else "") + "</button>" for key, name in zip(("plan", "map", "wx"), L["tabs"])) + "</div>",

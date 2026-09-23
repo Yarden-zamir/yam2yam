@@ -62,12 +62,12 @@ def label_tables(html: str) -> str:
 PLACES: dict[str, str] = TREK.get("places", {})
 _TERM_RE = re.compile("|".join(re.escape(t) for t in sorted(PLACES, key=len, reverse=True))) if PLACES else None
 _TAG_RE = re.compile(r"<[^>]+>")
-_SKIP_OPEN = ("<a ", "<a>", "<h1", "<button", "<title", "<summary", "<caption", "<h2", "<h3")
-_SKIP_CLOSE = ("</a>", "</h1>", "</button>", "</title>", "</summary>", "</caption>", "</h2>", "</h3>")
+_SKIP_OPEN = ("<a ", "<a>", "<h1", "<button", "<title", "<summary", "<caption", "<h2", "<h3", '<span class="st"')
+_SKIP_CLOSE = ("</a>", "</h1>", "</button>", "</title>", "</summary>", "</caption>", "</h2>", "</h3>", "</span>")
 
 
 def link_places(html: str) -> str:
-    """Wrap place names (trek.json "places") in map chips, in text only, never inside anchors or headings."""
+    """Wrap place names (trek.json "places") in map chips, in text only, never inside anchors, headings or the stats chips."""
     if not _TERM_RE:
         return html
     out, pos, skip = [], 0, 0

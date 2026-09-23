@@ -11,7 +11,7 @@ from urllib.parse import quote
 
 import yaml
 
-import render
+import render as render_mod  # the module: this file has its own render() below
 from render import LANG_META, esc, txt
 
 LOG_META = {
@@ -103,7 +103,7 @@ def _lang(v, lang):
 
 def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str) -> str:
     L, M = LANG_META[lang], LOG_META[lang]
-    render.RTL = L["dir"] == "rtl"
+    render_mod.RTL = L["dir"] == "rtl"  # txt() flips → for right-to-left text; the plan page leaves it on its last language
     h2 = lambda i, id_, title: f'<h2 id="{prefix}{id_}">{txt(title)}</h2>'
     plan_days = {int(d["n"]): d for d in (plan or {}).get("days", [])}
     intro = _lang(log.get("intro"), lang) or []
@@ -128,7 +128,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
         o += [f'<div class="stage" id="{prefix}d{n}" data-day="{n}" data-date="{d["date"]}">',
               f'  <div class="d"><a href="?map=day:{n}" data-focus="day:{n}">{M["day"]} {n}<small>{txt(label)}</small></a></div>', "  <div>",
               f'    <h3><a href="?map=day:{n}" class="daylink" data-focus="day:{n}">{txt(title)}</a></h3>',
-              '    <div class="stats">' + "".join(f"<span>{logtxt(s)}</span>" for s in stats) + "</div>",
+              '    <div class="stats">' + "".join(f'<span class="st">{logtxt(s)}</span>' for s in stats) + "</div>",
               '    <div class="tabs" role="tablist">' + "".join(
                   f'<button type="button" role="tab" data-tab="{key}" class="{"on" if key == "log" else ""}" aria-selected="{"true" if key == "log" else "false"}">{txt(name)}'
                   + ('<span class="badge" hidden></span>' if key == "pics" else "") + "</button>" for key, name in zip(("log", "pics", "map", "wx"), M["tabs"]))
