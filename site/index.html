@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Four-day tent plan for the Sea to Sea trail (Yam el Yam) from Achziv on the Mediterranean to the Sea of Galilee, 10 to 13 September 2026.">
+<meta property="og:title" content="Sea to Sea Dossier">
+<meta property="og:description" content="Four-day tent plan for the Sea to Sea trail (Yam el Yam) from Achziv on the Mediterranean to the Sea of Galilee, 10 to 13 September 2026.">
+<meta property="og:type" content="website">
 <meta name="color-scheme" content="light dark">
 <style>body{margin:0;font-size:14px;font-family:system-ui,sans-serif}img{max-width:100%;height:auto}[hidden]{display:none!important}</style>
 <title>Sea to Sea Dossier</title>
@@ -147,6 +150,17 @@ header{position:relative;overflow:hidden}
     repeating-radial-gradient(ellipse 40% 30% at 55% 10%, var(--line) 0 1px, transparent 1px 20px);
   -webkit-mask-image:linear-gradient(#000 40%,transparent);mask-image:linear-gradient(#000 40%,transparent)}
 header > *{position:relative}
+/* cover picture (cover: in log.yaml, or cover in trek.json): the eyebrow and title sit on a masthead over the picture, the rest of the header follows below */
+header.cover{padding-top:0}
+.mast{--ink:#fff;--muted:rgba(255,255,255,.86);--line:rgba(255,255,255,.55);color:#fff;position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;min-height:var(--cover-h,min(60vh,560px));margin:0 -20px 18px;padding:64px 20px 16px}
+body:not(.logpage) .mast{--cover-h:min(46vh,420px)}
+.mast .coverimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% var(--cover-y,50%);z-index:-2;margin:0}
+.mast::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,.45) 70%,rgba(0,0,0,.75) 100%)}
+.mast .eyebrow,.mast h1{text-shadow:0 1px 3px rgba(0,0,0,.55)}
+.mast h1{margin-bottom:0}
+.mast .balise,.mast h1::after{border-color:rgba(255,255,255,.6)}
+@media (max-width:760px){.mast{margin:0 -14px 14px;padding:28px 14px 12px;min-height:var(--cover-h,min(52vh,460px))}}
+@media (min-width:1040px){.mast{border-radius:6px}}
 h1{position:relative;display:inline-block}
 h1::after{content:"";display:block;height:6px;margin-top:10px;background:linear-gradient(90deg,var(--mark) 0 50%,#fff 50% 100%);border:1px solid var(--line);width:120px}
 h2::before{content:"";width:34px;height:16px;flex:none;align-self:center;background:linear-gradient(var(--mark) 0 50%,#fff 50% 100%);border:1px solid var(--line)}

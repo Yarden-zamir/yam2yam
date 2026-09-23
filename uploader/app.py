@@ -178,7 +178,8 @@ def load_edits(user: str) -> dict:
 
 def apply_edit(user: str, body: dict) -> dict:
     """Edits made on the page, kept beside the pictures and read by the page on load: a day's text
-    per language, a picture's caption or whether it is hidden. tools/log_pull.py folds them into log.yaml."""
+    per language, a picture's caption or whether it is hidden, the cover picture (an id, null to
+    remove it). tools/log_pull.py folds them into log.yaml."""
     with LOCK:
         e = load_edits(user)
         if "day" in body:
@@ -195,6 +196,14 @@ def apply_edit(user: str, body: dict) -> dict:
                 p["hide"] = bool(body["hide"])
             if isinstance(body.get("caption"), dict):
                 p.setdefault("caption", {}).update({str(k): str(v)[:500] for k, v in body["caption"].items() if re.match(r"^[a-z]{2}$", str(k))})
+        if "cover" in body:
+            c = body["cover"]
+            if c in (None, ""):
+                e["cover"] = None
+            elif re.match(r"^[a-f0-9]{12}$", str(c)):
+                e["cover"] = str(c)
+            else:
+                raise ValueError("bad picture id")
         e["updated"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         path = edits_path(user)
         path.parent.mkdir(parents=True, exist_ok=True)

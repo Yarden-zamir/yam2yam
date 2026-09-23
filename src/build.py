@@ -25,7 +25,7 @@ SHELL_HEAD = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="{description}">
-<meta name="color-scheme" content="light dark">
+{og}<meta name="color-scheme" content="light dark">
 <style>body{{margin:0;font-size:14px;font-family:system-ui,sans-serif}}img{{max-width:100%;height:auto}}[hidden]{{display:none!important}}</style>
 """
 
@@ -143,11 +143,29 @@ def config_script() -> str:
     return "<script>window.TREK=" + json.dumps(cfg, ensure_ascii=False) + ";</script>\n"
 
 
-if (ROOT / "content.yaml").exists():
-    sys.path.insert(0, str(SRC))
-    from render import render  # noqa: E402
+sys.path.insert(0, str(SRC))
+import render as render_mod  # noqa: E402
+import yaml  # noqa: E402
 
-    (SRC / "body.html").write_text(render(ROOT / "content.yaml", TREK))
+
+def log_covers() -> dict:
+    """{user: cover} for every log with a `cover:`; the trip page borrows the first when trek.json sets none."""
+    out = {}
+    for p in sorted((ROOT / "log").glob("*/log.yaml")) if (ROOT / "log").exists() else []:
+        d = yaml.safe_load(p.read_text())
+        c = render_mod.cover_of(d.get("cover"), d["user"])
+        if c:
+            out[d["user"]] = c
+    return out
+
+
+COVERS = log_covers()
+TREK["_cover"] = render_mod.cover_of(TREK.get("cover")) or next(iter(COVERS.values()), None)
+
+if (ROOT / "content.yaml").exists():
+    (SRC / "body.html").write_text(render_mod.render(ROOT / "content.yaml", TREK))
+
+
 def bust(html: str) -> str:
     """Append ?v=<content hash> to local script and stylesheet URLs, so a changed file is a new URL."""
     def one(m: re.Match) -> str:
@@ -160,10 +178,20 @@ def _vhash(f: Path) -> str:
     return hashlib.sha256(f.read_bytes()).hexdigest()[:10]
 
 
+def og_meta(title: str, description: str, image: str | None) -> str:
+    """Open Graph tags, so a shared link shows the title, the blurb and the cover picture."""
+    q = lambda s: str(s).replace('"', "&quot;")
+    o = [f'<meta property="og:title" content="{q(title)}">', f'<meta property="og:description" content="{q(description)}">', '<meta property="og:type" content="website">']
+    if image:
+        o += [f'<meta property="og:image" content="https://{TREK["hostname"]}{q(image)}">', '<meta name="twitter:card" content="summary_large_image">']
+    return "\n".join(o) + "\n"
+
+
 body = section_maps(link_places(label_tables((SRC / "body.html").read_text())))
 head = bust((SRC / "head.html").read_text().replace("{{NAME}}", TREK["name"]))
 page = (
-    SHELL_HEAD.format(lang=TREK.get("languages", ["en"])[0], description=TREK["description"].replace('"', "&quot;"))
+    SHELL_HEAD.format(lang=TREK.get("languages", ["en"])[0], description=TREK["description"].replace('"', "&quot;"),
+                      og=og_meta(TREK["name"], TREK["description"], TREK["_cover"] and TREK["_cover"]["src"]))
     + head
     + theme_style()
     + config_script()
@@ -181,8 +209,10 @@ if (ROOT / "log").exists():
 
     for log_yaml in sorted((ROOT / "log").glob("*/log.yaml")):
         log_body, log_cfg = render_log(log_yaml, TREK, ROOT / "content.yaml")
+        log_cover = log_cfg.get("cover")
         log_page = (
-            SHELL_HEAD.format(lang=TREK.get("languages", ["en"])[0], description=TREK["description"].replace('"', "&quot;"))
+            SHELL_HEAD.format(lang=TREK.get("languages", ["en"])[0], description=TREK["description"].replace('"', "&quot;"),
+                              og=og_meta(TREK["name"], TREK["description"], log_cover and log_cover["src"]))
             + '<meta name="robots" content="noindex, nofollow">\n'
             + head
             + theme_style()

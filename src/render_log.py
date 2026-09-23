@@ -108,10 +108,12 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
     plan_days = {int(d["n"]): d for d in (plan or {}).get("days", [])}
     intro = _lang(log.get("intro"), lang) or []
     intro = intro if isinstance(intro, list) else [intro]
-    o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap"{"" if lang == trek["languages"][0] else " hidden"}>', "<header>",
-         '  <div class="topo" aria-hidden="true"></div>',
+    htag, mast_open, mast_close = render_mod.cover_html(render_mod.cover_of(log.get("cover"), log["user"]))
+    o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap"{"" if lang == trek["languages"][0] else " hidden"}>', htag,
+         '  <div class="topo" aria-hidden="true"></div>', mast_open,
          f'  <div class="eyebrow"><span class="balise"></span>{txt(_lang(log.get("eyebrow"), lang) or M["eyebrow"])} · {esc(log["user"])}</div>',
-         f'  <h1>{txt(_lang(log.get("title"), lang) or trek["name"])}</h1>']
+         f'  <h1>{txt(_lang(log.get("title"), lang) or trek["name"])}</h1>', mast_close]
+    o = [x for x in o if x != ""]
     if intro:
         o.append(f'  <p class="lede">{logtxt(intro[0])}</p>')
         o += [f"  <p>{logtxt(p)}</p>" for p in intro[1:]]
@@ -175,7 +177,7 @@ def render(log_path: Path, trek: dict, plan_path: Path | None) -> tuple[str, dic
         t = _lang(d.get("text"), lang) or []
         return [str(x) for x in (t if isinstance(t, list) else [t])]
     cfg = {"user": log["user"], "days": {int(d["n"]): {"date": d["date"], "anchors": d.get("anchors") or [], "text": {lang: paras(d, lang) for lang in trek["languages"]}} for d in log["days"]},
-           "photos": {str(k): v for k, v in (log.get("photos") or {}).items()}}
+           "photos": {str(k): v for k, v in (log.get("photos") or {}).items()}, "cover": render_mod.cover_of(log.get("cover"), log["user"])}
     return "\n".join(parts), cfg
 
 

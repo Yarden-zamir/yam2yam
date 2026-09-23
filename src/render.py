@@ -29,6 +29,31 @@ LANG_META = {
 }
 
 
+def cover_of(spec, user: str | None = None) -> dict | None:
+    """The cover picture behind a page header: `cover:` in log.yaml is a picture id or {photo: id, y: 40%},
+    `cover` in trek.json is {src: /path.jpg, y: 40%}; y is where the crop centres. Returns {src, y, photo}."""
+    if not spec:
+        return None
+    if isinstance(spec, str):
+        spec = {"photo": spec}
+    src = spec.get("src")
+    if not src and spec.get("photo") and user:
+        src = f"/log/{user}/photos/{spec['photo']}.jpg"
+    if not src:
+        return None
+    return {"src": src, "y": str(spec.get("y") or "50%"), "photo": spec.get("photo")}
+
+
+def cover_html(cover: dict | None) -> tuple[str, str, str]:
+    """(header tag, masthead opening, masthead closing): with a cover the eyebrow and title sit in a
+    masthead over the picture, and the rest of the header follows below it; without one, a plain header."""
+    if not cover:
+        return "<header>", "", ""
+    return ('<header class="cover">',
+            f'  <div class="mast" style="--cover-y:{esc(cover["y"])}"><img class="coverimg" src="{esc(cover["src"])}" alt="" fetchpriority="high" decoding="async">',
+            "  </div>")
+
+
 def esc(s) -> str:
     return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") if s is not None else ""
 
@@ -87,10 +112,12 @@ def render_lang(lang: str, c: dict, trek: dict, prefix: str) -> str:
     L = LANG_META[lang]
     h2 = lambda i, id_, title: f'<h2 id="{prefix}{id_}">{txt(title)}</h2>'
     gpx = "/" + Path(trek["gpx"]).name
-    o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap"{"" if lang == trek["languages"][0] else " hidden"}>', "<header>",
-         '  <div class="topo" aria-hidden="true"></div>',
+    htag, mast_open, mast_close = cover_html(trek.get("_cover"))
+    o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap"{"" if lang == trek["languages"][0] else " hidden"}>', htag,
+         '  <div class="topo" aria-hidden="true"></div>', mast_open,
          f'  <div class="eyebrow"><span class="balise"></span>{txt(c["eyebrow"])}</div>',
-         f'  <h1>{txt(c["title"])}</h1>', f'  <p class="lede">{txt(c["lede"])}</p>', '  <div class="facts">']
+         f'  <h1>{txt(c["title"])}</h1>', mast_close, f'  <p class="lede">{txt(c["lede"])}</p>', '  <div class="facts">']
+    o = [x for x in o if x != ""]
     for f in c.get("facts", [])[:6]:
         o.append(f'    <div><b>{txt(f["value"])}</b><span>{txt(f["label"])}</span></div>')
     ids = ["plan", "maps", "rules", "tech", "practical", "links"]

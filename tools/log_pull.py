@@ -6,7 +6,7 @@
 
   uv run tools/log_pull.py [--user yarden-zamir] [--url https://host]
 
-The page keeps its edits (a day's text per language, a picture's caption, hidden pictures) in
+The page keeps its edits (a day's text per language, a picture's caption, hidden pictures, the cover) in
 /log/<user>/photos/edits.json next to the pictures; this reads that file and writes the same values
 into the yaml, keeping comments and order, so git and the page agree again. Run src/build.py after.
 """
@@ -17,6 +17,7 @@ from pathlib import Path
 
 import requests
 from ruamel.yaml import YAML
+from ruamel.yaml.comments import CommentedMap
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString as DQ
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -52,6 +53,20 @@ for n, d in (edits.get("days") or {}).items():
         if not isinstance(day.get("text"), dict):
             day["text"] = {}
         day["text"][lang] = [DQ(p) for p in paras]
+        changed += 1
+if "cover" in edits:  # the cover picture: an id, or null when it was removed on the page
+    cur = doc.get("cover")
+    cur_id = cur.get("photo") if isinstance(cur, dict) else cur
+    if edits["cover"] and edits["cover"] != cur_id:
+        m = CommentedMap([("photo", edits["cover"]), ("y", (cur.get("y") if isinstance(cur, dict) else None) or "50%")])
+        m.fa.set_flow_style()
+        if "cover" in doc:
+            doc["cover"] = m
+        else:
+            doc.insert(list(doc.keys()).index("days"), "cover", m)
+        changed += 1
+    elif not edits["cover"] and "cover" in doc:
+        del doc["cover"]
         changed += 1
 photos = doc.setdefault("photos", {})
 for pid, e in (edits.get("photos") or {}).items():

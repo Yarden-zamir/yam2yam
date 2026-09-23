@@ -10,12 +10,12 @@
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
       source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', layer: 'Pictures', zoomIn: 'zoom in for the pictures', download: 'Download',
       edit: 'Edit', save: 'Save', cancel: 'Cancel', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
-      inGmaps: 'Open in Google Maps', openUrl: 'Open the site', addPic: 'Add a picture…', pickHint: 'Tap a picture to put it at the cursor; the outlined ones are already in the text.', addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', captionEdit: 'Edit caption', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
+      inGmaps: 'Open in Google Maps', openUrl: 'Open the site', addPic: 'Add a picture…', pickHint: 'Tap a picture to put it at the cursor; the outlined ones are already in the text.', addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', cover: 'Use as the cover', uncover: 'Remove from the cover', captionEdit: 'Edit caption', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
       source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', layer: 'תמונות', zoomIn: 'התקרבו כדי לראות את התמונות', download: 'הורדה',
       edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
-      inGmaps: 'פתיחה ב-Google Maps', openUrl: 'פתיחת האתר', addPic: 'הוספת תמונה…', pickHint: 'הקישו על תמונה כדי להציב אותה במקום הסמן; המסומנות כבר בטקסט.', addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', captionEdit: 'עריכת כיתוב', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
+      inGmaps: 'פתיחה ב-Google Maps', openUrl: 'פתיחת האתר', addPic: 'הוספת תמונה…', pickHint: 'הקישו על תמונה כדי להציב אותה במקום הסמן; המסומנות כבר בטקסט.', addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', cover: 'שימוש כתמונת השער', uncover: 'הסרה מתמונת השער', captionEdit: 'עריכת כיתוב', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
   var photos = [], hiddenPics = [], byId = {}, over = LOG.photos || {}, DAYS = LOG.days || {}, clusters = {}, layers = {};
@@ -229,7 +229,25 @@
     return fetch(EDITS_URL, { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
       .then(function (e) { if (e && typeof e === 'object') EDITS = e; EDITS.days = EDITS.days || {}; EDITS.photos = EDITS.photos || {}; applyPhotoEdits(); });
   }
+  /* the cover picture behind the header: built from log.yaml, changed on the page through edits.json */
+  function coverId() { return EDITS.cover !== undefined ? EDITS.cover : (LOG.cover ? LOG.cover.photo : null); }
+  function applyCover() {
+    if (EDITS.cover === undefined) return;
+    document.querySelectorAll('.wrap > header').forEach(function (h) {
+      var mast = h.querySelector('.mast');
+      if (!EDITS.cover) { if (mast) { while (mast.children.length) { var c = mast.firstElementChild; if (c.classList.contains('coverimg')) c.remove(); else h.insertBefore(c, mast); } mast.remove(); } h.classList.remove('cover'); return; }
+      if (!mast) {
+        mast = document.createElement('div'); mast.className = 'mast';
+        var img = document.createElement('img'); img.className = 'coverimg'; img.alt = ''; mast.appendChild(img);
+        var eb = h.querySelector('.eyebrow'), h1 = h.querySelector('h1'); h.insertBefore(mast, eb || h1); if (eb) mast.appendChild(eb); if (h1) mast.appendChild(h1);
+      }
+      var src = BASE + EDITS.cover + '.jpg', im = mast.querySelector('.coverimg'); if (im.getAttribute('src') !== src) im.src = src;
+      mast.style.setProperty('--cover-y', LOG.cover && LOG.cover.photo === EDITS.cover ? LOG.cover.y : '50%');
+      h.classList.add('cover');
+    });
+  }
   function applyPhotoEdits() {
+    applyCover();
     Object.keys(EDITS.photos).forEach(function (id) {
       var e = EDITS.photos[id], o = over[id] = over[id] || {};
       if ('hide' in e) o.hide = !!e.hide;
@@ -372,6 +390,7 @@
     var st = a.closest('.stage'), lang = langOf(a), n = st ? +st.getAttribute('data-day') : dayOf(p), hidden = !!(over[id] && over[id].hide), inline = !!a.closest('.photoref'), items = [];
     if (n != null && !hidden) items.push({ k: inline || inLog(n, id) ? 'remove' : 'add', t: T[lang][inline || inLog(n, id) ? 'removeLog' : 'addLog'] });
     items.push({ k: 'caption', t: T[lang].captionEdit });
+    items.push({ k: coverId() === id ? 'uncover' : 'cover', t: T[lang][coverId() === id ? 'uncover' : 'cover'] });
     items.push({ k: hidden ? 'unhide' : 'hide', t: T[lang][hidden ? 'unhide' : 'hide'], cls: hidden ? '' : 'danger' });
     items.push({ k: 'cancel', t: T[lang].cancel, cls: 'cancel' });
     var sh = sheetWrap.querySelector('.sheet'); sh.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
@@ -383,6 +402,8 @@
       if (k === 'add') done = togglePhoto(n, id, true, lang); else if (k === 'remove') done = togglePhoto(n, id, false, lang);
       else if (k === 'hide') done = setHidden(id, true, lang); else if (k === 'unhide') done = setHidden(id, false, lang);
       else if (k === 'caption') editCaption(id, lang);
+      else if (k === 'cover') done = postEdit({ cover: id }, lang).then(function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      else if (k === 'uncover') done = postEdit({ cover: null }, lang);
       if (done) done.catch(function (err) { alert(T[lang].saveFail + ' (' + (err && err.message || err) + ')'); });
     };
   }
