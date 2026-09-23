@@ -23,14 +23,21 @@ http:// {
 	header /maps/* Cache-Control "public, max-age=604800"
 	header @gpx Content-Type application/gpx+xml
 	header @gpx Content-Disposition attachment
-	# trip logs: pictures live on the volume shared with the uploader, uploads go to it
+	# trip logs: pictures live on the volume shared with the uploader, uploads go to it.
+	# The index and the page's edits change on the page itself, so they are never cached;
+	# their own handle block, since a second header directive in one block does not override the first.
+	@livejson path /log/*/photos/*.json
+	handle @livejson {
+		uri strip_prefix /log
+		root * /data
+		header Cache-Control "no-cache"
+		file_server
+	}
 	@photos path /log/*/photos/*
 	handle @photos {
 		uri strip_prefix /log
 		root * /data
 		header Cache-Control "public, max-age=86400"
-		# header runs before uri strip_prefix, so the matcher sees the full path
-		header /log/*/photos/*.json Cache-Control "no-cache"
 		file_server
 	}
 	@orig path /log/*/orig/*
