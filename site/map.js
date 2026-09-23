@@ -610,7 +610,7 @@
   (function () {
     var rail = document.createElement('nav'); rail.className = 'dots'; rail.hidden = true; rail.setAttribute('aria-label', 'Sections'); document.body.appendChild(rail);
     var items = [], onEl = null, born = Date.now(), scrubbing = false, moved = false, scrubTimer = null, quietUntil = 0;
-    function buzz() { if (Date.now() - born < 3000 || Date.now() < quietUntil) return;  /* not while the page settles on load, nor during the glide after a tap */ try { if (navigator.vibrate) navigator.vibrate(8); } catch (e) { } }
+    function buzz() { if (Date.now() - born < 3000 || Date.now() < quietUntil) return;  /* not while the page settles on load, nor during the glide after a tap */ try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) { } }
     function build() {
       var lang = visibleLang(), T = I18N[lang], els = Array.prototype.slice.call(document.querySelectorAll('.wrap:not([hidden]) h2[id], .wrap:not([hidden]) .stage[data-day]'));
       items = []; rail.innerHTML = ''; onEl = null;
@@ -637,7 +637,7 @@
     }
     function jump(it, smooth) { if (!it) return; it.el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' }); }
     function at(yy) { var best = null, bd = Infinity; items.forEach(function (it) { var r = it.a.getBoundingClientRect(), d = Math.abs((r.top + r.bottom) / 2 - yy); if (d < bd) { bd = d; best = it; } }); return best; }
-    rail.addEventListener('pointerdown', function (e) { if (e.button > 0) return; e.preventDefault(); scrubbing = true; moved = false; rail.classList.add('scrub'); clearTimeout(scrubTimer); try { rail.setPointerCapture(e.pointerId); } catch (err) { } });
+    rail.addEventListener('pointerdown', function (e) { if (e.button > 0) return; e.preventDefault(); scrubbing = true; moved = false; rail.classList.add('scrub'); rail.classList.add('live'); clearTimeout(scrubTimer); try { rail.setPointerCapture(e.pointerId); } catch (err) { } });
     rail.addEventListener('pointermove', function (e) {
       if (!scrubbing) return; var it = at(e.clientY); if (!it || it.el === onEl) return;
       moved = true; jump(it, false); items.forEach(function (x) { x.a.classList.toggle('on', x === it); }); onEl = it.el; buzz();
@@ -645,7 +645,7 @@
     function done(e) {
       if (!scrubbing) return; scrubbing = false;
       if (!moved) { var it = at(e.clientY); if (it) { if (it.el !== onEl) buzz(); quietUntil = Date.now() + 1200; jump(it, true); items.forEach(function (x) { x.a.classList.toggle('on', x === it); }); onEl = it.el; } }
-      scrubTimer = setTimeout(function () { rail.classList.remove('scrub'); }, 700);
+      scrubTimer = setTimeout(function () { rail.classList.remove('scrub'); rail.classList.remove('live'); }, 1200);
     }
     rail.addEventListener('pointerup', done); rail.addEventListener('pointercancel', done);
     rail.addEventListener('click', function (e) { e.preventDefault(); });
