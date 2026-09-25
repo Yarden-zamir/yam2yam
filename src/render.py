@@ -129,8 +129,8 @@ def render_lang(lang: str, c: dict, trek: dict, prefix: str) -> str:
         n = int(d["n"])
         hours = f' data-hours="{d["hours"]}"' if d.get("hours") else ""
         o += [f'<div class="stage" data-day="{n}" data-date="{d["date"]}"{hours}>',
-              f'  <div class="d"><a href="#map" data-focus="day:{n}">D{n}<small>{txt(d["label"])}</small></a></div>', "  <div>",
-              f'    <h3><a href="#map" class="daylink" data-focus="day:{n}">{txt(d["title"])}</a></h3>',
+              f'  <div class="d"><a href="#{prefix}maps" data-focus="day:{n}">D{n}<small>{txt(d["label"])}</small></a></div>', "  <div>",
+              f'    <h3><a href="#{prefix}maps" class="daylink" data-focus="day:{n}">{txt(d["title"])}</a></h3>',
               '    <div class="stats">' + "".join(f'<span class="st">{txt(s)}</span>' for s in d.get("stats", [])) + "</div>",
               '    <div class="tabs" role="tablist">' + "".join(
                   f'<button type="button" role="tab" data-tab="{key}" class="{"on" if key == "plan" else ""}" aria-selected="{"true" if key == "plan" else "false"}">{txt(name)}'

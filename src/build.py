@@ -66,18 +66,22 @@ _SKIP_OPEN = ("<a ", "<a>", "<h1", "<button", "<title", "<summary", "<caption", 
 _SKIP_CLOSE = ("</a>", "</h1>", "</button>", "</title>", "</summary>", "</caption>", "</h2>", "</h3>", "</span>")
 
 
-def link_places(html: str) -> str:
-    """Wrap place names (trek.json "places") in map chips, in text only, never inside anchors, headings or the stats chips."""
+def link_places(html: str, anchor: str = "map") -> str:
+    """Wrap place names (trek.json "places") in map chips, in text only, never inside anchors, headings or the stats chips.
+    The chip's plain href (for a page without scripts) is the map section of the language it sits in: #map or #he-map."""
     if not _TERM_RE:
         return html
-    out, pos, stack = [], 0, []  # stack: [tag name, nesting depth] of the skipped elements we are inside
+    out, pos, stack, prefix = [], 0, [], ""  # stack: [tag name, nesting depth] of the skipped elements we are inside
     for m in _TAG_RE.finditer(html):
         text = html[pos : m.start()]
         if not stack:
-            text = _TERM_RE.sub(lambda t: f'<a href="#map" class="lk k-map focus" data-focus="{PLACES[t.group(0)]}"><i class="ic-map"></i>{t.group(0)}</a>', text)
+            text = _TERM_RE.sub(lambda t: f'<a href="#{prefix}{anchor}" class="lk k-map focus" data-focus="{PLACES[t.group(0)]}"><i class="ic-map"></i>{t.group(0)}</a>', text)
         out.append(text)
         tag = m.group(0)
         low = tag.lower()
+        lm = re.search(r'\slang="([a-z]+)"', low)
+        if lm and low.startswith("<div"):
+            prefix = "" if lm.group(1) == TREK["languages"][0] else lm.group(1) + "-"
         name = re.match(r"</?\s*([a-z0-9]+)", low)
         name = name.group(1) if name else ""
         if low.startswith("</"):
@@ -206,7 +210,7 @@ def og_meta(title: str, description: str, cover: dict | None, path: str = "/") -
     return "\n".join(o) + "\n"
 
 
-body = section_maps(link_places(label_tables((SRC / "body.html").read_text())))
+body = section_maps(link_places(label_tables((SRC / "body.html").read_text()), "maps"))
 head = bust((SRC / "head.html").read_text().replace("{{NAME}}", TREK["name"]))
 page = (
     SHELL_HEAD.format(lang=TREK.get("languages", ["en"])[0], description=TREK["description"].replace('"', "&quot;"),
