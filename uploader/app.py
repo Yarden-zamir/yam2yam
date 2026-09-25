@@ -275,7 +275,10 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):  # one line per request, no client address
         print(fmt % args, flush=True)
 
-    def do_GET(self):
+    def do_HEAD(self):  # link crawlers ask HEAD before GET
+        self.do_GET(head=True)
+
+    def do_GET(self, head: bool = False):
         if self.path == "/healthz":
             return self._json(200, {"ok": True})
         path, _, query = self.path.partition("?")
@@ -291,7 +294,8 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Content-Length", str(len(raw)))
             self.send_header("Cache-Control", "public, max-age=86400")
             self.end_headers()
-            self.wfile.write(raw)
+            if not head:
+                self.wfile.write(raw)
             return
         self._json(405, {"error": "POST pictures to /log/<user>/upload"})
 
