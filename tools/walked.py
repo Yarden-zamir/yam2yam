@@ -16,7 +16,8 @@ rebuilds the trek GPX from it, so the edits can be refined and rerun. Each edit 
   {"move": {"waypoint": "NIGHT 3", "to": [lat, lon], "name": "new name"}}
       a waypoint (matched by the start of its name) goes elsewhere, renamed when "name" is given
   {"add": {"name": "HUT · Refuge de Nice", "lat": .., "lon": .., "type": "Lodging"}}
-  {"drop": {"waypoint": "NIGHT 2 option B"}}
+  {"drop": {"waypoint": "NIGHT 2 option B"}}   or   {"drop": {"track": "SIDE TRIP"}}
+      a waypoint or a track whose name starts so is removed
 
 Points added to the line have no <ele>; run tools/elevation.py afterwards. Paths come from Overpass
 (cached under the system temp dir), so the first run needs the network.
@@ -180,9 +181,11 @@ def main():
             if a.get("name"):
                 w.find("g:name", ns).text = a["name"]
         elif kind == "drop":
-            for w in [w for w in wpts if w.findtext("g:name", default="", namespaces=ns).startswith(a["waypoint"])]:
+            for w in [w for w in wpts if a.get("waypoint") and w.findtext("g:name", default="", namespaces=ns).startswith(a["waypoint"])]:
                 root.remove(w)
                 wpts.remove(w)
+            for t in [t for t in root.findall("g:trk", ns) if a.get("track") and t.findtext("g:name", default="", namespaces=ns).startswith(a["track"])]:
+                root.remove(t)
         elif kind == "add":
             col, icon, bg = STYLE.get(a.get("type", "Info"), STYLE["Info"])
             w = ET.Element(f"{{{NS}}}wpt", {"lat": f"{a['lat']:.5f}", "lon": f"{a['lon']:.5f}"})

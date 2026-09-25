@@ -178,17 +178,21 @@ def load_edits(user: str) -> dict:
 
 def apply_edit(user: str, body: dict) -> dict:
     """Edits made on the page, kept beside the pictures and read by the page on load: a day's text
-    per language, the intro or outro per language, a picture's caption or whether it is hidden, the
-    cover picture (an id, null to remove it). tools/log_pull.py folds them into log.yaml."""
+    per language, a day's tips, the intro, the outro or a reference section per language, a picture's
+    caption or whether it is hidden, the cover picture (an id, null to remove it). tools/log_pull.py folds them into log.yaml."""
     with LOCK:
         e = load_edits(user)
         if "day" in body:
             d = e["days"].setdefault(str(int(body["day"])), {})
-            for lang, paras in (body.get("text") or {}).items():
-                if re.match(r"^[a-z]{2}$", str(lang)) and isinstance(paras, list):
-                    d.setdefault("text", {})[lang] = [str(x)[:20000] for x in paras][:200]
-        if body.get("section") in ("intro", "outro"):
-            sec = e.setdefault(body["section"], {})
+            for field in ("text", "tips"):
+                for lang, paras in (body.get(field) or {}).items():
+                    if re.match(r"^[a-z]{2}$", str(lang)) and isinstance(paras, list):
+                        d.setdefault(field, {})[lang] = [str(x)[:20000] for x in paras][:200]
+        if body.get("section"):
+            key = str(body["section"])
+            if not re.match(r"^[a-z][a-z0-9-]{0,30}$", key):
+                raise ValueError("bad section")
+            sec = e.setdefault(key, {}) if key in ("intro", "outro") else e.setdefault("sections", {}).setdefault(key, {})
             for lang, paras in (body.get("text") or {}).items():
                 if re.match(r"^[a-z]{2}$", str(lang)) and isinstance(paras, list):
                     sec[lang] = [str(x)[:20000] for x in paras][:200]

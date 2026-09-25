@@ -41,12 +41,15 @@ if not url:
     threading.Thread(target=server.serve_forever, daemon=True).start()
     url = "http://127.0.0.1:8765/"
 
+# with a story on the front page, the plan (and its map, weather and snapshot probe) lives at /plan/
+probe_url = url.rstrip("/") + "/plan/" if TREK.get("story") else url
+
 # Instrumented copy: log errors, open day 1's Map tab, rotate, simulate a snapshot at NIGHT 2, open one
 # hourly chart in its Weather tab, report in <title>.
 tmp = Path(tempfile.mkdtemp(prefix="trek-check-"))
-html = subprocess.run(["curl", "-s", url], capture_output=True, text=True).stdout
+html = subprocess.run(["curl", "-s", probe_url], capture_output=True, text=True).stdout
 if "<head>" not in html:
-    sys.exit("check: could not fetch " + url)
+    sys.exit("check: could not fetch " + probe_url)
 probe = """<script>window.__log=[];window.addEventListener('error',function(e){window.__log.push('ERR '+e.message+' @'+e.filename+':'+e.lineno)});
 window.addEventListener('unhandledrejection',function(e){window.__log.push('REJ '+(e.reason&&e.reason.message))});
 var __t0=Date.now(); (function waitWx(){ if(Date.now()-__t0<30000 && !document.querySelector('.wx .wxrow') && !document.querySelector('.wx .wxmeta')) return setTimeout(waitWx,500); setTimeout(function(){try{
@@ -96,6 +99,13 @@ m = re.search(r"<title>(\{.*?\})</title>", dom, re.S)
 if not m:
     sys.exit("check: no result title in the rendered DOM (page did not finish); DOM at " + str(tmp / "dom.html"))
 fails = []
+if TREK.get("story"):  # the story page: the days with their tabs, the sections and the page config
+    story = subprocess.run(["curl", "-s", url], capture_output=True, text=True).stdout
+    days = story.count('<div class="stage"'), story.count('<div class="pane" data-pane="tips"'), story.count('<div class="secblock" data-section="')
+    if "window.LOG=" not in story or days[0] < 2 or days[1] != days[0] or days[2] < 4:
+        fails.append(f"story page: LOG config {'present' if 'window.LOG=' in story else 'missing'}, stages {days[0]}, tips panes {days[1]}, sections {days[2]}")
+    if '<meta name="robots" content="noindex' in story:
+        fails.append("story page is marked noindex")
 res = json.loads(m.group(1).replace("&quot;", '"').replace("&amp;", "&"))
 # content completeness: skeleton placeholders that were never replaced
 placeholders = [p for p in ("START → END", "NNN", "N–N h", "…", "YYYY-MM-DD", "TRAIL · REGION", "Who, when, where") if p in html]

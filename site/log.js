@@ -9,12 +9,12 @@
   var T = {
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
       source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', layer: 'Pictures', zoomIn: 'zoom in for the pictures', download: 'Download',
-      edit: 'Edit', save: 'Save', cancel: 'Cancel', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
+      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
       inGmaps: 'Open in Google Maps', openUrl: 'Open the site', addPic: 'Add a picture…', pickHint: 'Tap a picture to put it at the cursor; the outlined ones are already in the text.', addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', cover: 'Use as the cover', uncover: 'Remove from the cover', captionEdit: 'Edit caption', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
       source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', layer: 'תמונות', zoomIn: 'התקרבו כדי לראות את התמונות', download: 'הורדה',
-      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
+      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
       inGmaps: 'פתיחה ב-Google Maps', openUrl: 'פתיחת האתר', addPic: 'הוספת תמונה…', pickHint: 'הקישו על תמונה כדי להציב אותה במקום הסמן; המסומנות כבר בטקסט.', addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', cover: 'שימוש כתמונת השער', uncover: 'הסרה מתמונת השער', captionEdit: 'עריכת כיתוב', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
@@ -85,7 +85,8 @@
       var badge = g.closest('.stage') && g.closest('.stage').querySelector('[data-tab="pics"] .badge'); if (badge) { badge.textContent = list.length ? String(list.length) : ''; badge.hidden = !list.length; }
     });
     document.querySelectorAll('.stage[data-day]').forEach(function (st) { var n = +st.getAttribute('data-day'); if (EDITS.days[n] && EDITS.days[n].text && EDITS.days[n].text[langOf(st)] && !st._edited) redrawLog(st); });
-    document.querySelectorAll('[data-section]').forEach(function (el) { var k = el.getAttribute('data-section'); if (EDITS[k] && EDITS[k][langOf(el)] && !el._edited) redrawSection(el); });
+    document.querySelectorAll('.stage[data-day]').forEach(function (st) { var n = +st.getAttribute('data-day'); if (EDITS.days[n] && EDITS.days[n].tips && EDITS.days[n].tips[langOf(st)] && !st._editedTips) redrawLog(st, 'tips'); });
+    document.querySelectorAll('[data-section]').forEach(function (el) { var k = el.getAttribute('data-section'), ed = k === 'intro' || k === 'outro' ? EDITS[k] : EDITS.sections && EDITS.sections[k]; if (ed && ed[langOf(el)] && !el._edited) redrawSection(el); });
     document.querySelectorAll('.photoref').forEach(function (s) {
       var p = byId[s.getAttribute('data-photo')]; if (!p) { s.innerHTML = ''; return; }
       if (over[p.id] && over[p.id].hide) { s.innerHTML = ''; s.hidden = true; return; }  /* a hidden picture leaves the text too; its token stays, so unhiding brings it back */
@@ -231,7 +232,7 @@
      the built page; tools/log_pull.py folds them into log.yaml. ---- */
   function loadEdits() {
     return fetch(EDITS_URL, { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
-      .then(function (e) { if (e && typeof e === 'object') EDITS = e; EDITS.days = EDITS.days || {}; EDITS.photos = EDITS.photos || {}; applyPhotoEdits(); });
+      .then(function (e) { if (e && typeof e === 'object') EDITS = e; EDITS.days = EDITS.days || {}; EDITS.photos = EDITS.photos || {}; EDITS.sections = EDITS.sections || {}; applyPhotoEdits(); });
   }
   /* the cover picture behind the header: built from log.yaml, changed on the page through edits.json */
   function coverId() { return EDITS.cover !== undefined ? EDITS.cover : (LOG.cover ? LOG.cover.photo : null); }
@@ -267,7 +268,7 @@
       if (r.status === 403) { var k = prompt(T[lang].keyPrompt); if (k == null) throw new Error('no key'); editKey = k; try { localStorage.setItem('log-edit-key', k); } catch (e) { } return postEdit(body, lang); }
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
-    }).then(function (e) { EDITS = e; EDITS.days = EDITS.days || {}; EDITS.photos = EDITS.photos || {}; applyPhotoEdits(); return e; });
+    }).then(function (e) { EDITS = e; EDITS.days = EDITS.days || {}; EDITS.photos = EDITS.photos || {}; EDITS.sections = EDITS.sections || {}; applyPhotoEdits(); return e; });
   }
   function dayText(n, lang) {
     var e = EDITS.days[n] && EDITS.days[n].text && EDITS.days[n].text[lang];
@@ -275,10 +276,15 @@
     var d = DAYS[n] && DAYS[n].text; return d && d[lang] ? d[lang].slice() : [];
   }
   /* the text of a day (a number) or of the intro / outro (its name), edits first */
-  function textOf(key, lang) {
-    if (typeof key === 'number') return dayText(key, lang);
-    var e = EDITS[key] && EDITS[key][lang]; if (e) return e.slice();
-    var s = LOG[key] && LOG[key][lang]; return s ? s.slice() : [];
+  function textOf(key, lang, kind) {
+    if (typeof key === 'number') {
+      if (kind !== 'tips') return dayText(key, lang);
+      var t = EDITS.days[key] && EDITS.days[key].tips && EDITS.days[key].tips[lang]; if (t) return t.slice();
+      var d = DAYS[key] && DAYS[key].tips; return d && d[lang] ? d[lang].slice() : [];
+    }
+    if (key === 'intro' || key === 'outro') { var e = EDITS[key] && EDITS[key][lang]; if (e) return e.slice(); var s = LOG[key] && LOG[key][lang]; return s ? s.slice() : []; }
+    var es = EDITS.sections && EDITS.sections[key] && EDITS.sections[key][lang]; if (es) return es.slice();
+    var ss = LOG.sections && LOG.sections[key] && LOG.sections[key][lang]; return ss ? ss.slice() : [];
   }
   function redrawSection(el) {
     var kind = el.getAttribute('data-section'), lang = langOf(el), box = el.querySelector('.sectext'); if (!box) return;
@@ -348,15 +354,15 @@
     out.push(html.slice(pos));
     return out.join('');
   }
-  function redrawLog(st) {
-    var n = +st.getAttribute('data-day'), lang = langOf(st), pane = st.querySelector('.pane[data-pane="log"]');
-    pane.innerHTML = linkPlaces(dayText(n, lang).map(function (p) { return blocks(p, lang); }).join('\n'));
-    st._edited = true;
+  function redrawLog(st, kind) {
+    var n = +st.getAttribute('data-day'), lang = langOf(st), pane = st.querySelector('.pane[data-pane="' + (kind === 'tips' ? 'tips' : 'log') + '"]'); if (!pane) return;
+    pane.innerHTML = linkPlaces(textOf(n, lang, kind).map(function (p) { return blocks(p, lang); }).join('\n'));
+    if (kind === 'tips') st._editedTips = true; else st._edited = true;
   }
-  function saveText(key, texts, lang) {
-    var body = typeof key === 'number' ? { day: key, text: texts } : { section: key, text: texts };
+  function saveText(key, texts, lang, kind) {
+    var body = typeof key === 'number' ? (kind === 'tips' ? { day: key, tips: texts } : { day: key, text: texts }) : { section: key, text: texts };
     return postEdit(body, lang).then(function () {
-      if (typeof key === 'number') document.querySelectorAll('.stage[data-day="' + key + '"]').forEach(function (st) { st._edited = false; redrawLog(st); });
+      if (typeof key === 'number') document.querySelectorAll('.stage[data-day="' + key + '"]').forEach(function (st) { if (kind === 'tips') st._editedTips = false; else st._edited = false; redrawLog(st, kind); });
       else document.querySelectorAll('[data-section="' + key + '"]').forEach(function (el) { el._edited = false; redrawSection(el); });
       render();
     });
@@ -365,32 +371,36 @@
   function editing() { document.body.classList.toggle('editing', !!document.querySelector('.editor')); }
   document.addEventListener('click', function (e) {
     var b = e.target.closest('.editbtn'); if (!b) return;
-    openEditor(b.closest('.stage, [data-section]'), null);
+    var box = b.closest('.stage, [data-section]'), on = box && box.querySelector('.tabs .on');
+    openEditor(box, null, on && on.getAttribute('data-tab') === 'tips' ? 'tips' : 'log');  /* the pencil edits the tab that is showing: the log or the tips */
   });
   /* opens (or closes) the day's editor; `at` is a character position in the text to put the caret on */
-  function openEditor(st, at) {
+  function openEditor(st, at, kind) {
     if (!st) return;
+    kind = kind === 'tips' ? 'tips' : 'log';
     var isDay = st.hasAttribute('data-day'), n = isDay ? +st.getAttribute('data-day') : st.getAttribute('data-section'), lang = langOf(st);
-    var b = isDay ? st.querySelector('.tabs .editbtn') : st.querySelector(':scope > .editbtn'), pane = isDay ? st.querySelector('.pane[data-pane="log"]') : st.querySelector('.sectext');
+    var b = isDay ? st.querySelector('.tabs .editbtn') : st.querySelector(':scope > .editbtn'), pane = isDay ? st.querySelector('.pane[data-pane="' + kind + '"]') : st.querySelector('.sectext');
     if (!b || !pane) return;
-    if (st.querySelector('.editor')) {
-      if (at == null) { st.querySelector('.editor').remove(); b.classList.remove('on'); pane.hidden = false; editing(); }
-      else caretTo(st.querySelector('.editor textarea'), at);
-      return;
+    var open = st.querySelector('.editor');
+    if (open) {
+      if (open.getAttribute('data-kind') === kind && at != null) { caretTo(open.querySelector('textarea'), at); return; }
+      open.remove(); b.classList.remove('on'); st.querySelectorAll('.pane[hidden][data-pane="log"], .pane[hidden][data-pane="tips"]').forEach(function (x) { x.hidden = true; }); editing();
+      if (open.getAttribute('data-kind') === kind && at == null) { if (isDay) window.gr52Map.showTab(st, kind); else pane.hidden = false; return; }  /* the same pencil again closes it */
     }
-    if (isDay) window.gr52Map.showTab(st, 'log');
-    var ed = document.createElement('div'); ed.className = 'editor';
+    if (isDay) window.gr52Map.showTab(st, kind);
+    var ed = document.createElement('div'); ed.className = 'editor'; ed.setAttribute('data-kind', kind);
     ed.innerHTML = '<textarea spellcheck="false"></textarea><div class="row"><button type="button" class="primary" data-act="save">' + T[lang].save + '</button><button type="button" data-act="cancel">' + T[lang].cancel + '</button><button type="button" data-act="pick">' + T[lang].addPic + '</button><span class="msg"></span><span class="hint">' + esc(T[lang].editHint) + '</span></div>';
-    ed.querySelector('textarea').value = textOf(n, lang).join('\n\n');
+    ed.querySelector('textarea').value = textOf(n, lang, kind).join('\n\n');
     pane.hidden = true; pane.parentNode.insertBefore(ed, pane); b.classList.add('on'); editing();
     if (at != null) caretTo(ed.querySelector('textarea'), at);
     ed.addEventListener('click', function (ev) {
       var act = ev.target.closest('[data-act]'); if (!act) return;
       if (act.getAttribute('data-act') === 'cancel') { ed.remove(); b.classList.remove('on'); pane.hidden = false; editing(); return; }
+      if (act.getAttribute('data-act') === 'save' && !ed.querySelector('textarea').value.trim() && !confirm(T[lang].emptyConfirm)) return;
       if (act.getAttribute('data-act') === 'pick') { pickPicture(isDay ? n : null, lang, ed.querySelector('textarea')); return; }
       var paras = ed.querySelector('textarea').value.split(/\n\s*\n/).map(function (x) { return x.trim(); }).filter(Boolean), texts = {}; texts[lang] = paras;
       var msg = ed.querySelector('.msg'); msg.textContent = '…';
-      saveText(n, texts, lang).then(function () { ed.remove(); b.classList.remove('on'); pane.hidden = false; editing(); }, function (err) { msg.textContent = T[lang].saveFail + ' (' + (err && err.message || err) + ')'; });
+      saveText(n, texts, lang, kind).then(function () { ed.remove(); b.classList.remove('on'); pane.hidden = false; editing(); }, function (err) { msg.textContent = T[lang].saveFail + ' (' + (err && err.message || err) + ')'; });
     });
   }
   function caretTo(ta, at) {
@@ -414,15 +424,16 @@
   function squash(s) { return String(s).replace(/[\s\u200e\u200f]+/g, ' ').replace(/[→←]/g, '').trim(); }
   function editAt(p, x, y) {
     var st = p.closest('.stage, [data-section]'); if (!st) return;
-    var lang = langOf(st), paras = textOf(st.hasAttribute('data-day') ? +st.getAttribute('data-day') : st.getAttribute('data-section'), lang);
+    var kind = p.closest('.pane[data-pane="tips"]') ? 'tips' : 'log';
+    var lang = langOf(st), paras = textOf(st.hasAttribute('data-day') ? +st.getAttribute('data-day') : st.getAttribute('data-section'), lang, kind);
     var node = null, off = 0;
     try { if (document.caretPositionFromPoint) { var cp = document.caretPositionFromPoint(x, y); if (cp) { node = cp.offsetNode; off = cp.offset; } } else if (document.caretRangeFromPoint) { var cr = document.caretRangeFromPoint(x, y); if (cr) { node = cr.startContainer; off = cr.startOffset; } } } catch (e) { }
     var inP = 0; if (node && p.contains(node)) { var r = document.createRange(); r.setStart(p, 0); r.setEnd(node, off); inP = squash(r.toString()).length; }
     var head = squash(p.textContent).slice(0, 40), idx = -1, segStart = 0, total = 0;
     for (var i = 0; i < paras.length && idx < 0; i++) { var vis = squash(visibleText(paras[i])); var k = head ? vis.indexOf(head) : -1; if (k >= 0) { idx = i; segStart = k; } }
-    if (idx < 0) { openEditor(st, 0); return; }
+    if (idx < 0) { openEditor(st, 0, kind); return; }
     for (var j = 0; j < idx; j++) total += paras[j].length + 2;
-    openEditor(st, total + sourceOffset(paras[idx], segStart + inP));
+    openEditor(st, total + sourceOffset(paras[idx], segStart + inP), kind);
   }
   /* the picker: the day's pictures in a grid; one tap puts its token where the cursor is */
   function pickPicture(n, lang, ta) {
@@ -504,7 +515,7 @@
   }, true);
   var pressTimer = null, pressed = null, pressStart = null, pressEnd = 0;
   function pressTarget(e) { var a = e.target.closest && e.target.closest('a[data-photo]'); return a && !a.closest('#lightbox') && !a.closest('.leaflet-popup') ? a : null; }
-  function textTarget(e) { var p = e.target.closest && e.target.closest('.pane[data-pane="log"] p, .sectext p'); var box = p && p.closest('.stage, [data-section]'); return p && box && !e.target.closest('a, .photoref, .editor') && box.querySelector('.editbtn') ? p : null; }
+  function textTarget(e) { var p = e.target.closest && e.target.closest('.pane[data-pane="log"] p, .pane[data-pane="tips"] p, .sectext p'); var box = p && p.closest('.stage, [data-section]'); return p && box && !e.target.closest('a, .photoref, .editor') && box.querySelector('.editbtn') ? p : null; }
   var lastPointer = 'mouse';
   document.addEventListener('pointerdown', function (e) {
     lastPointer = e.pointerType || 'mouse';

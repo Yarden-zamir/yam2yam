@@ -49,11 +49,12 @@ for n, d in (edits.get("days") or {}).items():
     if not day:
         print(f"day {n}: not in the yaml, skipped", file=sys.stderr)
         continue
-    for lang, paras in (d.get("text") or {}).items():
-        if not isinstance(day.get("text"), dict):
-            day["text"] = {}
-        day["text"][lang] = [DQ(p) for p in paras]
-        changed += 1
+    for field in ("text", "tips"):
+        for lang, paras in (d.get(field) or {}).items():
+            if not isinstance(day.get(field), dict):
+                day[field] = {}
+            day[field][lang] = [DQ(p) for p in paras]
+            changed += 1
 if "cover" in edits:  # the cover picture: an id, or null when it was removed on the page
     cur = doc.get("cover")
     cur_id = cur.get("photo") if isinstance(cur, dict) else cur
@@ -73,6 +74,17 @@ for kind in ("intro", "outro"):
         if not isinstance(doc.get(kind), dict):
             doc[kind] = {}
         doc[kind][lang] = [DQ(p) for p in paras]
+        changed += 1
+by_key = {s.get("key"): s for s in doc.get("sections") or []}
+for key, langs in (edits.get("sections") or {}).items():
+    sec = by_key.get(key)
+    if not sec:
+        print(f"section {key}: not in the yaml, skipped", file=sys.stderr)
+        continue
+    for lang, paras in langs.items():
+        if not isinstance(sec.get("text"), dict):
+            sec["text"] = {}
+        sec["text"][lang] = [DQ(p) for p in paras]
         changed += 1
 photos = doc.setdefault("photos", {})
 for pid, e in (edits.get("photos") or {}).items():

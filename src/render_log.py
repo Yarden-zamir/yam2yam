@@ -15,10 +15,10 @@ import render as render_mod  # the module: this file has its own render() below
 from render import LANG_META, esc, txt
 
 LOG_META = {
-    "en": {"tabs": ["Log", "Pictures", "Map", "Weather"], "days_h": "Days", "map_h": "Whole route", "upload_h": "Upload pictures",
+    "en": {"tabs": ["Log", "Tips", "Pictures", "Map", "Weather"], "days_h": "Days", "map_h": "Whole route", "upload_h": "Upload pictures",
            "upload_hint": "Pictures go straight into this log, one by one or as a zip (a Google Photos album download works as is). The date and place come from the picture itself; captions and the day can be set afterwards in the log file.",
            "pick": "Choose pictures", "undated": "Undated pictures", "eyebrow": "Trip log", "show_all": "Show the whole route here", "show_map": "Show the map here", "outro_h": "Wrap-up", "day": "Day", "edit": "Edit"},
-    "he": {"tabs": ["יומן", "תמונות", "מפה", "מזג אוויר"], "days_h": "הימים", "map_h": "כל המסלול", "upload_h": "העלאת תמונות",
+    "he": {"tabs": ["יומן", "טיפים", "תמונות", "מפה", "מזג אוויר"], "days_h": "הימים", "map_h": "כל המסלול", "upload_h": "העלאת תמונות",
            "upload_hint": "התמונות נכנסות ישירות ליומן הזה, אחת אחת או כקובץ zip (הורדה של אלבום מ-Google Photos עובדת כמו שהיא). התאריך והמקום נלקחים מהתמונה עצמה; כיתוב ויום אפשר לקבוע אחר כך בקובץ היומן.",
            "pick": "בחרו תמונות", "undated": "תמונות בלי תאריך", "eyebrow": "יומן מסע", "show_all": "הצג את כל המסלול כאן", "show_map": "הצג את המפה כאן", "outro_h": "לסיכום", "day": "יום", "edit": "עריכה"},
 }
@@ -116,7 +116,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
     o = [x for x in o if x != ""]
     pencil = f'<button type="button" class="editbtn" data-edit title="{M["edit"]}" aria-label="{M["edit"]}">✎</button>'
     o.append('  <div class="secblock" data-section="intro"><div class="sectext">' + "".join(blocks(p) for p in intro) + '</div>' + pencil + '</div>')
-    o += ['  <nav class="toc" aria-label="Days">' + "".join(f'<a href="#{prefix}d{int(d["n"])}">{M["day"]} {int(d["n"])}</a>' for d in log["days"]) + f'<a href="#{prefix}map">{M["map_h"]}</a><a href="#{prefix}upload">{M["upload_h"]}</a></nav>', "</header>", ""]
+    o += ['  <nav class="toc" aria-label="Days">' + "".join(f'<a href="#{prefix}d{int(d["n"])}">{M["day"]} {int(d["n"])}</a>' for d in log["days"]) + f'<a href="#{prefix}outro">{M["outro_h"]}</a>' + "".join(f'<a href="#{prefix}{esc(s["key"])}">{txt(_lang(s.get("title"), lang) or s["key"])}</a>' for s in log.get("sections") or []) + f'<a href="#{prefix}map">{M["map_h"]}</a><a href="#{prefix}upload">{M["upload_h"]}</a></nav>', "</header>", ""]
     o.append(h2(1, "days", M["days_h"]))
     for d in log["days"]:
         n = int(d["n"])
@@ -126,17 +126,20 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
         stats = _lang(d.get("stats"), lang) or []
         text = _lang(d.get("text"), lang) or []
         text = text if isinstance(text, list) else [text]
+        tips = _lang(d.get("tips"), lang) or []
+        tips = tips if isinstance(tips, list) else [tips]
         o += [f'<div class="stage" id="{prefix}d{n}" data-day="{n}" data-date="{d["date"]}">',
               f'  <div class="d"><a href="?map=day:{n}" data-focus="day:{n}">{M["day"]} {n}<small>{txt(label)}</small></a></div>', "  <div>",
               f'    <h3><a href="?map=day:{n}" class="daylink" data-focus="day:{n}">{txt(title)}</a></h3>',
               '    <div class="stats">' + "".join(f'<span class="st">{logtxt(s)}</span>' for s in stats) + "</div>",
               '    <div class="tabs" role="tablist">' + "".join(
                   f'<button type="button" role="tab" data-tab="{key}" class="{"on" if key == "log" else ""}" aria-selected="{"true" if key == "log" else "false"}">{txt(name)}'
-                  + ('<span class="badge" hidden></span>' if key == "pics" else "") + "</button>" for key, name in zip(("log", "pics", "map", "wx"), M["tabs"]))
+                  + ('<span class="badge" hidden></span>' if key == "pics" else "") + "</button>" for key, name in zip(("log", "tips", "pics", "map", "wx"), M["tabs"]))
               + f'<button type="button" class="editbtn" data-edit title="{M["edit"]}" aria-label="{M["edit"]}">✎</button></div>',
               '    <div class="pane" data-pane="log" role="tabpanel">']
         o += [blocks(p) for p in text]
         o += ["    </div>",
+              '    <div class="pane" data-pane="tips" role="tabpanel" hidden>'] + [blocks(p) for p in tips] + ["    </div>",
               f'    <div class="pane" data-pane="pics" role="tabpanel" hidden><div class="gallery" data-day="{n}"></div></div>',
               f'    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="{n}"><button type="button" class="mapclaim">{M["show_map"]}</button></div></div>',
               f'    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wxh" data-day="{n}"></div></div>',
@@ -147,6 +150,11 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
     outro = outro if isinstance(outro, list) else [outro]
     o += ["", h2(sec, "outro", M["outro_h"]), '<div class="secblock" data-section="outro"><div class="sectext">' + "".join(blocks(p) for p in outro) + '</div>' + pencil + '</div>']
     sec += 1
+    for s in log.get("sections") or []:  # reference sections after the story: {key, title: {lang}, text: {lang: [paras]}}
+        paras = _lang(s.get("text"), lang) or []
+        paras = paras if isinstance(paras, list) else [paras]
+        o += ["", h2(sec, s["key"], _lang(s.get("title"), lang) or s["key"]), f'<div class="secblock" data-section="{esc(s["key"])}"><div class="sectext">' + "".join(blocks(p) for p in paras) + '</div>' + pencil + '</div>']
+        sec += 1
     gpx = "/" + Path(trek["gpx"]).name
     o += ["", h2(sec, "map", M["map_h"]),
           f'<div class="maphost" data-host="all"><button type="button" class="mapclaim">{M["show_all"]}</button>',
@@ -174,7 +182,11 @@ def render(log_path: Path, trek: dict, plan_path: Path | None) -> tuple[str, dic
     def paras(d, lang):
         t = _lang(d.get("text"), lang) or []
         return [str(x) for x in (t if isinstance(t, list) else [t])]
-    cfg = {"user": log["user"], "days": {int(d["n"]): {"date": d["date"], "anchors": d.get("anchors") or [], "text": {lang: paras(d, lang) for lang in trek["languages"]}} for d in log["days"]},
+    def tips(d, lang):
+        t = _lang(d.get("tips"), lang) or []
+        return [str(x) for x in (t if isinstance(t, list) else [t])]
+    cfg = {"user": log["user"], "days": {int(d["n"]): {"date": d["date"], "anchors": d.get("anchors") or [], "text": {lang: paras(d, lang) for lang in trek["languages"]}, "tips": {lang: tips(d, lang) for lang in trek["languages"]}} for d in log["days"]},
+           "sections": {s["key"]: {lang: [str(x) for x in (lambda v: v if isinstance(v, list) else [v] if v else [])(_lang(s.get("text"), lang))] for lang in trek["languages"]} for s in log.get("sections") or []},
            "photos": {str(k): v for k, v in (log.get("photos") or {}).items()}, "cover": render_mod.cover_of(log.get("cover"), log["user"]),
            "places": trek.get("places", {}),
            "intro": {lang: [str(x) for x in (lambda v: v if isinstance(v, list) else [v] if v else [])(_lang(log.get("intro"), lang))] for lang in trek["languages"]},

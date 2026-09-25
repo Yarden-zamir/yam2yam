@@ -239,6 +239,8 @@ a.daylink:hover{color:var(--lake)}
 .tabs .badge{font:600 11px "IBM Plex Mono",monospace;background:var(--warn-soft);border:1px solid var(--warn);color:var(--ink);border-radius:9px;padding:0 6px;line-height:16px}
 .tabs .badge.bad{background:var(--mark-soft);border-color:var(--mark)}
 .tabs .editbtn{margin-inline-start:auto;font-size:16px;padding:6px 10px;color:var(--muted)} .tabs .editbtn:hover{color:var(--ink)} .tabs .editbtn.on{color:var(--mark)}
+/* the archived plan: a note at the top of each language */
+.archive{margin:16px 0 0;padding:10px 14px;border:1px solid var(--warn);background:var(--warn-soft);border-radius:4px;font-size:14px} .archive a{color:var(--ink)}
 /* the intro and the wrap-up carry a pencil of their own */
 .secblock{position:relative;padding-inline-end:34px} .secblock > .editbtn{position:absolute;inset-inline-end:0;top:0;font:16px "IBM Plex Sans",sans-serif;padding:4px 8px;color:var(--muted);background:none;border:0;cursor:pointer} .secblock > .editbtn:hover{color:var(--ink)} .secblock > .editbtn.on{color:var(--mark)}
 [data-section="intro"] .sectext > p:first-child{font-size:19px;max-width:62ch;color:var(--ink)}
@@ -318,7 +320,7 @@ body.editing .dots{display:none}  /* not while a day's text is being edited */
 /* --ar (width/height) comes with the picture, so its space is reserved before it loads and the page does not jump; the width is whatever fits under 85vh */
 .inpic img{display:block;height:auto;margin:0 auto;border-radius:3px;background:var(--line);aspect-ratio:var(--ar,auto);max-width:100%;width:min(100%,calc(85vh * var(--ar,1.5)))}
 .inpic span{display:block;font-size:12.5px;color:var(--muted);padding:4px 0;text-align:center;text-decoration:none}
-.pane[data-pane="log"] p{max-width:72ch}
+.pane[data-pane="log"] p,.pane[data-pane="tips"] p{max-width:72ch}
 .pane.pressing{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .tile,.inpic{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none} .tile img,.inpic img{-webkit-user-drag:none}
 .tile img{transition:transform .25s ease} .tile:hover img{transform:scale(1.03)} .tile,.inpic,.popthumbs a{cursor:zoom-in}
@@ -331,7 +333,7 @@ body.editing .dots{display:none}  /* not while a day's text is being edited */
   .photos{display:flex;gap:10px;align-items:flex-start}
   .photos .photoref{flex:1 1 0;min-width:0;margin:0}
   .photos .inpic img{width:min(100%,calc(70vh * var(--ar,1.5)))}
-  .logpage .pane[data-pane="log"]{max-width:none}
+  .logpage .pane[data-pane="log"],.logpage .pane[data-pane="tips"]{max-width:none}
 }
 #lightbox{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;flex-direction:column;padding:12px}
 #lightbox img{max-width:100%;max-height:calc(100vh - 110px);object-fit:contain;display:block}
