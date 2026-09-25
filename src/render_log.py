@@ -15,10 +15,10 @@ import render as render_mod  # the module: this file has its own render() below
 from render import LANG_META, esc, txt
 
 LOG_META = {
-    "en": {"tabs": ["Log", "Tips", "Pictures", "Map", "Weather"], "days_h": "Days", "map_h": "Whole route", "upload_h": "Upload pictures",
+    "en": {"tabs": ["Log", "Pictures", "Map", "Weather", "Tips"], "days_h": "Days", "map_h": "Whole route", "upload_h": "Upload pictures",
            "upload_hint": "Pictures go straight into this log, one by one or as a zip (a Google Photos album download works as is). The date and place come from the picture itself; captions and the day can be set afterwards in the log file.",
            "pick": "Choose pictures", "undated": "Undated pictures", "eyebrow": "Trip log", "show_all": "Show the whole route here", "show_map": "Show the map here", "outro_h": "Wrap-up", "day": "Day", "edit": "Edit"},
-    "he": {"tabs": ["יומן", "טיפים", "תמונות", "מפה", "מזג אוויר"], "days_h": "הימים", "map_h": "כל המסלול", "upload_h": "העלאת תמונות",
+    "he": {"tabs": ["יומן", "תמונות", "מפה", "מזג אוויר", "טיפים"], "days_h": "הימים", "map_h": "כל המסלול", "upload_h": "העלאת תמונות",
            "upload_hint": "התמונות נכנסות ישירות ליומן הזה, אחת אחת או כקובץ zip (הורדה של אלבום מ-Google Photos עובדת כמו שהיא). התאריך והמקום נלקחים מהתמונה עצמה; כיתוב ויום אפשר לקבוע אחר כך בקובץ היומן.",
            "pick": "בחרו תמונות", "undated": "תמונות בלי תאריך", "eyebrow": "יומן מסע", "show_all": "הצג את כל המסלול כאן", "show_map": "הצג את המפה כאן", "outro_h": "לסיכום", "day": "יום", "edit": "עריכה"},
 }
@@ -116,6 +116,9 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
     o = [x for x in o if x != ""]
     pencil = f'<button type="button" class="editbtn" data-edit title="{M["edit"]}" aria-label="{M["edit"]}">✎</button>'
     o.append('  <div class="secblock" data-section="intro"><div class="sectext">' + "".join(blocks(p) for p in intro) + '</div>' + pencil + '</div>')
+    facts = _lang(log.get("facts"), lang) or []  # the numbers of the trek as walked, as chips under the intro
+    if facts:
+        o.append('  <div class="facts">' + "".join(f'<div><b>{txt(f["value"])}</b><span>{txt(f["label"])}</span></div>' for f in facts[:6]) + "</div>")
     o += ['  <nav class="toc" aria-label="Days">' + "".join(f'<a href="#{prefix}d{int(d["n"])}">{M["day"]} {int(d["n"])}</a>' for d in log["days"]) + f'<a href="#{prefix}outro">{M["outro_h"]}</a>' + "".join(f'<a href="#{prefix}{esc(s["key"])}">{txt(_lang(s.get("title"), lang) or s["key"])}</a>' for s in log.get("sections") or []) + f'<a href="#{prefix}map">{M["map_h"]}</a><a href="#{prefix}upload">{M["upload_h"]}</a></nav>', "</header>", ""]
     o.append(h2(1, "days", M["days_h"]))
     for d in log["days"]:
@@ -134,15 +137,15 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
               '    <div class="stats">' + "".join(f'<span class="st">{logtxt(s)}</span>' for s in stats) + "</div>",
               '    <div class="tabs" role="tablist">' + "".join(
                   f'<button type="button" role="tab" data-tab="{key}" class="{"on" if key == "log" else ""}" aria-selected="{"true" if key == "log" else "false"}">{txt(name)}'
-                  + ('<span class="badge" hidden></span>' if key == "pics" else "") + "</button>" for key, name in zip(("log", "tips", "pics", "map", "wx"), M["tabs"]))
+                  + ('<span class="badge" hidden></span>' if key == "pics" else "") + "</button>" for key, name in zip(("log", "pics", "map", "wx", "tips"), M["tabs"]))
               + f'<button type="button" class="editbtn" data-edit title="{M["edit"]}" aria-label="{M["edit"]}">✎</button></div>',
               '    <div class="pane" data-pane="log" role="tabpanel">']
         o += [blocks(p) for p in text]
         o += ["    </div>",
-              '    <div class="pane" data-pane="tips" role="tabpanel" hidden>'] + [blocks(p) for p in tips] + ["    </div>",
               f'    <div class="pane" data-pane="pics" role="tabpanel" hidden><div class="gallery" data-day="{n}"></div></div>',
               f'    <div class="pane" data-pane="map" role="tabpanel" hidden><div class="maphost empty" data-host="{n}"><button type="button" class="mapclaim">{M["show_map"]}</button></div></div>',
               f'    <div class="pane" data-pane="wx" role="tabpanel" hidden><div class="wxh" data-day="{n}"></div></div>',
+              '    <div class="pane" data-pane="tips" role="tabpanel" hidden>'] + [blocks(p) for p in tips] + ["    </div>",
               "  </div>", "</div>"]
     o += [f'<div class="undated" hidden><h3>{M["undated"]}</h3><div class="gallery" data-day="none"></div></div>']
     sec = 2

@@ -14,18 +14,18 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 LANG_META = {
-    "en": {"dir": "ltr", "button": "עברית", "toc": ["Plan", "Maps", "Rules & water", "Technical", "Practical", "Links"], "gpx": "GPX for OsmAnd ↓",
+    "en": {"dir": "ltr", "button": "עברית", "toc": ["Plan", "Maps", "Rules & water", "Technical", "Practical", "Links"], "gpx": "Download the GPX ↓",
            "snapshot": "Where am I", "snapshot_hint": "The round button at the bottom left takes one position fix, no tracking: it shows you on the map and on the profile, marks finished days done and fills in today's distance, ascent left and arrival estimate. Long-press it to pick your position on the map instead. Each day has Plan, Map and Weather tabs; tap a day title to open its map.",
            "tabs": ["Plan", "Map", "Weather"], "show_map": "Show the map here", "show_all": "Show the whole route here",
            "maps_h": "Maps and profile", "static_maps": "Annotated section maps, for printing or offline", "profile_cap": "Elevation profile from the GPX; the nights are marked.",
            "rules_h": "Rules and water", "tech_h": "Technical options", "practical_h": "Practical", "links_h": "Links", "reports_h": "Trip reports", "official_h": "Official",
-           "map_intro": "This map is drawn live from the same GPX you download for OsmAnd. Each day's Map tab shows its own stretch and profile; this is the whole route. Tap any line or dot for its note. The layers button toggles each track and kind of waypoint; twist with two fingers or use the arrows to rotate, the compass resets north. The button at the bottom left shows your position on the map and the profile. \"Save whole route offline\" stores the map tiles; the page and GPX are stored automatically, so the site keeps working without signal."},
-    "he": {"dir": "rtl", "button": "English", "toc": ["התוכנית", "מפות", "חוקים ומים", "טכני", "פרקטי", "קישורים"], "gpx": "GPX ל-OsmAnd ↓",
+           "map_intro": "This map is drawn live from the same GPX file you can download here, for any map app that reads GPX. Each day's Map tab shows its own stretch and profile; this is the whole route. Tap any line or dot for its note. The layers button toggles each track and kind of waypoint; twist with two fingers or use the arrows to rotate, the compass resets north. The button at the bottom left shows your position on the map and the profile. \"Save whole route offline\" stores the map tiles; the page and GPX are stored automatically, so the site keeps working without signal."},
+    "he": {"dir": "rtl", "button": "English", "toc": ["התוכנית", "מפות", "חוקים ומים", "טכני", "פרקטי", "קישורים"], "gpx": "הורדת ה-GPX ↓",
            "snapshot": "איפה אני", "snapshot_hint": "הכפתור העגול בפינה השמאלית התחתונה קורא מיקום אחד, בלי מעקב: הוא מציג אתכם במפה ובפרופיל, מסמן ימים שהסתיימו כהושלמו וממלא את המרחק, העלייה שנותרה והערכת ההגעה להיום. לחיצה ארוכה עליו בוחרת את המיקום במפה במקום GPS. לכל יום יש לשוניות תוכנית, מפה ומזג אוויר; לחצו על כותרת יום כדי לפתוח את המפה שלו.",
            "tabs": ["תוכנית", "מפה", "מזג אוויר"], "show_map": "הצג את המפה כאן", "show_all": "הצג את כל המסלול כאן",
            "maps_h": "מפות ופרופיל", "static_maps": "מפות מקטעים עם סימונים, להדפסה או לאופליין", "profile_cap": "פרופיל גבהים מה-GPX; הלילות מסומנים.",
            "rules_h": "חוקים ומים", "tech_h": "אופציות טכניות", "practical_h": "פרקטי", "links_h": "קישורים", "reports_h": "דוחות טיולים", "official_h": "רשמי",
-           "map_intro": "המפה הזו מצוירת ישירות מאותו קובץ GPX שמורידים ל-OsmAnd. לשונית המפה של כל יום מציגה את הקטע והפרופיל שלו; כאן כל המסלול. לחצו על כל קו או נקודה כדי לראות את ההערה. כפתור השכבות מדליק ומכבה כל מסלול וכל סוג נקודה; סובבו בשתי אצבעות או עם החצים, והמצפן מחזיר לצפון. הכפתור בפינה השמאלית התחתונה מציג את המיקום שלכם במפה ובפרופיל. \"שמור את כל המסלול לאופליין\" שומר את אריחי המפה; הדף וה-GPX נשמרים אוטומטית, כך שהאתר ממשיך לעבוד בלי קליטה."},
+           "map_intro": "המפה הזו מצוירת ישירות מאותו קובץ GPX שאפשר להוריד כאן, לכל אפליקציית מפות שקוראת GPX. לשונית המפה של כל יום מציגה את הקטע והפרופיל שלו; כאן כל המסלול. לחצו על כל קו או נקודה כדי לראות את ההערה. כפתור השכבות מדליק ומכבה כל מסלול וכל סוג נקודה; סובבו בשתי אצבעות או עם החצים, והמצפן מחזיר לצפון. הכפתור בפינה השמאלית התחתונה מציג את המיקום שלכם במפה ובפרופיל. \"שמור את כל המסלול לאופליין\" שומר את אריחי המפה; הדף וה-GPX נשמרים אוטומטית, כך שהאתר ממשיך לעבוד בלי קליטה."},
 }
 
 
