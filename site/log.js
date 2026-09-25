@@ -9,12 +9,12 @@
   var T = {
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
       source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', layer: 'Pictures', zoomIn: 'zoom in for the pictures', download: 'Download',
-      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', signIn: 'Sign in with GitHub to edit', signOut: 'Sign out', noEdit: 'no editing rights', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
+      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', signIn: 'Sign in with GitHub to edit', signOut: 'Sign out', noEdit: 'no editing rights', tvOn: 'TV mode', tvOff: 'Leave TV mode', tvHint: '↑ ↓ read · ← → days · OK opens the picture · Back closes it', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
       inGmaps: 'Open in Google Maps', openUrl: 'Open the site', addPic: 'Add a picture…', pickHint: 'Tap a picture to put it at the cursor; the outlined ones are already in the text.', addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', cover: 'Use as the cover', uncover: 'Remove from the cover', captionEdit: 'Edit caption', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
       source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', layer: 'תמונות', zoomIn: 'התקרבו כדי לראות את התמונות', download: 'הורדה',
-      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', signIn: 'כניסה עם GitHub לעריכה', signOut: 'יציאה', noEdit: 'בלי הרשאת עריכה', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
+      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', signIn: 'כניסה עם GitHub לעריכה', signOut: 'יציאה', noEdit: 'בלי הרשאת עריכה', tvOn: 'מצב טלוויזיה', tvOff: 'יציאה ממצב טלוויזיה', tvHint: '↑ ↓ קריאה · → ← ימים · OK פותח את התמונה · Back סוגר', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
       inGmaps: 'פתיחה ב-Google Maps', openUrl: 'פתיחת האתר', addPic: 'הוספת תמונה…', pickHint: 'הקישו על תמונה כדי להציב אותה במקום הסמן; המסומנות כבר בטקסט.', addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', cover: 'שימוש כתמונת השער', uncover: 'הסרה מתמונת השער', captionEdit: 'עריכת כיתוב', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
@@ -95,6 +95,7 @@
       s.innerHTML = '<a class="inpic ' + (p.w && p.h && p.h > p.w ? 'port' : 'land') + '" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"><img src="' + BASE + esc(p.file) + '" alt="' + esc(c) + '" loading="lazy"' + (p.w && p.h ? ' width="' + p.w + '" height="' + p.h + '" style="--ar:' + (p.w / p.h).toFixed(4) + '"' : '') + '>' + (c ? '<span>' + esc(c) + '</span>' : '') + '</a>';
     });
     Object.keys(layers).forEach(function (lang) { rebuildDots(lang); });
+    trackNow(false);
   }
 
   /* ---- dots on the map: one preview per group of pictures that would overlap at this zoom (up to four
@@ -154,6 +155,8 @@
     rebuildDots(d.lang);
   });
 
+  /* the Back key of a TV remote: Samsung sends 10009, LG 461, others a named key */
+  function isBack(e) { return e.keyCode === 10009 || e.keyCode === 461 || e.key === 'GoBack' || e.key === 'BrowserBack' || (e.key === 'Backspace' && !(e.target.closest && e.target.closest('input,textarea,[contenteditable]'))); }
   /* ---- lightbox: arrows, keys, swipe sideways, swipe down to close, download ---- */
   var lb = document.getElementById('lightbox'), cur = { list: [], i: 0 };
   var sheetWrap = document.createElement('div'); sheetWrap.id = 'sheetwrap'; sheetWrap.hidden = true; sheetWrap.innerHTML = '<div class="sheet" role="menu"></div>'; document.body.appendChild(sheetWrap);
@@ -212,7 +215,7 @@
       }
       if (e.target.closest('[data-lb="close"]') || !e.target.closest('img,button,a,.lbcap,.lbnav')) close();
     });
-    document.addEventListener('keydown', function (e) { if (lb.hidden) return; if (e.key === 'Escape') close(); if (e.key === 'ArrowRight') show(cur.i + 1); if (e.key === 'ArrowLeft') show(cur.i - 1); });
+    document.addEventListener('keydown', function (e) { if (lb.hidden) return; if (e.key === 'Escape' || isBack(e)) { e.preventDefault(); e.lbClosed = true; close(); } if (e.key === 'ArrowRight') show(cur.i + 1); if (e.key === 'ArrowLeft') show(cur.i - 1); if (e.key === 'Enter' || e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault(); });
     var sx = 0, sy = 0, st0 = 0;
     lb.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; st0 = Date.now(); }, { passive: true });
     lb.addEventListener('touchend', function (e) {
@@ -281,7 +284,7 @@
           var p = document.createElement('p'); p.className = 'signin';
           if (ME.login) p.innerHTML = '<span>' + esc(ME.login) + (ME.editor ? '' : ' · ' + esc(T[lang].noEdit)) + '</span> <a href="/auth/sign_out?rd=%2F">' + esc(T[lang].signOut) + '</a>';
           else p.innerHTML = '<a href="' + signInUrl() + '">' + esc(T[lang].signIn) + '</a>';
-          main.appendChild(p);
+          var ft = main.querySelector('.foot'); if (ft) main.insertBefore(p, ft); else main.appendChild(p);
         });
         if (window.gr52Dots) window.gr52Dots.refresh();
       });
@@ -727,6 +730,82 @@
       st.appendChild(chip);
     });
   }
+
+  /* ---- the map tracks the story: beside the text (body.spine-on) with the Track button on, the map glides to
+     the picture nearest the reading line whenever that picture changes, and stays there between pictures; before
+     a day's first picture it shows the day's stretch. Snapping, not scrolling: one flight per picture. ---- */
+  var trackKey = null, trackTimer = null;
+  function trackStops() {
+    var w = document.querySelector('.wrap:not([hidden]) .main'); if (!w) return [];
+    return Array.prototype.filter.call(w.querySelectorAll('a.inpic[data-photo], .gallery .tile[data-photo]'), function (a) { return a.offsetParent !== null && !a.classList.contains('hid'); });
+  }
+  function trackNow(force) {
+    var G = window.gr52Map;
+    if (!G || !G.tracking() || !document.body.classList.contains('spine-on') || !window.gr52Data) { trackKey = null; return; }
+    var app = G.app(visibleLang()); if (!app || !app.trackTo) return;
+    var y = window.innerHeight * 0.42, best = null, bd = Infinity, above = null;
+    trackStops().forEach(function (a) {
+      var r = a.getBoundingClientRect();
+      if (r.bottom < 0) { above = a; return; } if (r.top > window.innerHeight) return;
+      var d = Math.abs((r.top + r.bottom) / 2 - y); if (d < bd) { bd = d; best = a; }
+    });
+    var a = best || above, p = a && byId[a.getAttribute('data-photo')], n = app.scope();
+    if (p && n != null && dayOf(p) !== n) p = null;  /* the last picture above is another day's: this day has not shown one yet */
+    var pos = p && place(p), key = pos ? p.id : 'scope:' + n;
+    if (!force && key === trackKey) return;
+    trackKey = key; app.trackTo(pos || null);
+  }
+  window.addEventListener('scroll', function () { clearTimeout(trackTimer); trackTimer = setTimeout(function () { trackNow(false); }, 140); }, { passive: true });
+  document.addEventListener('trek:scope', function () { setTimeout(function () { trackNow(true); }, 0); });  /* the day changed under the reader: the map has not moved yet */
+  document.addEventListener('trek:track', function (e) { if (e.detail.on) trackNow(true); else trackKey = null; });
+  window.addEventListener('resize', function () { clearTimeout(trackTimer); trackTimer = setTimeout(function () { trackNow(false); }, 200); });
+  /* a way in and out of TV mode at the foot of the page */
+  document.querySelectorAll('.wrap > .main').forEach(function (main) {
+    var lang = langOf(main), tv = document.documentElement.classList.contains('tv'), p = document.createElement('p'); p.className = 'foot';
+    p.innerHTML = '<a href="?tv=' + (tv ? '0' : '1') + '">' + esc(T[lang][tv ? 'tvOff' : 'tvOn']) + '</a>'; main.appendChild(p);
+  });
+  /* ---- a remote control (html.tv): the arrows walk the story block by block and the map tracks along, left and
+     right jump between days, OK opens the picture under the frame, Back closes it ---- */
+  (function () {
+    if (!document.documentElement.classList.contains('tv')) return;
+    var hint = document.createElement('div'); hint.className = 'tvhint'; document.body.appendChild(hint);
+    function label() { var l = visibleLang(); hint.textContent = T[l].tvHint; hint.setAttribute('lang', l); hint.dir = l === 'he' ? 'rtl' : 'ltr'; }
+    label(); document.addEventListener('trek:lang', function () { setTimeout(label, 30); if (cur) { cur.classList.remove('tvcur'); cur = null; } });
+    var cur = null, busy = 0;
+    function blocks() {
+      var w = document.querySelector('.wrap:not([hidden]) .main'); if (!w) return [];
+      return Array.prototype.filter.call(w.querySelectorAll('h2[id], .stage[data-day], .pane p, .pane .photoref, .pane .photos, .sectext p, .sectext .photoref, .sectext .photos, .facts'), function (el) {
+        return el.offsetParent !== null && !el.closest('.photos .photoref, .editor, .hiddenpics, .signin, .foot, .wx, .wxh') && !(el.matches('.photoref') && el.hidden);
+      });
+    }
+    function set(el) { if (cur) cur.classList.remove('tvcur'); cur = el; if (el) el.classList.add('tvcur'); }
+    function index(list) {
+      var i = cur ? list.indexOf(cur) : -1; if (i >= 0) return i;
+      var y = window.innerHeight * 0.2, best = 0, bd = Infinity;  /* nothing lit yet: the block nearest the reading line */
+      list.forEach(function (el, k) { var d = Math.abs(el.getBoundingClientRect().top - y); if (d < bd) { bd = d; best = k; } });
+      return best;
+    }
+    function goTo(list, i) {
+      i = Math.max(0, Math.min(list.length - 1, i)); var el = list[i]; if (!el) return; set(el);
+      var top = el.getBoundingClientRect().top + window.scrollY - (el.matches('.stage, h2') ? 24 : window.innerHeight * 0.2);
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    }
+    function step(d) { var list = blocks(); if (!list.length) return; goTo(list, (cur ? index(list) : index(list) - Math.max(0, d)) + d); }
+    function day(d) {
+      var list = blocks(), stages = list.filter(function (el) { return el.matches('.stage'); }); if (!stages.length) return;
+      var here = cur ? cur.closest('.stage') : null, i = here ? stages.indexOf(here) : -1;
+      if (i < 0) { var y = window.innerHeight * 0.2, bd = Infinity; stages.forEach(function (st, k) { var dd = st.getBoundingClientRect().top - y; if (dd <= 1 && -dd < bd) { bd = -dd; i = k; } }); }
+      var j = Math.max(0, Math.min(stages.length - 1, i + d)); goTo(list, list.indexOf(stages[j]));
+    }
+    document.addEventListener('keydown', function (e) {
+      if (!lb.hidden || !sheetWrap.hidden || (e.target.closest && e.target.closest('input,textarea,select,[contenteditable]'))) return;
+      var k = e.key;
+      if (k === 'ArrowDown' || k === 'ArrowUp') { e.preventDefault(); if (Date.now() < busy) return; busy = Date.now() + 240; step(k === 'ArrowDown' ? 1 : -1); return; }
+      if (k === 'ArrowRight' || k === 'ArrowLeft') { e.preventDefault(); if (Date.now() < busy) return; busy = Date.now() + 300; day(k === 'ArrowRight' ? 1 : -1); return; }
+      if (k === 'Enter' && cur && !(e.target.closest && e.target.closest('button,a'))) { var a = cur.querySelector('a.inpic[data-photo]'); if (a) { e.preventDefault(); a.click(); } return; }
+      if (isBack(e) && cur && !e.lbClosed) { e.preventDefault(); set(null); }  /* the same press already closed the lightbox: the frame stays */
+    });
+  })();
 
   /* ---- boot ---- */
   whoami(); loadEdits().then(loadIndex).then(render).then(function () {

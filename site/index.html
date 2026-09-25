@@ -253,10 +253,11 @@ a.daylink:hover{color:var(--lake)}
 .tabs .editbtn{margin-inline-start:auto;font-size:16px;padding:6px 10px;color:var(--muted)} .tabs .editbtn:hover{color:var(--ink)} .tabs .editbtn.on{color:var(--mark)}
 /* the archived plan: a note at the top of each language */
 .archive{margin:16px 0 0;padding:10px 14px;border:1px solid var(--warn);background:var(--warn-soft);border-radius:4px;font-size:14px} .archive a{color:var(--ink)}
-/* the spine: on a wide log page the map sits beside the story and follows the reader */
+/* the spine: on a wide log page (or a phone on its side) the map sits beside the story, on the right in both languages, and follows the reader */
 .spine{display:none}
-@media (min-width:1100px){
+@media (min-width:1100px),(orientation:landscape) and (min-width:640px) and (max-height:560px){
   body.spine-on .wrap{display:flex;gap:28px;align-items:flex-start}
+  body.spine-on .wrap[dir="rtl"]{flex-direction:row-reverse}
   body.spine-on .main{flex:1 1 0;min-width:0}
   body.spine-on .spine{display:block;flex:0 0 min(440px,36vw);position:sticky;top:58px;max-height:calc(100vh - 70px);overflow:hidden}  /* below the language button */
   body.spine-on .spine .mapbox{margin:0}
@@ -267,6 +268,43 @@ a.daylink:hover{color:var(--lake)}
   body.spine-on .mast{margin-inline:0;padding-inline:20px;border-radius:6px}  /* the cover fits the story column beside the map */
   body.spine-on h2#map,body.spine-on h2#he-map,body.spine-on .maphost[data-host="all"],body.spine-on .tabs [data-tab="map"]{display:none}
 }
+/* a phone on its side: the map takes the right half, full height, the profile and tools give way to it */
+@media (orientation:landscape) and (max-width:1099px) and (max-height:560px){
+  body.spine-on .wrap{gap:14px;padding-inline:12px}
+  body.spine-on .spine{flex:0 0 46vw;top:0;max-height:100vh;padding-top:46px;box-sizing:border-box}  /* the language button sits over the top strip */
+  body.spine-on .spine .livemap{height:calc(100vh - 54px);margin:0}
+  body.spine-on .spine canvas.profile,body.spine-on .spine .profstats,body.spine-on .spine .maptools{display:none}
+  body.spine-on .mast{min-height:min(60vh,240px)}
+  body.spine-on .inpic img{width:min(100%,calc(70vh * var(--ar,1.5)))}
+}
+/* the Track button on the map (beside the story only) and the ring on the picture being read */
+.trackctl{border-radius:4px} .trackctl .trackbtn{display:flex;align-items:center;gap:6px;height:34px;padding:0 10px 0 7px;border:0;border-radius:4px;background:#fff;color:#333;font:600 12.5px "IBM Plex Sans",sans-serif;cursor:pointer;white-space:nowrap;direction:ltr}
+.trackctl .trackbtn svg{width:18px;height:18px;flex:none;fill:currentColor} .trackctl .trackbtn:hover{background:#f4f4f4} .trackctl .trackbtn[aria-pressed="true"]{background:var(--mark);color:#fff}
+[lang="he"] .trackctl .trackbtn{font-family:"Heebo",sans-serif;direction:rtl}
+body:not(.spine-on) .trackctl{display:none}
+.trackpin{background:none;border:0} .trackpin::before,.trackpin::after{content:"";position:absolute;border-radius:50%;box-sizing:border-box}
+.trackpin::before{inset:7px;border:3px solid var(--mark);box-shadow:0 0 0 2px #fff,inset 0 0 0 2px #fff}
+.trackpin::after{inset:0;border:2px solid var(--mark);animation:trackpulse 1.8s ease-out infinite}
+@keyframes trackpulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.15);opacity:0}}
+@media (prefers-reduced-motion:reduce){.trackpin::after{animation:none;opacity:.5}}
+/* TV mode (html.tv): read from the sofa. Bigger type, a bigger map beside the story, no thumb controls; the remote's
+   arrows walk the text block by block, the lit block carries a frame; a hint line at the foot */
+html.tv body{font-size:21px;line-height:1.5}
+html.tv .lede,html.tv [data-section="intro"] .sectext > p:first-child{font-size:25px}
+html.tv .stage .d{font-size:50px} html.tv .stage .d small{font-size:15px} html.tv .stage h3{font-size:34px} html.tv .stage .stats{font-size:16px} html.tv h2{font-size:32px}
+html.tv .tabs button{font-size:18px;padding:10px 16px} html.tv .inpic span,html.tv .tile span{font-size:16px} html.tv .facts b{font-size:34px} html.tv .facts span{font-size:14px}
+html.tv .signin,html.tv .foot{font-size:16px} html.tv .langbar button{font-size:18px;padding:10px 18px}
+html.tv .pane[data-pane="log"] p,html.tv .pane[data-pane="tips"] p,html.tv .sectext p{max-width:64ch}
+html.tv .logpage .wrap{max-width:1760px}
+html.tv body.spine-on .spine{flex-basis:min(860px,46vw)} html.tv body.spine-on .spine .livemap{height:calc(100vh - 310px)} html.tv body.spine-on .spine canvas.profile{height:170px}
+html.tv .trackctl .trackbtn{height:44px;font-size:17px;padding:0 14px 0 10px} html.tv .trackctl .trackbtn svg{width:24px;height:24px}
+html.tv .leaflet-touch .leaflet-bar a,html.tv .leaflet-bar a{width:40px;height:40px;line-height:40px;font-size:24px}
+html.tv nav.dots,html.tv .locbar,html.tv .editbtn{display:none}
+html.tv .tvcur{outline:3px solid var(--mark);outline-offset:10px;border-radius:2px} html.tv .stage.tvcur,html.tv h2.tvcur{outline:none} html.tv .stage.tvcur .d,html.tv h2.tvcur{box-shadow:inset 6px 0 0 var(--mark);padding-inline-start:16px}
+html.tv .photoref.tvcur,html.tv .photos.tvcur{outline:none} html.tv .photoref.tvcur img,html.tv .photos.tvcur img{outline:4px solid var(--mark);outline-offset:5px}
+.tvhint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;font:15px "IBM Plex Mono",monospace;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:7px 18px;white-space:nowrap;opacity:.85;pointer-events:none}
+.tvhint[lang="he"]{font-family:"Heebo",sans-serif}
+.foot{margin:10px 0 0;font:13px "IBM Plex Mono",monospace;color:var(--muted);text-align:center} .foot a{color:var(--muted)} .foot a:hover{color:var(--ink)}
 /* editing controls show for signed-in editors only (body.can-edit, set by log.js from /whoami) */
 body:not(.can-edit) .editbtn,body:not(.can-edit) .upload,body:not(.can-edit) h2#upload,body:not(.can-edit) h2#he-upload,body:not(.can-edit) h2#upload + p,body:not(.can-edit) h2#he-upload + p,body:not(.can-edit) .hiddenpics,body:not(.can-edit) nav.toc a[href$="upload"]{display:none}
 .signin{margin:40px 0 0;font:13px "IBM Plex Mono",monospace;color:var(--muted);text-align:center} .signin a{color:var(--muted)} .signin a:hover{color:var(--ink)}
@@ -745,7 +783,7 @@ if('serviceWorker' in navigator){(function(){var had=!!navigator.serviceWorker.c
 </script>
 <script src="/vendor/leaflet.min.js?v=5c9aecfc30"></script>
 <script src="/vendor/leaflet-rotate.umd.min.js?v=543dab62fe"></script>
-<script src="/map.js?v=63ec000ac8" defer></script>
+<script src="/map.js?v=c84a856da9" defer></script>
 <script src="/trip.js?v=9a65a731ab" defer></script>
 </body>
 </html>

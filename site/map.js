@@ -7,6 +7,27 @@
 (function () {
   'use strict';
   var TREK = window.TREK || {}; var GPX = TREK.gpx || '/route.gpx';
+  /* TV mode: ?tv=1 (remembered; ?tv=0 leaves) or a television's browser. Bigger type, the map beside the
+     story, the remote's arrows walk the text. log.js does the keys; the CSS reads body.tv */
+  var TV = (function () {
+    var on = null;
+    try {
+      var u = new URL(location.href), q = u.searchParams.get('tv');
+      if (q != null) { on = q !== '0' && q !== 'off'; localStorage.setItem('trek.tv', on ? '1' : '0'); u.searchParams.delete('tv'); history.replaceState(history.state, '', u); }
+      else { var s = localStorage.getItem('trek.tv'); if (s != null) on = s === '1'; }
+    } catch (e) { }
+    if (on == null) on = /SMART-TV|SmartTV|Tizen|Web0S|WebOS|NetCast|Viera|BRAVIA|AFT[A-Z]|CrKey|Roku|HbbTV|Android TV|AppleTV|GoogleTV/i.test(navigator.userAgent);
+    return on;
+  })();
+  document.documentElement.classList.toggle('tv', TV);
+  /* tracking: with the map beside the story, it glides to the pictures as they pass under the eye (log.js
+     picks the picture; here is the button, the state and the flight). On by default on a TV. */
+  var tracking = (function () { try { var s = localStorage.getItem('trek.track'); if (s != null) return s === '1'; } catch (e) { } return TV; })();
+  function setTracking(on) {
+    tracking = !!on; try { localStorage.setItem('trek.track', tracking ? '1' : '0'); } catch (e) { }
+    Object.keys(apps).forEach(function (k) { apps[k].syncTrack(); });
+    document.dispatchEvent(new CustomEvent('trek:track', { detail: { on: tracking } }));
+  }
   var TILES = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
   var ME = '#1E6FD9';
   var I18N = {
@@ -18,7 +39,7 @@
       offRoute: 'off route', toNext: 'to', ascent: 'ascent',
       descent: 'descent', total: 'Route', day: 'Day', km: 'km', m: 'm', offline: 'Offline: page, GPX and saved tiles are available.',
       alt: 'alt', loading: 'Loading GPX…', retry: 'retry in', ready: 'GPX loaded: ', tracks: 'tracks', wpts: 'waypoints',
-      me: 'Your position', back: '← Back to', top: 'the top'
+      me: 'Your position', back: '← Back to', top: 'the top', track: 'Track the log'
     },
     he: {
       nights: 'לילות, בקתות, סיום', water: 'מים', passes: 'מעברים ופסגות', side: 'פסגות סטיות צד',
@@ -28,7 +49,7 @@
       offRoute: 'מחוץ למסלול', toNext: 'עד', ascent: 'עלייה',
       descent: 'ירידה', total: 'המסלול', day: 'יום', km: 'ק"מ', m: 'מ\'', offline: 'אופליין: הדף, ה-GPX והאריחים השמורים זמינים.',
       alt: 'גובה', loading: 'טוען GPX…', retry: 'ניסיון נוסף בעוד', ready: 'GPX נטען: ', tracks: 'מסלולים', wpts: 'נקודות',
-      me: 'המיקום שלכם', back: '→ חזרה אל', top: 'ראש הדף'
+      me: 'המיקום שלכם', back: '→ חזרה אל', top: 'ראש הדף', track: 'עקוב אחרי היומן'
     }
   };
   var CAT = { Night: 'nights', Flag: 'nights', Lodging: 'nights', Restaurant: 'nights', Water: 'water', Summit: 'passes',
@@ -197,6 +218,12 @@
       var c = climb(route, range.from, range.to);
       statsEl.textContent = (scope == null ? T.total : T.day + ' ' + scope) + ' ' + ((range.to - range.from) / 1000).toFixed(1) + ' ' + T.km + ' · ' + T.ascent + ' ' + Math.round(c.ascent) + ' ' + T.m + ' · ' + T.descent + ' ' + Math.round(c.descent) + ' ' + T.m + (TREK.elevation ? ' · ' + TREK.elevation : '');
     }
+    var scopeView = null;  /* where the scope's overview is: bounds and padding, or a spot and zoom for a rest day */
+    function fitScope(how) {  /* 'fly' glides there, anything else jumps */
+      if (!scopeView) return; map.stop();
+      if (scopeView.ll) { if (how === 'fly') map.flyTo(scopeView.ll, scopeView.zoom, { duration: 0.9, easeLinearity: 0.3 }); else map.setView(scopeView.ll, scopeView.zoom); return; }
+      if (how === 'fly') map.flyToBounds(scopeView.bounds, { padding: scopeView.pad, duration: 0.9, easeLinearity: 0.3 }); else map.fitBounds(scopeView.bounds, { padding: scopeView.pad });
+    }
     function setScope(n, fit) {
       scope = n;
       if (scopeLayer) { map.removeLayer(scopeLayer); scopeLayer = null; }
@@ -205,16 +232,15 @@
         /* an arrival or rest day: nothing to walk, show where you sleep */
         range = { from: 0, to: route.length };
         var w = nightOf(n) || route.pts[0];
-        if (fit) map.setView([w.lat, w.lon], Math.max(map.getZoom(), 13));
+        scopeView = { ll: [w.lat, w.lon], zoom: Math.max(map.getZoom(), 13) };
       } else {
         range = r;
         if (n != null) {
           scopeLayer = L.polyline(route.pts.filter(function (p) { return p.d >= r.from && p.d <= r.to; }).map(function (p) { return [p.lat, p.lon]; }), { color: ME, weight: 9, opacity: .45, interactive: false }).addTo(map);
-          if (fit === 'fly') { map.stop(); map.flyToBounds(scopeLayer.getBounds(), { padding: [24, 24], duration: 0.9, easeLinearity: 0.3 }); }
-          else if (fit) map.fitBounds(scopeLayer.getBounds(), { padding: [20, 20] });
-        } else if (fit === 'fly') { map.stop(); map.flyToBounds(routeGroup.getBounds(), { padding: [12, 12], duration: 0.9, easeLinearity: 0.3 }); }
-        else if (fit) map.fitBounds(routeGroup.getBounds(), { padding: [12, 12] });
+          scopeView = { bounds: scopeLayer.getBounds(), pad: [24, 24] };
+        } else scopeView = { bounds: routeGroup.getBounds(), pad: [12, 12] };
       }
+      if (fit) fitScope(fit);
       stats(); drawProfile(null);
       container.dispatchEvent(new CustomEvent('trek:scope', { bubbles: true, detail: { lang: lang, scope: scope, map: map, range: range } }));
     }
@@ -398,16 +424,37 @@
     map.on('click', clearHighlight);
     function pick(cb) { mapEl.style.cursor = 'crosshair'; map.once('click', function (e) { mapEl.style.cursor = ''; cb(e.latlng.lat, e.latlng.lng); }); }
 
+    /* the Track button (shown beside the story only): the map glides to each picture as the reader reaches it */
+    var trackBtn = null, trackPin = null;
+    var TrackCtl = L.Control.extend({ options: { position: 'topleft' }, onAdd: function () {
+      var d = L.DomUtil.create('div', 'leaflet-bar trackctl'), b = L.DomUtil.create('button', 'trackbtn', d);
+      b.type = 'button'; b.title = T.track; b.setAttribute('aria-pressed', tracking ? 'true' : 'false');
+      b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18c3-1 4-6 8-6s5 5 8 4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="4" cy="18" r="2.4"/><circle cx="20" cy="16" r="2.4"/></svg><span>' + T.track + '</span>';
+      L.DomEvent.disableClickPropagation(d); L.DomEvent.on(b, 'click', function (e) { L.DomEvent.stop(e); setTracking(!tracking); });
+      trackBtn = b; return d;
+    } });
+    new TrackCtl().addTo(map);
+    function syncTrack() { if (trackBtn) trackBtn.setAttribute('aria-pressed', tracking ? 'true' : 'false'); if (!tracking && trackPin) { map.removeLayer(trackPin); trackPin = null; } }
+    function tracked() { return tracking && document.body.classList.contains('spine-on'); }
+    /* glide to a picture's spot and ring it; with no spot, back to the overview of the stretch being read */
+    function trackTo(pos) {
+      if (!pos) { if (trackPin) { map.removeLayer(trackPin); trackPin = null; } fitScope('fly'); return; }
+      var ll = [pos.lat, pos.lon], z = map.getZoom() >= 12 ? map.getZoom() : 14;
+      if (!trackPin) trackPin = pin(ll, 'trackpin', 64, 850).addTo(map); else trackPin.setLatLng(ll);
+      map.stop(); map.flyTo(ll, z, { duration: 1, easeLinearity: 0.3 });
+    }
+
     /* hosts: the box moves into whichever day tab or section claims it */
     var host = container.parentNode;
     function claim(h) {
       var hn = h.getAttribute('data-host'), n = hn === 'all' || hn === 'spine' ? null : +hn;
       if (h !== host) { h.appendChild(container); host.classList.add('empty'); h.classList.remove('empty'); host = h; }
       map.invalidateSize();
-      if (scope !== n) setScope(n, true); else drawProfile(null);
+      if (scope !== n) setScope(n, tracked() ? false : true); else drawProfile(null);  /* tracking decides the view itself, on trek:scope */
     }
     apps[lang] = { map: map, focus: focus, pick: pick, box: container, status: status, claim: claim, refreshMe: refreshMe, panToMe: panToMe,
-      follow: function (n) { if (scope !== n) setScope(n, 'fly'); },  /* the spine glides to the day being read */
+      follow: function (n) { if (scope !== n) setScope(n, tracked() ? false : 'fly'); },  /* the spine glides to the day being read */
+      trackTo: trackTo, syncTrack: syncTrack,
       redraw: function () { map.invalidateSize(); drawProfile(null); }, hostEl: function () { return host; }, scope: function () { return scope; },
       setMarks: function (list) { marks = list || []; drawProfile(null); },
       addOverlay: function (name, layer, on) { layersCtl.addOverlay(layer, name); if (on) layer.addTo(map); } };
@@ -425,7 +472,7 @@
   }
   /* move the language's map box into a host (a day's Map tab or the whole-route section) and scope it */
   /* the spine: on a wide screen the story's map sits beside the text and follows the reader instead of moving into the day cards */
-  var SPINE_MQ = window.matchMedia ? matchMedia('(min-width: 1100px)') : null;
+  var SPINE_MQ = window.matchMedia ? matchMedia('(min-width: 1100px), (orientation: landscape) and (min-width: 640px) and (max-height: 560px)') : null;  /* a desktop, a TV, or a phone on its side */
   function spineOn() { return !!(SPINE_MQ && SPINE_MQ.matches && document.body.classList.contains('logpage')); }
   function spineHost(lang) { return document.querySelector('#' + lang + ' .maphost[data-host="spine"]'); }
   function claimHost(h) {
@@ -503,7 +550,8 @@
   var btn = document.getElementById('langbtn'); if (btn) btn.addEventListener('click', function () { setTimeout(visible, 30); setTimeout(spineLayout, 40); });
   function spineLayout() {
     var lang = visibleLang(); if (!lang || !data) return;
-    var on = spineOn(); document.body.classList.toggle('spine-on', on);
+    var on = spineOn(), was = document.body.classList.contains('spine-on'); document.body.classList.toggle('spine-on', on);
+    if (on !== was && window.gr52Dots) window.gr52Dots.refresh();  /* the Maps heading and tab hide beside the spine: the rail must not list them */
     var box = boxes[lang], sp = spineHost(lang); if (!box || !sp) return;
     if (on) { if (box.parentNode !== sp) claimHost(sp); else { var ap = apps[lang]; if (ap) ap.redraw(); } }
     else if (box.parentNode === sp) claimHost(allHost(lang));
@@ -522,6 +570,7 @@
     dayRange: function (n) { return route ? dayRange(n) : null; }, nightOf: nightOf, nights: function () { return NIGHTS; },
     dayStats: function (n) { if (!route) return null; var r = dayRange(n), c = climb(route, r.from, r.to); return { km: (r.to - r.from) / 1000, ascent: c.ascent, descent: c.descent }; },
     showTab: showTab, openDay: openDay, hav: hav, app: function (lang) { return apps[lang] || null; },
+    tracking: function () { return tracking; }, setTracking: setTracking, tv: TV,
     /* the route point nearest to a waypoint or track name, or at a distance along the route */
     routePointAt: function (d) { if (!route) return null; var a = 0, b = route.pts.length - 1; while (a < b) { var mid = (a + b) >> 1; if (route.pts[mid].d < d) a = mid + 1; else b = mid; } return route.pts[a]; },
     findPlace: function (q) { if (!data) return null; var nq = norm(q), w = null; data.wpts.forEach(function (x) { if (!w && norm(x.name).indexOf(nq) >= 0) w = x; }); return w ? nearestOnRoute(route, w) : null; },
@@ -554,7 +603,7 @@
     var st = origin && origin.closest ? origin.closest('.stage[data-day]') : null;
     if (st) { var on = st.querySelector('.tabs .on'); return 'd' + st.getAttribute('data-day') + (on ? ':' + on.getAttribute('data-tab') : ''); }
     var y = origin && origin.getBoundingClientRect ? origin.getBoundingClientRect().top : 0, best = null, bestY = -Infinity;
-    document.querySelectorAll('.wrap:not([hidden]) h2[id], .wrap:not([hidden]) .stage[data-day]').forEach(function (h) { var t = h.getBoundingClientRect().top; if (t <= y + 1 && t > bestY) { best = h; bestY = t; } });
+    document.querySelectorAll('.wrap:not([hidden]) h2[id], .wrap:not([hidden]) .stage[data-day]').forEach(function (h) { if (h.offsetParent === null) return; var t = h.getBoundingClientRect().top; if (t <= y + 1 && t > bestY) { best = h; bestY = t; } });
     return best ? (best.id || 'd' + best.getAttribute('data-day')) : 'top';
   }
   function labelFor(from) {
@@ -574,7 +623,7 @@
   var atTimer = null;
   function whereOnPage() {
     var y = Math.min(window.innerHeight * 0.4, 320), best = null, bestY = -Infinity;
-    document.querySelectorAll('.wrap:not([hidden]) h2[id], .wrap:not([hidden]) .stage[data-day]').forEach(function (h) { var t = h.getBoundingClientRect().top; if (t <= y && t > bestY) { best = h; bestY = t; } });
+    document.querySelectorAll('.wrap:not([hidden]) h2[id], .wrap:not([hidden]) .stage[data-day]').forEach(function (h) { if (h.offsetParent === null) return; /* the Maps heading is hidden beside the spine */ var t = h.getBoundingClientRect().top; if (t <= y && t > bestY) { best = h; bestY = t; } });
     if (!best) return 'top';
     if (!best.hasAttribute('data-day')) return best.id;
     var on = best.querySelector('.tabs .on'); return 'd' + best.getAttribute('data-day') + (on ? ':' + on.getAttribute('data-tab') : '');
@@ -659,7 +708,7 @@
     }
     function current() {
       var y = Math.min(window.innerHeight * 0.4, 320), best = null, bestY = -Infinity;
-      items.forEach(function (it) { var t = it.el.getBoundingClientRect().top; if (t <= y && t > bestY) { best = it; bestY = t; } });
+      items.forEach(function (it) { if (it.el.offsetParent === null) return; /* hidden beside the spine: its rect sits at 0 and would always win */ var t = it.el.getBoundingClientRect().top; if (t <= y && t > bestY) { best = it; bestY = t; } });
       if (!best && items.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) best = items[items.length - 1];
       return best || items[0];
     }
