@@ -646,6 +646,7 @@
         ta.href = '#'; ta.className = 'top'; ta.innerHTML = '<i></i><span></span>'; ta.querySelector('span').textContent = tl; ta.setAttribute('aria-label', T.top);
         rail.appendChild(ta); items.push({ el: top, a: ta, day: false, top: true });
       }
+      els = els.filter(function (el) { return el.offsetParent !== null; });  /* not the sections hidden from non-editors */
       els.forEach(function (el, i) {
         var day = el.hasAttribute('data-day');
         if (!day && els[i + 1] && els[i + 1].hasAttribute('data-day')) return;  /* the heading over the day cards: the days stand for it */

@@ -279,6 +279,10 @@ manifest = {
 (SITE / "manifest.webmanifest").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
 
 host = TREK["hostname"]
+# .env for docker compose: the site host for the sign-in redirect, the editors, and the "auth" profile that runs oauth2-proxy
+editors = [str(x) for x in TREK.get("editors") or []]
+# the "auth" profile (oauth2-proxy) runs once trek.json says "auth": true, which needs the OAuth app params in the repo
+(ROOT / ".env").write_text("# written by src/build.py from trek.json; docker compose reads it\n" + f"SITE_HOST={host}\n" + f"LOG_EDITORS={','.join(editors)}\n" + ("COMPOSE_PROFILES=auth\n" if TREK.get("auth") else ""))
 (ROOT / "Caddyfile.j2").write_text(
     '{% if environment == "prod" -%}\n' + host + "\n{%- else -%}\npr.{{ environment.removeprefix(\"pr-\") }}." + host
     + "\n{%- endif %} {\n    reverse_proxy unix//{{ paths.default_socket }}\n}\n"

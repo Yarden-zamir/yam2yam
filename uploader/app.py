@@ -34,6 +34,11 @@ MAX_FILE = int(os.environ.get("LOG_MAX_FILE_MB", "40")) * 1024 * 1024
 MAX_USER = int(os.environ.get("LOG_MAX_USER_GB", "5")) * 1024 * 1024 * 1024
 USER_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,38}$")
 EDIT_KEY = os.environ.get("LOG_EDIT_KEY", "")  # when set, edits need this key (X-Log-Key); uploads stay open
+# GitHub sign-in is oauth2-proxy'"'"'s job (compose.yml, container/Caddyfile): Caddy sends the editing routes through
+# forward_auth and copies the signed-in login into X-Auth-Request-User. LOG_EDITORS lists the GitHub logins allowed
+# to edit; with it set, every edit, upload and reindex needs one of them.
+EDITORS = {x.strip().lower() for x in os.environ.get("LOG_EDITORS", "").split(",") if x.strip()}
+AUTH_ON = bool(EDITORS)
 LOCK = threading.Lock()
 Image.MAX_IMAGE_PIXELS = 80_000_000
 
@@ -255,6 +260,16 @@ def og_preview(user: str, pid: str, y: int | None) -> Path | None:
     return out
 
 
+def login_of(handler) -> str | None:
+    """The GitHub login oauth2-proxy verified for this request (Caddy copies it in), or None."""
+    return (handler.headers.get("X-Auth-Request-User") or "").strip() or None
+
+
+def is_editor(handler) -> bool:
+    login = login_of(handler)
+    return bool(login and login.lower() in EDITORS)
+
+
 def used_bytes(user: str) -> int:
     d = DATA / user
     return sum(p.stat().st_size for p in d.rglob("*") if p.is_file()) if d.exists() else 0
@@ -282,6 +297,9 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/healthz":
             return self._json(200, {"ok": True})
         path, _, query = self.path.partition("?")
+        m = re.match(r"^/log/([^/]+)/whoami/?$", path)
+        if m:  # who is signed in, and may they edit this log
+            return self._json(200, {"login": login_of(self), "editor": AUTH_ON and is_editor(self), "auth": AUTH_ON})
         m = re.match(r"^/log/([^/]+)/photos/([a-f0-9]{12})\.og\.jpg$", path)
         if m:  # the link-preview crop, made on demand
             y = re.search(r"(?:^|&)y=(\d{1,3})", query)
@@ -304,10 +322,12 @@ class Handler(BaseHTTPRequestHandler):
         if not m or not USER_RE.match(m.group(1)):
             return self._json(404, {"error": "unknown log"})
         user = m.group(1)
+        if AUTH_ON and not is_editor(self):
+            return self._json(403, {"error": "sign in with GitHub as an editor to change this log", "signin": True, "login": login_of(self)})
         if m.group(2) == "reindex":
             return self._json(200, reindex(user))
         if m.group(2) == "edit":
-            if EDIT_KEY and self.headers.get("X-Log-Key", "") != EDIT_KEY:
+            if not AUTH_ON and EDIT_KEY and self.headers.get("X-Log-Key", "") != EDIT_KEY:
                 return self._json(403, {"error": "edit key needed"})
             n = int(self.headers.get("Content-Length") or 0)
             if n <= 0 or n > 2_000_000:

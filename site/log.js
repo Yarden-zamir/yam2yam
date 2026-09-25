@@ -9,12 +9,12 @@
   var T = {
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
       source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', layer: 'Pictures', zoomIn: 'zoom in for the pictures', download: 'Download',
-      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
+      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', signIn: 'Sign in with GitHub to edit', signOut: 'Sign out', noEdit: 'no editing rights', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
       inGmaps: 'Open in Google Maps', openUrl: 'Open the site', addPic: 'Add a picture…', pickHint: 'Tap a picture to put it at the cursor; the outlined ones are already in the text.', addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', cover: 'Use as the cover', uncover: 'Remove from the cover', captionEdit: 'Edit caption', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
       source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', layer: 'תמונות', zoomIn: 'התקרבו כדי לראות את התמונות', download: 'הורדה',
-      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
+      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', signIn: 'כניסה עם GitHub לעריכה', signOut: 'יציאה', noEdit: 'בלי הרשאת עריכה', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
       inGmaps: 'פתיחה ב-Google Maps', openUrl: 'פתיחת האתר', addPic: 'הוספת תמונה…', pickHint: 'הקישו על תמונה כדי להציב אותה במקום הסמן; המסומנות כבר בטקסט.', addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', cover: 'שימוש כתמונת השער', uncover: 'הסרה מתמונת השער', captionEdit: 'עריכת כיתוב', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
@@ -266,12 +266,30 @@
       if (e.caption) { var c = o.caption; o.caption = Object.assign({}, typeof c === 'object' && c ? c : (c ? { en: c, he: c } : {}), e.caption); }
     });
   }
-  var editKey = null;
-  try { editKey = localStorage.getItem('log-edit-key'); } catch (e) { }
+  /* who is signed in (GitHub, through oauth2-proxy) and whether they may edit: the pencils, the long press and the
+     upload show only for editors; everyone else sees a small sign-in line at the bottom */
+  var ME = { login: null, editor: false, auth: false };
+  function signInUrl() { return '/auth/sign_in?rd=' + encodeURIComponent(location.pathname + location.search); }
+  function whoami() {
+    return fetch('/log/' + USER + '/whoami', { cache: 'no-store', credentials: 'same-origin' }).then(function (r) { return r.json().catch(function () { return {}; }); })
+      .catch(function () { return {}; }).then(function (me) {
+        ME = { login: me.login || null, editor: !!me.editor, auth: !!me.auth };
+        document.body.classList.toggle('can-edit', ME.editor);  /* not 'editor': that class is the text editor's */
+        document.querySelectorAll('.wrap > .main').forEach(function (main) {
+          var lang = langOf(main), old = main.querySelector('.signin'); if (old) old.remove();
+          if (!ME.auth) return;
+          var p = document.createElement('p'); p.className = 'signin';
+          if (ME.login) p.innerHTML = '<span>' + esc(ME.login) + (ME.editor ? '' : ' · ' + esc(T[lang].noEdit)) + '</span> <a href="/auth/sign_out?rd=%2F">' + esc(T[lang].signOut) + '</a>';
+          else p.innerHTML = '<a href="' + signInUrl() + '">' + esc(T[lang].signIn) + '</a>';
+          main.appendChild(p);
+        });
+        if (window.gr52Dots) window.gr52Dots.refresh();
+      });
+  }
   function postEdit(body, lang) {
-    var h = { 'Content-Type': 'application/json' }; if (editKey) h['X-Log-Key'] = editKey;
-    return fetch(EDIT_URL, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) {
-      if (r.status === 403) { var k = prompt(T[lang].keyPrompt); if (k == null) throw new Error('no key'); editKey = k; try { localStorage.setItem('log-edit-key', k); } catch (e) { } return postEdit(body, lang); }
+    var h = { 'Content-Type': 'application/json' };
+    return fetch(EDIT_URL, { method: 'POST', headers: h, body: JSON.stringify(body), credentials: 'same-origin' }).then(function (r) {
+      if (r.status === 403 || r.status === 401) { return r.json().catch(function () { return {}; }).then(function (e) { if (e.signin || !ME.login) { location.href = signInUrl(); throw new Error(T[lang].signIn); } throw new Error(e.error || T[lang].noEdit); }); }
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     }).then(function (e) { EDITS = e; EDITS.days = EDITS.days || {}; EDITS.photos = EDITS.photos || {}; EDITS.sections = EDITS.sections || {}; applyPhotoEdits(); return e; });
@@ -376,7 +394,7 @@
   /* the editor: the day's paragraphs in a textarea, blank lines between them; body.editing hides the dot rail meanwhile */
   function editing() { document.body.classList.toggle('editing', !!document.querySelector('.editor')); }
   document.addEventListener('click', function (e) {
-    var b = e.target.closest('.editbtn'); if (!b) return;
+    var b = e.target.closest('.editbtn'); if (!b || !ME.editor) return;
     var box = b.closest('.stage, [data-section]'), on = box && box.querySelector('.tabs .on');
     openEditor(box, null, on && on.getAttribute('data-tab') === 'tips' ? 'tips' : 'log');  /* the pencil edits the tab that is showing: the log or the tips */
   });
@@ -520,8 +538,8 @@
     };
   }, true);
   var pressTimer = null, pressed = null, pressStart = null, pressEnd = 0;
-  function pressTarget(e) { var a = e.target.closest && e.target.closest('a[data-photo]'); return a && !a.closest('#lightbox') && !a.closest('.leaflet-popup') ? a : null; }
-  function textTarget(e) { var p = e.target.closest && e.target.closest('.pane[data-pane="log"] p, .pane[data-pane="tips"] p, .sectext p'); var box = p && p.closest('.stage, [data-section]'); return p && box && !e.target.closest('a, .photoref, .editor') && box.querySelector('.editbtn') ? p : null; }
+  function pressTarget(e) { if (!ME.editor) return null; var a = e.target.closest && e.target.closest('a[data-photo]'); return a && !a.closest('#lightbox') && !a.closest('.leaflet-popup') ? a : null; }
+  function textTarget(e) { if (!ME.editor) return null; var p = e.target.closest && e.target.closest('.pane[data-pane="log"] p, .pane[data-pane="tips"] p, .sectext p'); var box = p && p.closest('.stage, [data-section]'); return p && box && !e.target.closest('a, .photoref, .editor') && box.querySelector('.editbtn') ? p : null; }
   var lastPointer = 'mouse';
   document.addEventListener('pointerdown', function (e) {
     lastPointer = e.pointerType || 'mouse';
@@ -633,7 +651,7 @@
     tries = tries == null ? 2 : tries;
     return new Promise(function (resolve) {
       var fd = new FormData(); Object.keys(fields || {}).forEach(function (k) { if (fields[k] != null) fd.append(k, String(fields[k])); }); fd.append('photo', f, f.name);
-      var xhr = new XMLHttpRequest(); xhr.open('POST', UPLOAD);
+      var xhr = new XMLHttpRequest(); xhr.open('POST', UPLOAD); xhr.withCredentials = true;
       xhr.upload.onprogress = function (e) { if (e.lengthComputable) row.textContent = f.name + ' · ' + T[lang].uploading + ' ' + Math.round(e.loaded / e.total * 100) + ' %'; };
       function fail(why) {
         if (tries > 0) { row.textContent = f.name + ' · ' + T[lang].retry; setTimeout(function () { send(f, fields, row, lang, tries - 1).then(resolve); }, 1500); return; }
@@ -711,7 +729,7 @@
   }
 
   /* ---- boot ---- */
-  loadEdits().then(loadIndex).then(render).then(function () {
+  whoami(); loadEdits().then(loadIndex).then(render).then(function () {
     var id = new URL(location.href).searchParams.get('photo'), p = id && byId[id]; if (!p) return;
     var n = dayOf(p), list = photos.filter(function (x) { return dayOf(x) === n; }), i = Math.max(0, list.indexOf(p));
     var st = n != null && document.querySelector('.wrap:not([hidden]) .stage[data-day="' + n + '"]'); if (st) st.scrollIntoView({ block: 'start' });
