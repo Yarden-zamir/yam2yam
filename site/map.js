@@ -13,6 +13,7 @@
     var on = null;
     try {
       var u = new URL(location.href), q = u.searchParams.get('tv');
+      if (u.searchParams.get('cast') === '1') return true;  /* the page a phone casts to a TV: TV mode for this page only, nothing remembered */
       if (q != null) { on = q !== '0' && q !== 'off'; localStorage.setItem('trek.tv', on ? '1' : '0'); u.searchParams.delete('tv'); history.replaceState(history.state, '', u); }
       else { var s = localStorage.getItem('trek.tv'); if (s != null) on = s === '1'; }
     } catch (e) { }

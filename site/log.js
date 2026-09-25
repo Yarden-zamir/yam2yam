@@ -9,12 +9,12 @@
   var T = {
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
       source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', layer: 'Pictures', zoomIn: 'zoom in for the pictures', download: 'Download',
-      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', signIn: 'Sign in with GitHub to edit', signOut: 'Sign out', noEdit: 'no editing rights', tvOn: 'TV mode', tvOff: 'Leave TV mode', tvHint: '↑ ↓ read · ← → days · OK opens the picture · Back closes it', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
+      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', signIn: 'Sign in with GitHub to edit', signOut: 'Sign out', noEdit: 'no editing rights', tvOn: 'TV mode', tvOff: 'Leave TV mode', tvHint: '↑ ↓ read · ← → days · OK opens the picture · Back closes it', cast: 'Cast to TV', casting: 'Casting · stop', castHow: 'Open {url} in the TV’s browser, or cast this tab from the browser menu.', castHint: 'Following your phone', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
       inGmaps: 'Open in Google Maps', openUrl: 'Open the site', addPic: 'Add a picture…', pickHint: 'Tap a picture to put it at the cursor; the outlined ones are already in the text.', addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', cover: 'Use as the cover', uncover: 'Remove from the cover', captionEdit: 'Edit caption', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
       source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', layer: 'תמונות', zoomIn: 'התקרבו כדי לראות את התמונות', download: 'הורדה',
-      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', signIn: 'כניסה עם GitHub לעריכה', signOut: 'יציאה', noEdit: 'בלי הרשאת עריכה', tvOn: 'מצב טלוויזיה', tvOff: 'יציאה ממצב טלוויזיה', tvHint: '↑ ↓ קריאה · → ← ימים · OK פותח את התמונה · Back סוגר', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
+      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', signIn: 'כניסה עם GitHub לעריכה', signOut: 'יציאה', noEdit: 'בלי הרשאת עריכה', tvOn: 'מצב טלוויזיה', tvOff: 'יציאה ממצב טלוויזיה', tvHint: '↑ ↓ קריאה · → ← ימים · OK פותח את התמונה · Back סוגר', cast: 'שידור לטלוויזיה', casting: 'משדר · עצירה', castHow: 'פתחו {url} בדפדפן של הטלוויזיה או שדרו את הכרטיסייה מתפריט הדפדפן.', castHint: 'עוקב אחרי הטלפון', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
       inGmaps: 'פתיחה ב-Google Maps', openUrl: 'פתיחת האתר', addPic: 'הוספת תמונה…', pickHint: 'הקישו על תמונה כדי להציב אותה במקום הסמן; המסומנות כבר בטקסט.', addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', cover: 'שימוש כתמונת השער', uncover: 'הסרה מתמונת השער', captionEdit: 'עריכת כיתוב', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
@@ -171,6 +171,7 @@
     if (overlay === 'lb') { var u = new URL(location.href); if (u.searchParams.get('photo') !== p.id) { u.searchParams.set('photo', p.id); history.replaceState(history.state, '', u); } }
     lb.querySelector('[data-lb="prev"]').disabled = i === 0; lb.querySelector('[data-lb="next"]').disabled = i === cur.list.length - 1;
     var pre = cur.list[i + 1]; if (pre) { var img = new Image(); img.src = BASE + pre.file; }
+    castSync();
   }
   /* the lightbox and the sheet are history entries, so the phone's back button closes them instead of
      leaving the page; the lightbox also keeps ?photo=ID in the address, so the link can be shared */
@@ -184,6 +185,7 @@
     lb.hidden = true; document.body.classList.remove('lbopen'); sheetWrap.setAttribute('hidden', ''); overlay = null;
     var u = new URL(location.href); u.searchParams.delete('photo');
     history.replaceState(Object.assign({}, history.state || {}, { overlay: null }), '', u);
+    castSync();
   }
   function popOverlay() {
     if (history.state && history.state.overlay && overlay) { popPending = true; overlay = null; history.back(); return; }
@@ -198,7 +200,7 @@
     return false;
   } };
   function open(list, i, quiet) { cur.list = list; lb.hidden = false; document.body.classList.add('lbopen'); if (!quiet && overlay !== 'lb') pushOverlay('lb', list[i] && list[i].id); show(i); }
-  function close() { lb.hidden = true; document.body.classList.remove('lbopen'); popOverlay(); }
+  function close() { lb.hidden = true; document.body.classList.remove('lbopen'); popOverlay(); castSync(); }
   function showSheet() { sheetWrap.hidden = false; if (overlay !== 'sheet') pushOverlay('sheet'); }
   function hideSheet() { sheetWrap.setAttribute('hidden', ''); popOverlay(); }
   if (lb) {
@@ -759,17 +761,94 @@
   document.addEventListener('trek:scope', function () { setTimeout(function () { trackNow(true); }, 0); });  /* the day changed under the reader: the map has not moved yet */
   document.addEventListener('trek:track', function (e) { if (e.detail.on) trackNow(true); else trackKey = null; });
   window.addEventListener('resize', function () { clearTimeout(trackTimer); trackTimer = setTimeout(function () { trackNow(false); }, 200); });
-  /* a way in and out of TV mode at the foot of the page */
+  /* a way in and out of TV mode at the foot of the page, and the cast */
   document.querySelectorAll('.wrap > .main').forEach(function (main) {
     var lang = langOf(main), tv = document.documentElement.classList.contains('tv'), p = document.createElement('p'); p.className = 'foot';
-    p.innerHTML = '<a href="?tv=' + (tv ? '0' : '1') + '">' + esc(T[lang][tv ? 'tvOff' : 'tvOn']) + '</a>'; main.appendChild(p);
+    p.innerHTML = '<a href="?tv=' + (tv ? '0' : '1') + '">' + esc(T[lang][tv ? 'tvOff' : 'tvOn']) + '</a>' + (tv ? '' : ' · <a href="#" class="castlink">' + esc(T[lang].cast) + '</a><span class="casthow" hidden></span>'); main.appendChild(p);
   });
+  /* ---- cast to a TV. With the Presentation API (Chrome, Edge: a Chromecast or a cast-capable TV) the phone
+     opens this page on the TV in TV mode and keeps it on the same spot: the block under the eye, the language,
+     the picture open in the lightbox. Anywhere else, the address to type into the TV's browser. ---- */
+  var CAST = new URL(location.href).searchParams.get('cast') === '1', castConn = null, castReq = null, castTimer = null, castLast = '';
+  function castUrl() { return location.origin + location.pathname + '?tv=1&cast=1'; }
+  function isBlock(el) { return el.nodeType === 1 && !el.matches('.editor, .editbtn, script, style'); }
+  function blockAddr(el) {  /* a stable address for a block: the day and pane (or the section) and its place in it */
+    if (el.matches('.stage[data-day]')) return 'd' + el.getAttribute('data-day');
+    if (el.matches('h2[id]')) return '#' + el.id.replace(/^he-/, '');
+    var pane = el.closest('.pane, .sectext'), box = pane && pane.closest('.stage[data-day], [data-section]'); if (!box) return null;
+    var kids = Array.prototype.filter.call(pane.children, isBlock);
+    return (box.hasAttribute('data-day') ? 'd' + box.getAttribute('data-day') + ':' + pane.getAttribute('data-pane') : box.getAttribute('data-section')) + ':' + kids.indexOf(el);
+  }
+  function blockAt(addr) {
+    var lang = visibleLang(), w = document.getElementById(lang); if (!w || !addr) return null;
+    if (addr.charAt(0) === '#') return document.getElementById((lang === 'he' ? 'he-' : '') + addr.slice(1));
+    var m = /^d(\d+)(?::(\w+):(\d+))?$/.exec(addr);
+    if (m) { var st = w.querySelector('.stage[data-day="' + m[1] + '"]'); if (!st || !m[2]) return st; var pane = st.querySelector('.pane[data-pane="' + m[2] + '"]'); return pane ? Array.prototype.filter.call(pane.children, isBlock)[+m[3]] || st : st; }
+    var ms = /^([\w-]+):(\d+)$/.exec(addr), sec = ms && w.querySelector('[data-section="' + ms[1] + '"] .sectext');
+    return sec ? Array.prototype.filter.call(sec.children, isBlock)[+ms[2]] || sec : null;
+  }
+  function readingBlock() {  /* the block under the reading line on the phone */
+    var w = document.querySelector('.wrap:not([hidden]) .main'); if (!w) return null;
+    var y = window.innerHeight * 0.3, best = null, bd = Infinity;
+    Array.prototype.forEach.call(w.querySelectorAll('.stage[data-day], h2[id], .pane:not([hidden]) > *, .sectext > *'), function (el) {
+      if (el.offsetParent === null || !isBlock(el)) return; var r = el.getBoundingClientRect(), d = r.top <= y && r.bottom >= y ? 0 : Math.min(Math.abs(r.top - y), Math.abs(r.bottom - y));
+      if (d <= bd) { bd = d; best = el; }  /* a block inside the day card comes later and wins over the card itself */
+    });
+    return best;
+  }
+  function castState() { var b = readingBlock(); return { lang: visibleLang(), at: b ? blockAddr(b) : null, open: lb.hidden ? null : (cur.list[cur.i] || {}).id || null }; }
+  function castSync() {
+    if (!castConn) return; clearTimeout(castTimer);
+    castTimer = setTimeout(function () { if (!castConn) return; var m = JSON.stringify(castState()); if (m === castLast) return; castLast = m; try { castConn.send(m); } catch (e) { } }, 120);
+  }
+  function castMark(on) { document.body.classList.toggle('casting', on); var lang = visibleLang(); document.querySelectorAll('.castlink').forEach(function (a) { a.textContent = T[langOf(a)][on ? 'casting' : 'cast']; }); var b = document.getElementById('castbtn'); if (b) b.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+  function castTake(c) {
+    castConn = c; castLast = ''; castMark(true); try { sessionStorage.setItem('trek.cast', c.id); } catch (e) { }
+    c.onclose = c.onterminate = function () { if (castConn === c) { castConn = null; castMark(false); try { sessionStorage.removeItem('trek.cast'); } catch (e) { } } };
+    if (c.state === 'connected') castSync(); else c.onconnect = castSync;
+  }
+  function castStart() {
+    if (castConn) { try { castConn.terminate(); } catch (e) { castConn.close(); } return; }
+    castReq.start().then(castTake).catch(function () { });
+  }
+  if (!CAST && window.PresentationRequest) {
+    try { castReq = new PresentationRequest([castUrl()]); navigator.presentation.defaultRequest = castReq; } catch (e) { castReq = null; }
+    if (castReq) {
+      var bar = document.querySelector('.langbar');
+      if (bar) { var cb = document.createElement('button'); cb.id = 'castbtn'; cb.type = 'button'; cb.title = T[visibleLang()].cast; cb.setAttribute('aria-label', cb.title); cb.setAttribute('aria-pressed', 'false'); cb.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 16v3a1 1 0 0 0 0 0M2 12a9 9 0 0 1 9 9M2 8a13 13 0 0 1 13 13M2 4h20v16h-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="3.5" cy="19.5" r="1.7"/></svg>'; bar.insertBefore(cb, bar.firstChild); cb.addEventListener('click', castStart); }
+      try { var old = sessionStorage.getItem('trek.cast'); if (old) castReq.reconnect(old).then(castTake).catch(function () { }); } catch (e) { }
+      window.addEventListener('scroll', castSync, { passive: true }); document.addEventListener('trek:lang', function () { setTimeout(castSync, 50); });
+    }
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('.castlink'); if (!a) return; e.preventDefault();
+    if (castReq) return castStart();
+    var how = a.parentNode.querySelector('.casthow'); how.textContent = T[langOf(a)].castHow.replace('{url}', location.host + location.pathname + '?tv=1'); how.hidden = !how.hidden;  /* no Presentation API here: the address for the TV's browser */
+  });
+  if (CAST && navigator.presentation && navigator.presentation.receiver) (function () {  /* this page is on the TV: follow the phone */
+    var pending = null;
+    function follow(m) {
+      if (m.lang && m.lang !== visibleLang()) { var lb0 = document.getElementById('langbtn'); if (lb0) { lb0.click(); pending = m; setTimeout(function () { if (pending === m) { pending = null; follow(m); } }, 200); return; } }
+      var el = m.at ? blockAt(m.at) : null;
+      if (el) {
+        document.querySelectorAll('.tvcur').forEach(function (x) { x.classList.remove('tvcur'); }); el.classList.add('tvcur');
+        var top = el.getBoundingClientRect().top + window.scrollY - (el.matches('.stage, h2') ? 24 : window.innerHeight * 0.2);
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      }
+      var p = m.open && byId[m.open];
+      if (p) { if (lb.hidden || (cur.list[cur.i] || {}).id !== p.id) { var n = dayOf(p), list = photos.filter(function (x) { return dayOf(x) === n; }); open(list.length ? list : [p], Math.max(0, list.indexOf(p)), true); } }
+      else if (!lb.hidden) { lb.hidden = true; document.body.classList.remove('lbopen'); }
+    }
+    function hook(c) { c.onmessage = function (e) { try { follow(JSON.parse(e.data)); } catch (err) { } }; }
+    navigator.presentation.receiver.connectionList.then(function (list) { list.connections.forEach(hook); list.onconnectionavailable = function (e) { hook(e.connection); }; });
+    document.body.classList.add('castee');
+  })();
   /* ---- a remote control (html.tv): the arrows walk the story block by block and the map tracks along, left and
      right jump between days, OK opens the picture under the frame, Back closes it ---- */
   (function () {
     if (!document.documentElement.classList.contains('tv')) return;
     var hint = document.createElement('div'); hint.className = 'tvhint'; document.body.appendChild(hint);
-    function label() { var l = visibleLang(); hint.textContent = T[l].tvHint; hint.setAttribute('lang', l); hint.dir = l === 'he' ? 'rtl' : 'ltr'; }
+    function label() { var l = visibleLang(); hint.textContent = T[l][CAST ? 'castHint' : 'tvHint']; hint.setAttribute('lang', l); hint.dir = l === 'he' ? 'rtl' : 'ltr'; }
     label(); document.addEventListener('trek:lang', function () { setTimeout(label, 30); if (cur) { cur.classList.remove('tvcur'); cur = null; } });
     var cur = null, busy = 0;
     function blocks() {

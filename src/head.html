@@ -255,6 +255,10 @@ a.daylink:hover{color:var(--lake)}
   body.spine-on .spine .mapclaim{display:none}
   body.spine-on .mast{margin-inline:0;padding-inline:20px;border-radius:6px}  /* the cover fits the story column beside the map */
   body.spine-on h2#map,body.spine-on h2#he-map,body.spine-on .maphost[data-host="all"],body.spine-on .tabs [data-tab="map"]{display:none}
+  /* the day number sits above its text, as on a phone: the column beside the map has no width to spare */
+  body.spine-on .stage{grid-template-columns:1fr;gap:6px 0}
+  body.spine-on .stage .d{display:flex;align-items:center;gap:12px} body.spine-on .stage .d::before{margin:0} body.spine-on .stage .d small{margin:0}
+  body.spine-on .inpic img{width:min(100%,calc(100vh * var(--ar,1.5)))}  /* pictures fill the column */
 }
 /* a phone on its side: the map takes the right half, full height, the profile and tools give way to it */
 @media (orientation:landscape) and (max-width:1099px) and (max-height:560px){
@@ -263,7 +267,7 @@ a.daylink:hover{color:var(--lake)}
   body.spine-on .spine .livemap{height:calc(100vh - 54px);margin:0}
   body.spine-on .spine canvas.profile,body.spine-on .spine .profstats,body.spine-on .spine .maptools{display:none}
   body.spine-on .mast{min-height:min(60vh,240px)}
-  body.spine-on .inpic img{width:min(100%,calc(70vh * var(--ar,1.5)))}
+  body.spine-on .inpic img{width:100%}
 }
 /* the Track button on the map (beside the story only) and the ring on the picture being read */
 .trackctl{border-radius:4px} .trackctl .trackbtn{display:flex;align-items:center;gap:6px;height:34px;padding:0 10px 0 7px;border:0;border-radius:4px;background:#fff;color:#333;font:600 12.5px "IBM Plex Sans",sans-serif;cursor:pointer;white-space:nowrap;direction:ltr}
@@ -293,6 +297,10 @@ html.tv .photoref.tvcur,html.tv .photos.tvcur{outline:none} html.tv .photoref.tv
 .tvhint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;font:15px "IBM Plex Mono",monospace;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:7px 18px;white-space:nowrap;opacity:.85;pointer-events:none}
 .tvhint[lang="he"]{font-family:"Heebo",sans-serif}
 .foot{margin:10px 0 0;font:13px "IBM Plex Mono",monospace;color:var(--muted);text-align:center} .foot a{color:var(--muted)} .foot a:hover{color:var(--ink)}
+.foot .casthow{display:block;margin-top:6px;font-family:"IBM Plex Sans",sans-serif;font-size:13px} [lang="he"] .foot .casthow{font-family:"Heebo",sans-serif} .foot .casthow[hidden]{display:none} body.casting .castlink{color:var(--mark)}
+/* the cast button beside the language button (browsers with the Presentation API only) */
+.langbar{display:flex;gap:8px;align-items:center} #castbtn{width:36px;height:36px;padding:0;display:grid;place-items:center;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:3px;cursor:pointer;box-shadow:0 2px 8px -4px rgba(0,0,0,.4)} #castbtn svg{width:20px;height:20px;fill:currentColor} #castbtn:hover{border-color:var(--mark)} #castbtn[aria-pressed="true"]{color:#fff;background:var(--mark);border-color:var(--mark)}
+html.tv #castbtn{display:none}
 /* editing controls show for signed-in editors only (body.can-edit, set by log.js from /whoami) */
 body:not(.can-edit) .editbtn,body:not(.can-edit) .upload,body:not(.can-edit) h2#upload,body:not(.can-edit) h2#he-upload,body:not(.can-edit) h2#upload + p,body:not(.can-edit) h2#he-upload + p,body:not(.can-edit) .hiddenpics,body:not(.can-edit) nav.toc a[href$="upload"]{display:none}
 .signin{margin:40px 0 0;font:13px "IBM Plex Mono",monospace;color:var(--muted);text-align:center} .signin a{color:var(--muted)} .signin a:hover{color:var(--ink)}
@@ -395,7 +403,8 @@ body.editing .dots{display:none}  /* not while a day's text is being edited */
   .logpage .stage canvas.profile{height:200px}
   .photos{display:flex;gap:10px;align-items:flex-start}
   .photos .photoref{flex:1 1 0;min-width:0;margin:0}
-  .photos .inpic img{width:min(100%,calc(70vh * var(--ar,1.5)))}
+  .photos .inpic img{width:100%}
+  .logpage .inpic img{width:min(100%,calc(100vh * var(--ar,1.5)))}
   .logpage .pane[data-pane="log"],.logpage .pane[data-pane="tips"]{max-width:none}
 }
 #lightbox{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;flex-direction:column;padding:12px}
