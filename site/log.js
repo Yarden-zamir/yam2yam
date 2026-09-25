@@ -85,7 +85,7 @@
       var badge = g.closest('.stage') && g.closest('.stage').querySelector('[data-tab="pics"] .badge'); if (badge) { badge.textContent = list.length ? String(list.length) : ''; badge.hidden = !list.length; }
     });
     document.querySelectorAll('.stage[data-day]').forEach(function (st) { var n = +st.getAttribute('data-day'); if (EDITS.days[n] && EDITS.days[n].text && EDITS.days[n].text[langOf(st)] && !st._edited) redrawLog(st); });
-    document.querySelectorAll('.stage[data-day]').forEach(function (st) { var n = +st.getAttribute('data-day'); if (EDITS.days[n] && EDITS.days[n].tips && EDITS.days[n].tips[langOf(st)] && !st._editedTips) redrawLog(st, 'tips'); });
+    document.querySelectorAll('.stage[data-day]').forEach(function (st) { var n = +st.getAttribute('data-day'), t = EDITS.days[n] && EDITS.days[n].tips && EDITS.days[n].tips[langOf(st)]; if (t && !st._editedTips) redrawLog(st, 'tips'); if (t && t.length) { var tb = st.querySelector('.tabs [data-tab="tips"]'); if (tb) tb.hidden = false; } });
     document.querySelectorAll('[data-section]').forEach(function (el) { var k = el.getAttribute('data-section'), ed = k === 'intro' || k === 'outro' ? EDITS[k] : EDITS.sections && EDITS.sections[k]; if (ed && ed[langOf(el)] && !el._edited) redrawSection(el); });
     document.querySelectorAll('.photoref').forEach(function (s) {
       var p = byId[s.getAttribute('data-photo')]; if (!p) { s.innerHTML = ''; return; }

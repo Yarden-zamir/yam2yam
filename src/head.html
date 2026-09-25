@@ -241,6 +241,20 @@ a.daylink:hover{color:var(--lake)}
 .tabs .editbtn{margin-inline-start:auto;font-size:16px;padding:6px 10px;color:var(--muted)} .tabs .editbtn:hover{color:var(--ink)} .tabs .editbtn.on{color:var(--mark)}
 /* the archived plan: a note at the top of each language */
 .archive{margin:16px 0 0;padding:10px 14px;border:1px solid var(--warn);background:var(--warn-soft);border-radius:4px;font-size:14px} .archive a{color:var(--ink)}
+/* the spine: on a wide log page the map sits beside the story and follows the reader */
+.spine{display:none}
+@media (min-width:1100px){
+  body.spine-on .wrap{display:flex;gap:28px;align-items:flex-start}
+  body.spine-on .main{flex:1 1 0;min-width:0}
+  body.spine-on .spine{display:block;flex:0 0 min(440px,36vw);position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:hidden}
+  body.spine-on .spine .mapbox{margin:0}
+  body.spine-on .spine .livemap{height:min(60vh,600px);margin:0 0 8px}
+  body.spine-on .spine canvas.profile{height:150px}
+  body.spine-on .spine .maptools{margin:6px 0}
+  body.spine-on .spine .mapclaim{display:none}
+  body.spine-on .mast{margin-inline:0;padding-inline:20px;border-radius:6px}  /* the cover fits the story column beside the map */
+  body.spine-on h2#map,body.spine-on h2#he-map,body.spine-on .maphost[data-host="all"],body.spine-on .tabs [data-tab="map"]{display:none}
+}
 /* the intro and the wrap-up carry a pencil of their own */
 .secblock{position:relative;padding-inline-end:34px} .secblock > .editbtn{position:absolute;inset-inline-end:0;top:0;font:16px "IBM Plex Sans",sans-serif;padding:4px 8px;color:var(--muted);background:none;border:0;cursor:pointer} .secblock > .editbtn:hover{color:var(--ink)} .secblock > .editbtn.on{color:var(--mark)}
 [data-section="intro"] .sectext > p:first-child{font-size:19px;max-width:62ch;color:var(--ink)}
@@ -296,9 +310,16 @@ a.lk i.ic-url{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
 .dots::after{content:"";position:absolute;top:0;bottom:0;left:0;right:-4px}  /* a touch target only a little wider than the peeking dots */
 .dots[hidden]{display:none}
 .dots a{position:relative;display:flex;align-items:center;height:13px;padding:0 4px;text-decoration:none;color:var(--ink);cursor:pointer}
-.dots i{flex:none;width:5px;height:5px;border-radius:50%;background:var(--muted);opacity:.6;box-shadow:0 0 0 2px var(--ground);transition:transform .15s,opacity .15s,background .15s}
+/* one shape per kind: a dot for a day, a dash for a text section, a triangle for the wrap-up, a ring for the map, a plus for the upload */
+.dots i{--c:var(--muted);flex:none;width:5px;height:5px;border-radius:50%;background:var(--c);opacity:.6;box-shadow:0 0 0 2px var(--ground);transition:transform .15s,opacity .15s,background .15s}
 .dots a.sec i{width:8px;height:3px;border-radius:2px}
-.dots a.on i{background:var(--mark);opacity:1;transform:scale(1.7)}
+.dots a.end i{width:0;height:0;border-radius:0;background:none;box-shadow:none;border-left:4px solid transparent;border-right:4px solid transparent;border-bottom:7px solid var(--c)}
+.dots a.map i{width:7px;height:7px;background:none;border:1.5px solid var(--c)}
+.dots a.up i{width:7px;height:7px;background:none;box-shadow:none;position:relative}
+.dots a.up i::before,.dots a.up i::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--c)} .dots a.up i::before{width:7px;height:2px} .dots a.up i::after{width:2px;height:7px}
+.dots a.on i{--c:var(--mark);opacity:1;transform:scale(1.6)}
+.dots .rh{display:block;font:700 9.5px "IBM Plex Mono",monospace;letter-spacing:.12em;color:var(--mark);writing-mode:vertical-rl;transform:rotate(180deg);margin:2px auto 6px;opacity:0;transition:opacity .2s;pointer-events:none}
+.dots.live .rh,.dots.scrub .rh,.dots:hover .rh{opacity:1}
 .dots span{position:absolute;left:22px;top:50%;transform:translateY(-50%);font:600 11.5px "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:2px 9px;white-space:nowrap;opacity:0;pointer-events:none;box-shadow:0 2px 8px -4px rgba(0,0,0,.4);transition:opacity .15s}
 .dots.scrub a.on span,.dots:not(.scrub) a:hover span{opacity:1}
 html[dir="rtl"] .dots span{font-family:"Heebo",sans-serif}

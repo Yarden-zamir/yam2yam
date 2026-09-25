@@ -210,8 +210,10 @@
         range = r;
         if (n != null) {
           scopeLayer = L.polyline(route.pts.filter(function (p) { return p.d >= r.from && p.d <= r.to; }).map(function (p) { return [p.lat, p.lon]; }), { color: ME, weight: 9, opacity: .45, interactive: false }).addTo(map);
-          if (fit) map.fitBounds(scopeLayer.getBounds(), { padding: [20, 20] });
-        } else if (fit) map.fitBounds(routeGroup.getBounds(), { padding: [12, 12] });
+          if (fit === 'fly') { map.stop(); map.flyToBounds(scopeLayer.getBounds(), { padding: [24, 24], duration: 0.9, easeLinearity: 0.3 }); }
+          else if (fit) map.fitBounds(scopeLayer.getBounds(), { padding: [20, 20] });
+        } else if (fit === 'fly') { map.stop(); map.flyToBounds(routeGroup.getBounds(), { padding: [12, 12], duration: 0.9, easeLinearity: 0.3 }); }
+        else if (fit) map.fitBounds(routeGroup.getBounds(), { padding: [12, 12] });
       }
       stats(); drawProfile(null);
       container.dispatchEvent(new CustomEvent('trek:scope', { bubbles: true, detail: { lang: lang, scope: scope, map: map, range: range } }));
@@ -399,12 +401,13 @@
     /* hosts: the box moves into whichever day tab or section claims it */
     var host = container.parentNode;
     function claim(h) {
-      var n = h.getAttribute('data-host') === 'all' ? null : +h.getAttribute('data-host');
+      var hn = h.getAttribute('data-host'), n = hn === 'all' || hn === 'spine' ? null : +hn;
       if (h !== host) { h.appendChild(container); host.classList.add('empty'); h.classList.remove('empty'); host = h; }
       map.invalidateSize();
       if (scope !== n) setScope(n, true); else drawProfile(null);
     }
     apps[lang] = { map: map, focus: focus, pick: pick, box: container, status: status, claim: claim, refreshMe: refreshMe, panToMe: panToMe,
+      follow: function (n) { if (scope !== n) setScope(n, 'fly'); },  /* the spine glides to the day being read */
       redraw: function () { map.invalidateSize(); drawProfile(null); }, hostEl: function () { return host; }, scope: function () { return scope; },
       setMarks: function (list) { marks = list || []; drawProfile(null); },
       addOverlay: function (name, layer, on) { layersCtl.addOverlay(layer, name); if (on) layer.addTo(map); } };
@@ -421,10 +424,19 @@
     return r.height > 0 && Math.min(r.bottom, h) - Math.max(r.top, 0) >= r.height * 0.6;
   }
   /* move the language's map box into a host (a day's Map tab or the whole-route section) and scope it */
+  /* the spine: on a wide screen the story's map sits beside the text and follows the reader instead of moving into the day cards */
+  var SPINE_MQ = window.matchMedia ? matchMedia('(min-width: 1100px)') : null;
+  function spineOn() { return !!(SPINE_MQ && SPINE_MQ.matches && document.body.classList.contains('logpage')); }
+  function spineHost(lang) { return document.querySelector('#' + lang + ' .maphost[data-host="spine"]'); }
   function claimHost(h) {
     if (!h) return null;
     if (!data) { pendingClaim = h; return null; }
     var lang = langOf(h), box = boxes[lang]; if (!box) return null;
+    if (spineOn() && h.getAttribute('data-host') !== 'spine') {  /* a day or the whole route asked for the map: the spine shows it instead */
+      var sp = spineHost(lang); if (sp && box.parentNode !== sp) claimHost(sp);
+      var ap = apps[lang]; if (ap) { var hn = h.getAttribute('data-host'); ap.follow(hn === 'all' ? null : +hn); }
+      return ap || null;
+    }
     var cur = box.parentNode;
     if (cur !== h) { h.appendChild(box); cur.classList.add('empty'); h.classList.remove('empty'); }
     if (box.offsetParent === null) return apps[lang] || null;
@@ -444,7 +456,7 @@
     var lang = visibleLang(), stage = stageOf(lang, n);
     if (!stage) return focusAll(q);
     if (stage.classList.contains('done')) stage.classList.add('open');
-    showTab(stage, 'map');
+    if (spineOn()) claimHost(stage.querySelector('.maphost')); else showTab(stage, 'map');
     stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
     var app = apps[lang];
     if (app && q && q !== 'day:' + n) setTimeout(function () { app.redraw(); app.focus(q); }, 250);
@@ -452,7 +464,7 @@
   function focusAll(q) {
     var lang = visibleLang(), h = allHost(lang); if (!h) return;
     claimHost(h);
-    h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!spineOn()) h.scrollIntoView({ behavior: 'smooth', block: 'start' });
     var app = apps[lang];
     if (app && q) setTimeout(function () { app.redraw(); app.focus(q); }, 250);
   }
@@ -488,7 +500,21 @@
       setTimeout(function () { loadGpx(attempt + 1); }, wait);
     });
   })(0);
-  var btn = document.getElementById('langbtn'); if (btn) btn.addEventListener('click', function () { setTimeout(visible, 30); });
+  var btn = document.getElementById('langbtn'); if (btn) btn.addEventListener('click', function () { setTimeout(visible, 30); setTimeout(spineLayout, 40); });
+  function spineLayout() {
+    var lang = visibleLang(); if (!lang || !data) return;
+    var on = spineOn(); document.body.classList.toggle('spine-on', on);
+    var box = boxes[lang], sp = spineHost(lang); if (!box || !sp) return;
+    if (on) { if (box.parentNode !== sp) claimHost(sp); else { var ap = apps[lang]; if (ap) ap.redraw(); } }
+    else if (box.parentNode === sp) claimHost(allHost(lang));
+  }
+  if (SPINE_MQ && SPINE_MQ.addEventListener) SPINE_MQ.addEventListener('change', spineLayout);
+  document.addEventListener('trek:gpx', spineLayout);
+  var followTimer = null;
+  document.addEventListener('trek:reading', function (e) {  /* the rail says which day is under the eye; the spine follows a moment later */
+    if (!spineOn()) return; clearTimeout(followTimer);
+    followTimer = setTimeout(function () { var ap = apps[visibleLang()]; if (ap) ap.follow(e.detail.day); }, 220);
+  });
   window.gr52Focus = focusVisible;
   window.gr52Map = {
     visibleApp: function () { return appFor(visibleLang()); },
@@ -613,12 +639,13 @@
     function buzz() { if (Date.now() - born < 3000 || Date.now() < quietUntil) return;  /* not while the page settles on load, nor during the glide after a tap */ try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) { } }
     function build() {
       var lang = visibleLang(), T = I18N[lang], els = Array.prototype.slice.call(document.querySelectorAll('.wrap:not([hidden]) h2[id], .wrap:not([hidden]) .stage[data-day]'));
-      items = []; rail.innerHTML = ''; onEl = null;
+      items = []; rail.innerHTML = '<b class="rh"></b>'; rail.querySelector('.rh').textContent = (window.TREK && (TREK.short || TREK.slug) || '').toUpperCase(); onEl = null;
       els.forEach(function (el, i) {
         var day = el.hasAttribute('data-day');
         if (!day && els[i + 1] && els[i + 1].hasAttribute('data-day')) return;  /* the heading over the day cards: the days stand for it */
         var a = document.createElement('a'), label = day ? T.day + ' ' + el.getAttribute('data-day') : el.textContent.replace(/^§\d+/, '').trim().replace(/^(.{34}[^\s]*)\s.+$/, '$1');  /* long section names end at a word */
-        a.href = '#' + (day ? 'd' + el.getAttribute('data-day') : el.id); a.className = day ? 'day' : 'sec'; a.innerHTML = '<i></i><span></span>'; a.querySelector('span').textContent = label; a.setAttribute('aria-label', label);
+        var kind = day ? 'day' : /(^|-)outro$/.test(el.id) ? 'end' : /(^|-)map$/.test(el.id) ? 'map' : /(^|-)upload$/.test(el.id) ? 'up' : 'sec';  /* dot, dash, triangle, ring, plus */
+        a.href = '#' + (day ? 'd' + el.getAttribute('data-day') : el.id); a.className = kind; a.innerHTML = '<i></i><span></span>'; a.querySelector('span').textContent = label; a.setAttribute('aria-label', label);
         rail.appendChild(a); items.push({ el: el, a: a, day: day });
       });
       rail.hidden = items.length < 3; mark(false);
@@ -634,6 +661,7 @@
       items.forEach(function (x) { x.a.classList.toggle('on', x === it); });
       if (onEl && vibrate) buzz();
       onEl = it.el;
+      document.dispatchEvent(new CustomEvent('trek:reading', { detail: { day: it.day ? +it.el.getAttribute('data-day') : null, id: it.el.id || null } }));
     }
     function jump(it, smooth) { if (!it) return; it.el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' }); }
     function at(yy) { var best = null, bd = Infinity; items.forEach(function (it) { var r = it.a.getBoundingClientRect(), d = Math.abs((r.top + r.bottom) / 2 - yy); if (d < bd) { bd = d; best = it; } }); return best; }

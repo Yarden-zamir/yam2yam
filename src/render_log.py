@@ -109,7 +109,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
     intro = _lang(log.get("intro"), lang) or []
     intro = intro if isinstance(intro, list) else [intro]
     htag, mast_open, mast_close = render_mod.cover_html(render_mod.cover_of(log.get("cover"), log["user"]))
-    o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap"{"" if lang == trek["languages"][0] else " hidden"}>', htag,
+    o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap"{"" if lang == trek["languages"][0] else " hidden"}>', '<div class="main">', htag,
          '  <div class="topo" aria-hidden="true"></div>', mast_open,
          f'  <div class="eyebrow"><span class="balise"></span>{txt(_lang(log.get("eyebrow"), lang) or M["eyebrow"])} · {esc(log["user"])}</div>',
          f'  <h1>{txt(_lang(log.get("title"), lang) or trek["name"])}</h1>', mast_close]
@@ -136,7 +136,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
               f'    <h3><a href="?map=day:{n}" class="daylink" data-focus="day:{n}">{txt(title)}</a></h3>',
               '    <div class="stats">' + "".join(f'<span class="st">{logtxt(s)}</span>' for s in stats) + "</div>",
               '    <div class="tabs" role="tablist">' + "".join(
-                  f'<button type="button" role="tab" data-tab="{key}" class="{"on" if key == "log" else ""}" aria-selected="{"true" if key == "log" else "false"}">{txt(name)}'
+                  f'<button type="button" role="tab" data-tab="{key}" class="{"on" if key == "log" else ""}" aria-selected="{"true" if key == "log" else "false"}"{" hidden" if key == "tips" and not tips else ""}>{txt(name)}'
                   + ('<span class="badge" hidden></span>' if key == "pics" else "") + "</button>" for key, name in zip(("log", "pics", "map", "wx", "tips"), M["tabs"]))
               + f'<button type="button" class="editbtn" data-edit title="{M["edit"]}" aria-label="{M["edit"]}">✎</button></div>',
               '    <div class="pane" data-pane="log" role="tabpanel">']
@@ -167,7 +167,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
           f'<p><a href="{gpx}" download>{L["gpx"]}</a></p>']
     o += ["", h2(sec + 1, "upload", M["upload_h"]), f'<p>{M["upload_hint"]}</p>',
           f'<div class="upload"><label class="upbtn">{M["pick"]}<input type="file" accept="image/*,.heic,.heif,.zip,application/zip" multiple hidden></label><div class="uplist"></div></div>']
-    o.append("</div>")
+    o.append('</div><aside class="spine" aria-label="Map"><div class="maphost empty" data-host="spine"></div></aside></div>')  # the map beside the story on wide screens
     return "\n".join(o)
 
 

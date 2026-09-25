@@ -127,6 +127,7 @@ def theme_style() -> str:
 def config_script() -> str:
     cfg = {
         "slug": TREK["slug"],
+        "short": TREK.get("shortName", TREK["slug"].upper()),
         "gpx": "/" + Path(TREK["gpx"]).name,
         "timezone": TREK.get("timezone", "auto"),
         "plannedStart": TREK.get("plannedStart", 8),
