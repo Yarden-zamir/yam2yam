@@ -33,6 +33,11 @@ http:// {
 		header Cache-Control "no-cache"
 		file_server
 	}
+	# link previews (og:image): a 1200 x 630 crop the uploader makes on the first request
+	@og path /log/*/photos/*.og.jpg
+	handle @og {
+		reverse_proxy uploader:8080
+	}
 	@photos path /log/*/photos/*
 	handle @photos {
 		uri strip_prefix /log

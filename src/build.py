@@ -169,6 +169,7 @@ def log_covers() -> dict:
 
 
 COVERS = log_covers()
+STORY = TREK.get("story")  # the user whose log is the front page; the plan then moves to /plan/ with an archive note
 TREK["_cover"] = render_mod.cover_of(TREK.get("cover")) or next(iter(COVERS.values()), None)
 
 if (ROOT / "content.yaml").exists():
@@ -187,12 +188,21 @@ def _vhash(f: Path) -> str:
     return hashlib.sha256(f.read_bytes()).hexdigest()[:10]
 
 
-def og_meta(title: str, description: str, image: str | None) -> str:
-    """Open Graph tags, so a shared link shows the title, the blurb and the cover picture."""
+def og_meta(title: str, description: str, cover: dict | None, path: str = "/") -> str:
+    """Open Graph tags, so a shared link shows the title, the blurb and the cover picture. The picture is the
+    uploader's 1200 x 630 crop of the cover (under 300 KB, which WhatsApp insists on), centred where the cover is."""
     q = lambda s: str(s).replace('"', "&quot;")
-    o = [f'<meta property="og:title" content="{q(title)}">', f'<meta property="og:description" content="{q(description)}">', '<meta property="og:type" content="website">']
-    if image:
-        o += [f'<meta property="og:image" content="https://{TREK["hostname"]}{q(image)}">', '<meta name="twitter:card" content="summary_large_image">']
+    o = [f'<meta property="og:title" content="{q(title)}">', f'<meta property="og:description" content="{q(description)}">', '<meta property="og:type" content="website">',
+         f'<meta property="og:url" content="https://{TREK["hostname"]}{path}">']
+    if cover and cover.get("src"):
+        src = cover["src"]
+        if cover.get("photo"):
+            y = re.sub(r"[^\d]", "", str(cover.get("y", "50"))) or "50"
+            src = src[: -len(".jpg")] + ".og.jpg?y=" + y if src.endswith(".jpg") else src
+        url = f"https://{TREK['hostname']}{q(src)}"
+        o += [f'<meta property="og:image" content="{url}">', f'<meta property="og:image:secure_url" content="{url}">',
+              '<meta property="og:image:type" content="image/jpeg">', '<meta property="og:image:width" content="1200">', '<meta property="og:image:height" content="630">',
+              '<meta name="twitter:card" content="summary_large_image">', f'<meta name="twitter:image" content="{url}">']
     return "\n".join(o) + "\n"
 
 
@@ -200,7 +210,7 @@ body = section_maps(link_places(label_tables((SRC / "body.html").read_text())))
 head = bust((SRC / "head.html").read_text().replace("{{NAME}}", TREK["name"]))
 page = (
     SHELL_HEAD.format(lang=TREK.get("languages", ["en"])[0], description=TREK["description"].replace('"', "&quot;"),
-                      og=og_meta(TREK["name"], TREK["description"], TREK["_cover"] and TREK["_cover"]["src"]))
+                      og=og_meta(TREK["name"], TREK["description"], TREK["_cover"], "/plan/" if STORY else "/"))
     + head
     + theme_style()
     + config_script()
@@ -210,7 +220,6 @@ page = (
     + bust((SRC / "scripts.html").read_text().replace("{{APP}}", '<script src="/trip.js" defer></script>'))
     + "</body>\n</html>\n"
 )
-STORY = TREK.get("story")  # the user whose log is the front page; the plan then moves to /plan/ with an archive note
 if STORY:
     _NOTE = {"en": 'This is the plan as it was before we left, kept for reference. The trek as walked, with pictures and tips, is on the <a href="/">front page</a>.',
              "he": 'זו התוכנית כפי שהייתה לפני היציאה, שמורה לעיון. המסלול כפי שהלכנו, עם תמונות וטיפים, נמצא ב<a href="/">עמוד הראשי</a>.'}
@@ -231,7 +240,7 @@ if (ROOT / "log").exists():
         log_cover = log_cfg.get("cover")
         log_page = (
             SHELL_HEAD.format(lang=TREK.get("languages", ["en"])[0], description=TREK["description"].replace('"', "&quot;"),
-                              og=og_meta(TREK["name"], TREK["description"], log_cover and log_cover["src"]))
+                              og=og_meta(TREK["name"], TREK["description"], log_cover, "/" if STORY == log_cfg["user"] else f"/log/{log_cfg['user']}/"))
             + '<meta name="robots" content="noindex, nofollow">\n'
             + head
             + theme_style()

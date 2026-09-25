@@ -222,6 +222,39 @@ def apply_edit(user: str, body: dict) -> dict:
         return e
 
 
+OG_MAX = 290_000  # WhatsApp shows no preview above about 300 KB
+
+
+def og_preview(user: str, pid: str, y: int | None) -> Path | None:
+    """A 1200 x 630 crop of the picture for link previews (og:image), centred on y percent of its height,
+    made on the first request and kept beside the picture. None when the picture is unknown."""
+    src = DATA / user / "photos" / (pid + ".jpg")
+    if not src.exists():
+        return None
+    out = DATA / user / "photos" / (pid + (f".og{y}.jpg" if y is not None else ".og.jpg"))
+    if out.exists() and out.stat().st_mtime >= src.stat().st_mtime:
+        return out
+    img = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
+    W, H = 1200, 630
+    scale = max(W / img.width, H / img.height)
+    img = img.resize((max(W, round(img.width * scale)), max(H, round(img.height * scale))), Image.LANCZOS)
+    cy = img.height * (y if y is not None else 50) / 100
+    top = int(min(max(cy - H / 2, 0), img.height - H))
+    left = (img.width - W) // 2
+    img = img.crop((left, top, left + W, top + H))
+    q = 80
+    while True:
+        buf = io.BytesIO()
+        img.save(buf, "JPEG", quality=q, optimize=True, progressive=True)
+        if buf.tell() <= OG_MAX or q <= 40:
+            break
+        q -= 8
+    tmp = out.with_suffix(".tmp")
+    tmp.write_bytes(buf.getvalue())
+    tmp.replace(out)
+    return out
+
+
 def used_bytes(user: str) -> int:
     d = DATA / user
     return sum(p.stat().st_size for p in d.rglob("*") if p.is_file()) if d.exists() else 0
@@ -245,6 +278,21 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/healthz":
             return self._json(200, {"ok": True})
+        path, _, query = self.path.partition("?")
+        m = re.match(r"^/log/([^/]+)/photos/([a-f0-9]{12})\.og\.jpg$", path)
+        if m:  # the link-preview crop, made on demand
+            y = re.search(r"(?:^|&)y=(\d{1,3})", query)
+            out = og_preview(m.group(1), m.group(2), min(100, int(y.group(1))) if y else None)
+            if not out:
+                return self._json(404, {"error": "no such picture"})
+            raw = out.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "image/jpeg")
+            self.send_header("Content-Length", str(len(raw)))
+            self.send_header("Cache-Control", "public, max-age=86400")
+            self.end_headers()
+            self.wfile.write(raw)
+            return
         self._json(405, {"error": "POST pictures to /log/<user>/upload"})
 
     def do_POST(self):
