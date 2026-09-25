@@ -435,12 +435,17 @@
       trackBtn = b; return d;
     } });
     new TrackCtl().addTo(map);
-    function syncTrack() { if (trackBtn) trackBtn.setAttribute('aria-pressed', tracking ? 'true' : 'false'); if (!tracking && trackPin) { map.removeLayer(trackPin); trackPin = null; } }
+    function syncTrack() { if (trackBtn) trackBtn.setAttribute('aria-pressed', tracking ? 'true' : 'false'); if (!tracking) { trackAt = null; if (trackPin) { map.removeLayer(trackPin); trackPin = null; } } }
     function tracked() { return tracking && document.body.classList.contains('spine-on'); }
     /* glide to a picture's spot and ring it; with no spot, back to the overview of the stretch being read */
+    var trackAt = null;
     function trackTo(pos) {
-      if (!pos) { if (trackPin) { map.removeLayer(trackPin); trackPin = null; } fitScope('fly'); return; }
-      var ll = [pos.lat, pos.lon], z = map.getZoom() >= 12 ? map.getZoom() : 14;
+      if (!pos) { if (trackPin) { map.removeLayer(trackPin); trackPin = null; } trackAt = null; fitScope('fly'); return; }
+      var ll = L.latLng(pos.lat, pos.lon), z = map.getZoom() >= 12 ? map.getZoom() : 14;
+      /* the same picture, still well inside the view after the reader's own panning or zooming: leave the map be;
+         once it has been dragged away, the next scroll of the story brings it back */
+      if (trackAt && trackAt.equals(ll) && map.getZoom() >= 12 && map.getBounds().pad(-0.25).contains(ll)) return;
+      trackAt = ll;
       if (!trackPin) trackPin = pin(ll, 'trackpin', 64, 850).addTo(map); else trackPin.setLatLng(ll);
       map.stop(); map.flyTo(ll, z, { duration: 1, easeLinearity: 0.3 });
     }

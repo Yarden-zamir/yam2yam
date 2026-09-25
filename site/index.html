@@ -310,9 +310,10 @@ html.tv .photoref.tvcur,html.tv .photos.tvcur{outline:none} html.tv .photoref.tv
 .tvhint[lang="he"]{font-family:"Heebo",sans-serif}
 .foot{margin:10px 0 0;font:13px "IBM Plex Mono",monospace;color:var(--muted);text-align:center} .foot a{color:var(--muted)} .foot a:hover{color:var(--ink)}
 .foot .casthow{display:block;margin-top:6px;font-family:"IBM Plex Sans",sans-serif;font-size:13px} [lang="he"] .foot .casthow{font-family:"Heebo",sans-serif} .foot .casthow[hidden]{display:none} body.casting .castlink{color:var(--mark)}
-/* the cast button beside the language button (browsers with the Presentation API only) */
-.langbar{display:flex;gap:8px;align-items:center} #castbtn{width:36px;height:36px;padding:0;display:grid;place-items:center;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:3px;cursor:pointer;box-shadow:0 2px 8px -4px rgba(0,0,0,.4)} #castbtn svg{width:20px;height:20px;fill:currentColor} #castbtn:hover{border-color:var(--mark)} #castbtn[aria-pressed="true"]{color:#fff;background:var(--mark);border-color:var(--mark)}
-html.tv #castbtn{display:none}
+/* the cast button: fixed at the bottom right, the mirror of the position button (browsers with the Presentation API only) */
+#castbtn{position:fixed;right:14px;bottom:14px;z-index:6;width:48px;height:48px;padding:0;display:grid;place-items:center;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:50%;cursor:pointer;box-shadow:0 4px 14px -4px rgba(0,0,0,.5)} #castbtn svg{width:24px;height:24px;fill:currentColor} #castbtn:hover{border-color:var(--mark)} #castbtn[aria-pressed="true"]{color:#fff;background:var(--mark);border-color:var(--mark)}
+@media (max-width:760px){#castbtn{right:10px;bottom:10px}}
+html.tv #castbtn,body.lbopen #castbtn{display:none}
 /* editing controls show for signed-in editors only (body.can-edit, set by log.js from /whoami) */
 body:not(.can-edit) .editbtn,body:not(.can-edit) .upload,body:not(.can-edit) h2#upload,body:not(.can-edit) h2#he-upload,body:not(.can-edit) h2#upload + p,body:not(.can-edit) h2#he-upload + p,body:not(.can-edit) .hiddenpics,body:not(.can-edit) nav.toc a[href$="upload"]{display:none}
 .signin{margin:40px 0 0;font:13px "IBM Plex Mono",monospace;color:var(--muted);text-align:center} .signin a{color:var(--muted)} .signin a:hover{color:var(--ink)}
@@ -792,7 +793,7 @@ if('serviceWorker' in navigator){(function(){var had=!!navigator.serviceWorker.c
 </script>
 <script src="/vendor/leaflet.min.js?v=5c9aecfc30"></script>
 <script src="/vendor/leaflet-rotate.umd.min.js?v=543dab62fe"></script>
-<script src="/map.js?v=73bd00ac97" defer></script>
+<script src="/map.js?v=96f3880533" defer></script>
 <script src="/trip.js?v=9a65a731ab" defer></script>
 </body>
 </html>

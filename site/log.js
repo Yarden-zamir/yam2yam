@@ -754,8 +754,8 @@
     var a = best || above, p = a && byId[a.getAttribute('data-photo')], n = app.scope();
     if (p && n != null && dayOf(p) !== n) p = null;  /* the last picture above is another day's: this day has not shown one yet */
     var pos = p && place(p), key = pos ? p.id : 'scope:' + n;
-    if (!force && key === trackKey) return;
-    trackKey = key; app.trackTo(pos || null);
+    if (!force && key === trackKey && !pos) return;  /* the same overview again: leave the map as the reader left it */
+    trackKey = key; app.trackTo(pos || null);  /* a picture: the map itself decides whether it is still in view */
   }
   window.addEventListener('scroll', function () { clearTimeout(trackTimer); trackTimer = setTimeout(function () { trackNow(false); }, 140); }, { passive: true });
   document.addEventListener('trek:scope', function () { setTimeout(function () { trackNow(true); }, 0); });  /* the day changed under the reader: the map has not moved yet */
@@ -814,8 +814,9 @@
   if (!CAST && window.PresentationRequest) {
     try { castReq = new PresentationRequest([castUrl()]); navigator.presentation.defaultRequest = castReq; } catch (e) { castReq = null; }
     if (castReq) {
-      var bar = document.querySelector('.langbar');
-      if (bar) { var cb = document.createElement('button'); cb.id = 'castbtn'; cb.type = 'button'; cb.title = T[visibleLang()].cast; cb.setAttribute('aria-label', cb.title); cb.setAttribute('aria-pressed', 'false'); cb.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 16v3a1 1 0 0 0 0 0M2 12a9 9 0 0 1 9 9M2 8a13 13 0 0 1 13 13M2 4h20v16h-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="3.5" cy="19.5" r="1.7"/></svg>'; bar.insertBefore(cb, bar.firstChild); cb.addEventListener('click', castStart); }
+      var cb = document.createElement('button'); cb.id = 'castbtn'; cb.type = 'button'; cb.title = T[visibleLang()].cast; cb.setAttribute('aria-label', cb.title); cb.setAttribute('aria-pressed', 'false');  /* a round button at the bottom right, like the position one at the left */
+      cb.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12a9 9 0 0 1 9 9M2 8a13 13 0 0 1 13 13M2 4h20v16h-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="3.5" cy="19.5" r="1.7"/></svg>'; document.body.appendChild(cb); cb.addEventListener('click', castStart);
+      document.addEventListener('trek:lang', function () { setTimeout(function () { cb.title = T[visibleLang()].cast; cb.setAttribute('aria-label', cb.title); }, 30); });
       try { var old = sessionStorage.getItem('trek.cast'); if (old) castReq.reconnect(old).then(castTake).catch(function () { }); } catch (e) { }
       window.addEventListener('scroll', castSync, { passive: true }); document.addEventListener('trek:lang', function () { setTimeout(castSync, 50); });
     }
