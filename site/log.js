@@ -176,6 +176,12 @@
     var u = new URL(location.href); if (photoId) u.searchParams.set('photo', photoId);
     history.pushState(Object.assign({}, history.state || {}, { overlay: kind }), '', u); overlay = kind;
   }
+  /* an overlay closes without stepping back in history: for a navigation that pushes its own entry right after */
+  function leaveQuietly() {
+    lb.hidden = true; document.body.classList.remove('lbopen'); sheetWrap.setAttribute('hidden', ''); overlay = null;
+    var u = new URL(location.href); u.searchParams.delete('photo');
+    history.replaceState(Object.assign({}, history.state || {}, { overlay: null }), '', u);
+  }
   function popOverlay() {
     if (history.state && history.state.overlay && overlay) { popPending = true; overlay = null; history.back(); return; }
     overlay = null; var u = new URL(location.href); if (u.searchParams.has('photo')) { u.searchParams.delete('photo'); history.replaceState(history.state, '', u); }
@@ -199,7 +205,7 @@
       if (e.target.closest('.lbdl')) return;
       var g = e.target.closest('a[data-go]');
       if (g) { /* close first, then navigate from the picture's day so its map opens */
-        e.preventDefault(); close();
+        e.preventDefault(); leaveQuietly();
         var lang = visibleLang(), st = g.getAttribute('data-day') !== '' ? document.querySelector('#' + lang + ' .stage[data-day="' + g.getAttribute('data-day') + '"]') : null;
         if (window.gr52Nav) window.gr52Nav.go(g.getAttribute('data-go'), st || g);
         return;
@@ -508,7 +514,7 @@
     }).join('') + '</div><button type="button" data-k="cancel" class="cancel">' + T[lang].cancel + '</button>';
     showSheet();
     sh.onclick = function (ev) {
-      var g = ev.target.closest('a[data-go]'); if (g) { ev.preventDefault(); hideSheet(); if (window.gr52Nav) window.gr52Nav.go(g.getAttribute('data-go'), a); return; }
+      var g = ev.target.closest('a[data-go]'); if (g) { ev.preventDefault(); leaveQuietly(); if (window.gr52Nav) window.gr52Nav.go(g.getAttribute('data-go'), a); return; }
       if (ev.target.closest('a.lk')) { hideSheet(); return; }
       if (ev.target.closest('[data-k="cancel"]')) hideSheet();
     };

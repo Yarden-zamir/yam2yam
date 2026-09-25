@@ -62,7 +62,7 @@ def label_tables(html: str) -> str:
 PLACES: dict[str, str] = TREK.get("places", {})
 _TERM_RE = re.compile("|".join(re.escape(t) for t in sorted(PLACES, key=len, reverse=True))) if PLACES else None
 _TAG_RE = re.compile(r"<[^>]+>")
-_SKIP_OPEN = ("<a ", "<a>", "<h1", "<button", "<title", "<summary", "<caption", "<h2", "<h3", '<span class="st"')
+_SKIP_OPEN = ("<a ", "<a>", "<h1", "<button", "<title", "<summary", "<caption", "<h2", "<h3", '<span class="st"', '<div class="facts"', '<nav')
 _SKIP_CLOSE = ("</a>", "</h1>", "</button>", "</title>", "</summary>", "</caption>", "</h2>", "</h3>", "</span>")
 
 
@@ -70,18 +70,26 @@ def link_places(html: str) -> str:
     """Wrap place names (trek.json "places") in map chips, in text only, never inside anchors, headings or the stats chips."""
     if not _TERM_RE:
         return html
-    out, pos, skip = [], 0, 0
+    out, pos, stack = [], 0, []  # stack: [tag name, nesting depth] of the skipped elements we are inside
     for m in _TAG_RE.finditer(html):
         text = html[pos : m.start()]
-        if skip == 0:
+        if not stack:
             text = _TERM_RE.sub(lambda t: f'<a href="#map" class="lk k-map focus" data-focus="{PLACES[t.group(0)]}"><i class="ic-map"></i>{t.group(0)}</a>', text)
         out.append(text)
         tag = m.group(0)
         low = tag.lower()
-        if low.startswith(_SKIP_OPEN):
-            skip += 1
-        elif low.startswith(_SKIP_CLOSE):
-            skip = max(0, skip - 1)
+        name = re.match(r"</?\s*([a-z0-9]+)", low)
+        name = name.group(1) if name else ""
+        if low.startswith("</"):
+            if stack and stack[-1][0] == name:
+                stack[-1][1] -= 1
+                if stack[-1][1] == 0:
+                    stack.pop()
+        elif not low.endswith("/>") and name not in ("br", "img", "input", "i", "span") or low.startswith(_SKIP_OPEN):
+            if stack and stack[-1][0] == name:
+                stack[-1][1] += 1
+            elif low.startswith(_SKIP_OPEN):
+                stack.append([name, 1])
         out.append(tag)
         pos = m.end()
     out.append(html[pos:])

@@ -329,8 +329,9 @@ a.lk i.ic-url{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
 .dots a.up i{width:7px;height:7px;background:none;box-shadow:none;position:relative}
 .dots a.up i::before,.dots a.up i::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--c)} .dots a.up i::before{width:7px;height:2px} .dots a.up i::after{width:2px;height:7px}
 .dots a.on i{--c:var(--mark);opacity:1;transform:scale(1.6)}
-.dots .rh{display:block;font:700 9.5px "IBM Plex Mono",monospace;letter-spacing:.12em;color:var(--mark);writing-mode:vertical-rl;transform:rotate(180deg);margin:2px auto 6px;opacity:0;transition:opacity .2s;pointer-events:none}
-.dots.live .rh,.dots.scrub .rh,.dots:hover .rh{opacity:1}
+.dots a.top{height:auto;padding:2px 4px 6px} .dots a.top i{display:none}
+.dots a.top span{position:static;transform:rotate(180deg);opacity:1;background:none;border:0;box-shadow:none;padding:0;font:700 9.5px "IBM Plex Mono",monospace;letter-spacing:.12em;color:var(--muted);writing-mode:vertical-rl;pointer-events:none}
+.dots a.top.on span{color:var(--mark)}
 .dots span{position:absolute;left:22px;top:50%;transform:translateY(-50%);font:600 11.5px "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:2px 9px;white-space:nowrap;opacity:0;pointer-events:none;box-shadow:0 2px 8px -4px rgba(0,0,0,.4);transition:opacity .15s}
 .dots.scrub a.on span,.dots:not(.scrub) a:hover span{opacity:1}
 html[dir="rtl"] .dots span{font-family:"Heebo",sans-serif}
@@ -413,12 +414,12 @@ body:has(.locbar) #backbubble{left:78px;transform:none;max-width:calc(100vw - 92
   <h1>Sea to Sea Dossier</h1>
   <p class="lede">Yarden and Ayelet sleep at <a href="#map" class="lk k-map focus" data-focus="NIGHT 0"><i class="ic-map"></i>Achziv</a> on Wednesday 9 September, walk four days east from the Mediterranean over <a href="#map" class="lk k-map focus" data-focus="PASS · Har Meron"><i class="ic-map"></i>Har Meron</a> to the <a href="#map" class="lk k-map focus" data-focus="FINISH"><i class="ic-map"></i>Kinneret</a> with a tent, and get home from <a href="#map" class="lk k-map focus" data-focus="FINISH"><i class="ic-map"></i>Ginosar</a> on Sunday 13 September, the second day of Rosh Hashana. Their stage split, the camp rules, the water, the heat, and the <a href="#map" class="lk k-map focus" data-focus="INFO · Sechvi pools"><i class="ic-map"></i>Nahal Amud</a> gate times that shape day 3 and day 4.</p>
   <div class="facts">
-    <div><b>≈72 km</b><span><a href="#map" class="lk k-map focus" data-focus="NIGHT 0"><i class="ic-map"></i>Achziv</a> → <a href="#map" class="lk k-map focus" data-focus="FINISH"><i class="ic-map"></i>Ginosar</a></span></div>
+    <div><b>≈72 km</b><span>Achziv → Ginosar</span></div>
     <div><b>≈1,550 m</b><span>total ascent</span></div>
     <div><b>≈1,750 m</b><span>total descent</span></div>
-    <div><b>1,204 m</b><span>high point, <a href="#map" class="lk k-map focus" data-focus="PASS · Har Meron"><i class="ic-map"></i>Har Meron</a></span></div>
+    <div><b>1,204 m</b><span>high point, Har Meron</span></div>
     <div><b>4 days</b><span>Thu 10 → Sun 13 Sep</span></div>
-    <div><b>4 L</b><span>water each for the <a href="#map" class="lk k-map focus" data-focus="INFO · Sechvi pools"><i class="ic-map"></i>Nahal Amud</a> canyon</span></div>
+    <div><b>4 L</b><span>water each for the Nahal Amud canyon</span></div>
   </div>
   <nav class="toc" aria-label="Sections"><a href="#plan">Plan</a><a href="#maps">Maps</a><a href="#rules">Rules &amp; water</a><a href="#tech">Technical</a><a href="#practical">Practical</a><a href="#links">Links</a><a href="/route.gpx" download>Download the GPX ↓</a></nav>
 </header>
@@ -560,12 +561,12 @@ body:has(.locbar) #backbubble{left:78px;transform:none;max-width:calc(100vw - 92
   <h1>ים אל ים עם אוהל</h1>
   <p class="lede">ירדן ואיילת ישנים ב-<a href="#map" class="lk k-map focus" data-focus="NIGHT 0"><i class="ic-map"></i>Achziv</a> ביום רביעי 9 בספטמבר, הולכים ארבעה ימים מזרחה מהים התיכון דרך <a href="#map" class="lk k-map focus" data-focus="PASS · Har Meron"><i class="ic-map"></i>Har Meron</a> עד ה<a href="#map" class="lk k-map focus" data-focus="FINISH"><i class="ic-map"></i>כנרת</a> עם אוהל, וחוזרים הביתה מ-<a href="#map" class="lk k-map focus" data-focus="FINISH"><i class="ic-map"></i>Ginosar</a> ביום ראשון 13 בספטמבר, היום השני של ראש השנה. החלוקה לימים, חוקי החניונים, המים, החום, ושעות השער של <a href="#map" class="lk k-map focus" data-focus="INFO · Sechvi pools"><i class="ic-map"></i>Nahal Amud</a> שמכתיבות את יום 3 ויום 4.</p>
   <div class="facts">
-    <div><b>≈72 ק"מ</b><span><a href="#map" class="lk k-map focus" data-focus="NIGHT 0"><i class="ic-map"></i>Achziv</a> עד <a href="#map" class="lk k-map focus" data-focus="FINISH"><i class="ic-map"></i>Ginosar</a></span></div>
+    <div><b>≈72 ק"מ</b><span>Achziv עד Ginosar</span></div>
     <div><b>≈1,550 מ'</b><span>עלייה מצטברת</span></div>
     <div><b>≈1,750 מ'</b><span>ירידה מצטברת</span></div>
-    <div><b>1,204 מ'</b><span>הנקודה הגבוהה, <a href="#map" class="lk k-map focus" data-focus="PASS · Har Meron"><i class="ic-map"></i>Har Meron</a></span></div>
+    <div><b>1,204 מ'</b><span>הנקודה הגבוהה, Har Meron</span></div>
     <div><b>4 ימים</b><span>חמישי 10 עד ראשון 13 בספטמבר</span></div>
-    <div><b>4 ליטר</b><span>מים לכל אחד לקניון <a href="#map" class="lk k-map focus" data-focus="INFO · Sechvi pools"><i class="ic-map"></i>Nahal Amud</a></span></div>
+    <div><b>4 ליטר</b><span>מים לכל אחד לקניון Nahal Amud</span></div>
   </div>
   <nav class="toc" aria-label="Sections"><a href="#he-plan">התוכנית</a><a href="#he-maps">מפות</a><a href="#he-rules">חוקים ומים</a><a href="#he-tech">טכני</a><a href="#he-practical">פרקטי</a><a href="#he-links">קישורים</a><a href="/route.gpx" download>הורדת ה-GPX ↓</a></nav>
 </header>
@@ -740,7 +741,7 @@ if('serviceWorker' in navigator){(function(){var had=!!navigator.serviceWorker.c
 </script>
 <script src="/vendor/leaflet.min.js?v=5c9aecfc30"></script>
 <script src="/vendor/leaflet-rotate.umd.min.js?v=543dab62fe"></script>
-<script src="/map.js?v=f65503ea65" defer></script>
+<script src="/map.js?v=3451538ca6" defer></script>
 <script src="/trip.js?v=9a65a731ab" defer></script>
 </body>
 </html>

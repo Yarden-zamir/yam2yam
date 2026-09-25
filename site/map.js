@@ -639,7 +639,13 @@
     function buzz() { if (Date.now() - born < 3000 || Date.now() < quietUntil) return;  /* not while the page settles on load, nor during the glide after a tap */ try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) { } }
     function build() {
       var lang = visibleLang(), T = I18N[lang], els = Array.prototype.slice.call(document.querySelectorAll('.wrap:not([hidden]) h2[id], .wrap:not([hidden]) .stage[data-day]'));
-      items = []; rail.innerHTML = '<b class="rh"></b>'; rail.querySelector('.rh').textContent = (window.TREK && (TREK.short || TREK.slug) || '').toUpperCase(); onEl = null;
+      items = []; rail.innerHTML = ''; onEl = null;
+      var top = document.querySelector('.wrap:not([hidden]) header');
+      if (top) {  /* the heading is the first stop: the top of the page */
+        var ta = document.createElement('a'), tl = (window.TREK && (TREK.short || TREK.slug) || '').toUpperCase();
+        ta.href = '#'; ta.className = 'top'; ta.innerHTML = '<i></i><span></span>'; ta.querySelector('span').textContent = tl; ta.setAttribute('aria-label', T.top);
+        rail.appendChild(ta); items.push({ el: top, a: ta, day: false, top: true });
+      }
       els.forEach(function (el, i) {
         var day = el.hasAttribute('data-day');
         if (!day && els[i + 1] && els[i + 1].hasAttribute('data-day')) return;  /* the heading over the day cards: the days stand for it */
@@ -663,7 +669,7 @@
       onEl = it.el;
       document.dispatchEvent(new CustomEvent('trek:reading', { detail: { day: it.day ? +it.el.getAttribute('data-day') : null, id: it.el.id || null } }));
     }
-    function jump(it, smooth) { if (!it) return; it.el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' }); }
+    function jump(it, smooth) { if (!it) return; if (it.top) { window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' }); return; } it.el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' }); }
     function at(yy) { var best = null, bd = Infinity; items.forEach(function (it) { var r = it.a.getBoundingClientRect(), d = Math.abs((r.top + r.bottom) / 2 - yy); if (d < bd) { bd = d; best = it; } }); return best; }
     rail.addEventListener('pointerdown', function (e) { if (e.button > 0) return; e.preventDefault(); scrubbing = true; moved = false; y0 = e.clientY; rail.classList.add('scrub'); rail.classList.add('live'); clearTimeout(scrubTimer); try { rail.setPointerCapture(e.pointerId); } catch (err) { } });
     rail.addEventListener('pointermove', function (e) {
