@@ -414,7 +414,7 @@ body.editing .dots{display:none}  /* not while a day's text is being edited */
   .logpage .inpic img{width:min(100%,calc(100vh * var(--ar,1.5)))}
   .logpage .pane[data-pane="log"],.logpage .pane[data-pane="tips"]{max-width:none}
 }
-#lightbox{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.94);display:flex;align-items:center;justify-content:center;padding:0;overflow:hidden}
+#lightbox{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.975);display:flex;align-items:center;justify-content:center;padding:0;overflow:hidden}
 #lightbox img{max-width:100vw;max-height:100vh;max-height:100dvh;object-fit:contain;display:block;transform-origin:50% 50%;will-change:transform;cursor:zoom-in} #lightbox.zoomed img{cursor:grab} #lightbox.dragging img{cursor:grabbing}
 /* the caption and the arrows lie over the foot of the picture, on a soft shade; they step aside once zoomed in */
 #lightbox .lbfoot{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;align-items:center;padding:28px 12px calc(8px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.65));pointer-events:none;transition:opacity .2s} #lightbox .lbfoot > *{pointer-events:auto} #lightbox.zoomed .lbfoot{opacity:0;pointer-events:none} #lightbox.zoomed .lbfoot > *{pointer-events:none}
