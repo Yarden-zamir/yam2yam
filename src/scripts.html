@@ -15,9 +15,9 @@
     }
   }
   /* a shared link carries its language; otherwise the reader's own choice */
-  var saved='en',fromUrl=null;
+  var dflt=(window.TREK&&window.TREK.defaultLang)||'en',saved=dflt,fromUrl=null;
   try{fromUrl=new URL(location.href).searchParams.get('lang')}catch(e){}
-  try{saved=localStorage.getItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang')||'en'}catch(e){}
+  try{saved=localStorage.getItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang')||dflt}catch(e){}
   apply(fromUrl==='he'||fromUrl==='en'?fromUrl:saved,false);
   btn.addEventListener('click',function(){apply(en.hidden?'en':'he',true);if(window.gr52Mast)window.gr52Mast.refresh();});
 })();

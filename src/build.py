@@ -20,7 +20,7 @@ SITE = ROOT / "site"
 TREK = json.loads((ROOT / "trek.json").read_text())
 
 SHELL_HEAD = """<!doctype html>
-<html lang="{lang}">
+<html lang="{lang}" dir="{dir}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -152,6 +152,7 @@ def config_script() -> str:
         "exposed": TREK.get("exposed", []),
         "accent": TREK.get("accent"),
         "castAppId": TREK.get("castAppId"),  # a Google Cast receiver app registered for https://<hostname>/?cast=1
+        "defaultLang": DEFAULT_LANG,  # the language a first visit opens in; the reader's own choice is remembered after that
         "elevation": {"eudem25m": "EU-DEM 25 m", "srtm30m": "SRTM 30 m", "aster30m": "ASTER 30 m"}.get(TREK.get("elevationDataset", "srtm30m"), TREK.get("elevationDataset")),
     }
     return "<script>window.TREK=" + json.dumps(cfg, ensure_ascii=False) + ";</script>\n"
@@ -159,6 +160,8 @@ def config_script() -> str:
 
 sys.path.insert(0, str(SRC))
 import render as render_mod  # noqa: E402
+
+DEFAULT_LANG = TREK.get("defaultLanguage", TREK.get("languages", ["en"])[0])  # trek.json "defaultLanguage"; the first language otherwise. The ids stay keyed on the first language
 import yaml  # noqa: E402
 
 
@@ -214,7 +217,7 @@ def og_meta(title: str, description: str, cover: dict | None, path: str = "/") -
 body = section_maps(link_places(label_tables((SRC / "body.html").read_text()), "maps"))
 head = bust((SRC / "head.html").read_text().replace("{{NAME}}", TREK["name"]))
 page = (
-    SHELL_HEAD.format(lang=TREK.get("languages", ["en"])[0], description=TREK["description"].replace('"', "&quot;"),
+    SHELL_HEAD.format(lang=DEFAULT_LANG, dir=render_mod.LANG_META[DEFAULT_LANG]["dir"], description=TREK["description"].replace('"', "&quot;"),
                       og=og_meta(TREK["name"], TREK["description"], TREK["_cover"], "/plan/" if STORY else "/"))
     + head
     + theme_style()
@@ -244,7 +247,7 @@ if (ROOT / "log").exists():
         log_body, log_cfg = render_log(log_yaml, TREK, ROOT / "content.yaml")
         log_cover = log_cfg.get("cover")
         log_page = (
-            SHELL_HEAD.format(lang=TREK.get("languages", ["en"])[0], description=TREK["description"].replace('"', "&quot;"),
+            SHELL_HEAD.format(lang=DEFAULT_LANG, dir=render_mod.LANG_META[DEFAULT_LANG]["dir"], description=TREK["description"].replace('"', "&quot;"),
                               og=og_meta(TREK["name"], TREK["description"], log_cover, "/" if STORY == log_cfg["user"] else f"/log/{log_cfg['user']}/"))
             + '<meta name="robots" content="noindex, nofollow">\n'
             + head

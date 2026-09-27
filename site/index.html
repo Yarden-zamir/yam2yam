@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -458,7 +458,7 @@ body:has(.locbar) #backbubble{left:78px;transform:none;max-width:calc(100vw - 92
 </style>
 
 <style>:root{--mark:#7B3FA0;--mark-soft:#EAE0F0}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--mark:#9869B5;--mark-soft:#322540}}:root[data-theme="dark"]{--mark:#9869B5;--mark-soft:#322540}</style>
-<script>window.TREK={"slug": "yam2yam", "short": "Yam el Yam", "gpx": "/route.gpx", "timezone": "Asia/Jerusalem", "plannedStart": 6, "tentWindow": null, "strings": {}, "weatherModel": null, "weatherModelLabel": null, "treeline": null, "heatLimit": 30, "exposed": [], "accent": "#7B3FA0", "castAppId": null, "elevation": "SRTM 30 m"};</script>
+<script>window.TREK={"slug": "yam2yam", "short": "Yam el Yam", "gpx": "/route.gpx", "timezone": "Asia/Jerusalem", "plannedStart": 6, "tentWindow": null, "strings": {}, "weatherModel": null, "weatherModelLabel": null, "treeline": null, "heatLimit": 30, "exposed": [], "accent": "#7B3FA0", "castAppId": null, "defaultLang": "en", "elevation": "SRTM 30 m"};</script>
 </head>
 <body>
 <div class="langbar"><button id="langbtn" type="button">עברית</button></div>
@@ -776,9 +776,9 @@ body:has(.locbar) #backbubble{left:78px;transform:none;max-width:calc(100vw - 92
     }
   }
   /* a shared link carries its language; otherwise the reader's own choice */
-  var saved='en',fromUrl=null;
+  var dflt=(window.TREK&&window.TREK.defaultLang)||'en',saved=dflt,fromUrl=null;
   try{fromUrl=new URL(location.href).searchParams.get('lang')}catch(e){}
-  try{saved=localStorage.getItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang')||'en'}catch(e){}
+  try{saved=localStorage.getItem(((window.TREK&&window.TREK.slug)||'trek')+'-lang')||dflt}catch(e){}
   apply(fromUrl==='he'||fromUrl==='en'?fromUrl:saved,false);
   btn.addEventListener('click',function(){apply(en.hidden?'en':'he',true);if(window.gr52Mast)window.gr52Mast.refresh();});
 })();

@@ -109,7 +109,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
     intro = _lang(log.get("intro"), lang) or []
     intro = intro if isinstance(intro, list) else [intro]
     htag, mast_open, mast_close = render_mod.cover_html(render_mod.cover_of(log.get("cover"), log["user"]))
-    o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap"{"" if lang == trek["languages"][0] else " hidden"}>', '<div class="main">', htag,
+    o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap"{"" if lang == render_mod.default_lang(trek) else " hidden"}>', '<div class="main">', htag,
          '  <div class="topo" aria-hidden="true"></div>', mast_open,
          f'  <div class="eyebrow"><span class="balise"></span>{txt(_lang(log.get("eyebrow"), lang) or M["eyebrow"])} · {esc(log["user"])}</div>',
          f'  <h1>{txt(_lang(log.get("title"), lang) or trek["name"])}</h1>', mast_close]
@@ -175,8 +175,8 @@ def render(log_path: Path, trek: dict, plan_path: Path | None) -> tuple[str, dic
     """The page body and the runtime config (window.LOG) for one user's log."""
     log = yaml.safe_load(log_path.read_text())
     plan = yaml.safe_load(plan_path.read_text()) if plan_path and plan_path.exists() else {}
-    first = trek["languages"][0]
-    parts = [f'<div class="langbar"><button id="langbtn" type="button">{LANG_META[first]["button"]}</button></div>',
+    first = trek["languages"][0]  # owns the unprefixed ids
+    parts = [f'<div class="langbar"><button id="langbtn" type="button">{LANG_META[render_mod.default_lang(trek)]["button"]}</button></div>',
              '<button id="backbubble" type="button" hidden></button>',
              '<div id="lightbox" hidden><button type="button" class="lbx" data-lb="close" aria-label="Close">×</button><img alt=""><a class="lbdl" download aria-label="Download">⤓</a><div class="lbcap"></div><div class="lbnav"><button type="button" class="lbp" data-lb="prev" aria-label="Previous">‹</button><div class="lbn"></div><button type="button" class="lbp" data-lb="next" aria-label="Next">›</button></div></div>', ""]
     for lang in trek["languages"]:

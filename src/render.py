@@ -61,6 +61,11 @@ def esc(s) -> str:
 RTL = False  # set by render_lang while a right-to-left language is rendered
 
 
+def default_lang(trek: dict) -> str:
+    """The language a first visit opens in: trek.json "defaultLanguage", else the first listed (which also owns the unprefixed ids)."""
+    return trek.get("defaultLanguage", trek["languages"][0])
+
+
 def arrows(s: str) -> str:
     """In a right-to-left text "A → B" must point left, unless both neighbours are Latin words, which
     the browser lays out left to right as one run (bidi rule N1: numbers count as right-to-left)."""
@@ -113,7 +118,7 @@ def render_lang(lang: str, c: dict, trek: dict, prefix: str) -> str:
     h2 = lambda i, id_, title: f'<h2 id="{prefix}{id_}">{txt(title)}</h2>'
     gpx = "/" + Path(trek["gpx"]).name
     htag, mast_open, mast_close = cover_html(trek.get("_cover"))
-    o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap"{"" if lang == trek["languages"][0] else " hidden"}>', htag,
+    o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap"{"" if lang == default_lang(trek) else " hidden"}>', htag,
          '  <div class="topo" aria-hidden="true"></div>', mast_open,
          f'  <div class="eyebrow"><span class="balise"></span>{txt(c["eyebrow"])}</div>',
          f'  <h1>{txt(c["title"])}</h1>', mast_close, f'  <p class="lede">{txt(c["lede"])}</p>', '  <div class="facts">']
@@ -200,7 +205,7 @@ def render_lang(lang: str, c: dict, trek: dict, prefix: str) -> str:
 
 def render(content_path: Path, trek: dict) -> str:
     c = yaml.safe_load(content_path.read_text())
-    first = trek["languages"][0]
+    first = default_lang(trek)  # the language a first visit opens in
     labels = " ".join(f'data-label-{lang}="{esc(LANG_META[lang]["snapshot"])}"' for lang in trek["languages"] if lang in LANG_META)
     parts = [f'<div class="langbar"><button id="langbtn" type="button">{LANG_META[first]["button"]}</button></div>',
              f'<div class="locbar"><button id="locfab" type="button" data-act="snapshot" aria-label="{esc(LANG_META[first]["snapshot"])}" title="{esc(LANG_META[first]["snapshot"])}" {labels}>'
