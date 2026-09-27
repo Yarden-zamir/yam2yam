@@ -277,7 +277,7 @@
         trace(); ctx.strokeStyle = lake; ctx.lineWidth = 1.5; ctx.stroke();
       }
       ctx.font = '500 11px IBM Plex Sans, sans-serif';
-      var ns = nights.filter(function (n) { return n.d >= from - 1 && n.d <= to + 1; });
+      var ns = cats.nights && !map.hasLayer(cats.nights) ? [] : nights.filter(function (n) { return n.d >= from - 1 && n.d <= to + 1; });  /* the nights follow their overlay, like the pictures */
       ns.forEach(function (n, i) {
         var px = x(n.d), py = y(n.ele == null ? minE : n.ele);
         ctx.beginPath(); ctx.arc(px, py, 4.5, 0, 7); ctx.fillStyle = mark; ctx.fill();
@@ -317,6 +317,7 @@
       if (hit && hit.m.onClick) hit.m.onClick(hit.m);
     });
     stats(); drawProfile(null);
+    map.on('overlayadd overlayremove', function () { drawProfile(null); });  /* the profile shows what the map shows */
     var sizeTimer = null; window.addEventListener('resize', function () { clearTimeout(sizeTimer); sizeTimer = setTimeout(function () { map.invalidateSize(); drawProfile(null); }, 120); });  /* the box beside the story grows with the window */
 
     /* the position snapshot: the map dot and the profile dot are both drawn from `me` */
@@ -465,7 +466,7 @@
       follow: function (n) { if (scope !== n) setScope(n, tracked() ? false : 'fly'); },  /* the spine glides to the day being read */
       trackTo: trackTo, syncTrack: syncTrack,
       redraw: function () { map.invalidateSize(); drawProfile(null); }, hostEl: function () { return host; }, scope: function () { return scope; },
-      setMarks: function (list) { marks = list || []; drawProfile(null); },
+      setMarks: function (list) { marks = list || []; drawProfile(null); }, marks: function () { return marks; },
       addOverlay: function (name, layer, on) { layersCtl.addOverlay(layer, name); if (on) layer.addTo(map); } };
     refreshMe();
     return apps[lang];

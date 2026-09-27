@@ -140,7 +140,8 @@
       if (g && x.pos.d - g.d0 < tol) { g.items.push(x.p); g.est = g.est && x.pos.est; } else groups.push({ d0: x.pos.d, items: [x.p], est: x.pos.est });
     });
     var app = G.app(lang);
-    if (app) app.setMarks(groups.map(function (g) { var pt = G.routePointAt(g.d0) || {}; return { d: g.d0, ele: pt.ele, est: g.est, label: g.items.length > 1 ? String(g.items.length) : '', onClick: function () { open(g.items, 0); } }; }));
+    /* the profile follows the map's layer switch: the Pictures overlay off means no picture marks on the profile either */
+    if (app) app.setMarks(!on ? [] : groups.map(function (g) { var pt = G.routePointAt(g.d0) || {}; return { d: g.d0, ele: pt.ele, est: g.est, label: g.items.length > 1 ? String(g.items.length) : '', onClick: function () { open(g.items, 0); } }; }));
   }
   document.addEventListener('trek:scope', function (e) {
     var d = e.detail;
