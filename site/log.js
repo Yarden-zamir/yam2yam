@@ -9,12 +9,12 @@
   var T = {
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
       source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', layer: 'Pictures', zoomIn: 'zoom in for the pictures', download: 'Download',
-      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', signIn: 'Sign in with GitHub to edit', signOut: 'Sign out', noEdit: 'no editing rights', tvOn: 'TV mode', tvOff: 'Leave TV mode', tvHint: '↑ ↓ read · ← → days · OK opens the picture · Back closes it', cast: 'Cast to TV', casting: 'Casting · stop', castHow: 'Open {url} in the TV’s browser, or cast this tab from the browser menu.', castHint: 'Following your phone', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
+      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', signIn: 'Sign in with GitHub to edit', signOut: 'Sign out', noEdit: 'no editing rights', cast: 'Cast to TV', casting: 'Casting · stop', castHow: 'Open {url} in the TV’s browser, or mirror this screen from your phone or computer.', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
       inGmaps: 'Open in Google Maps', openUrl: 'Open the site', addPic: 'Add a picture…', pickHint: 'Tap a picture to put it at the cursor; the outlined ones are already in the text.', addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', cover: 'Use as the cover', uncover: 'Remove from the cover', captionEdit: 'Edit caption', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
       source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', layer: 'תמונות', zoomIn: 'התקרבו כדי לראות את התמונות', download: 'הורדה',
-      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', signIn: 'כניסה עם GitHub לעריכה', signOut: 'יציאה', noEdit: 'בלי הרשאת עריכה', tvOn: 'מצב טלוויזיה', tvOff: 'יציאה ממצב טלוויזיה', tvHint: '↑ ↓ קריאה · → ← ימים · OK פותח את התמונה · Back סוגר', cast: 'שידור לטלוויזיה', casting: 'משדר · עצירה', castHow: 'פתחו {url} בדפדפן של הטלוויזיה או שדרו את הכרטיסייה מתפריט הדפדפן.', castHint: 'עוקב אחרי הטלפון', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
+      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', signIn: 'כניסה עם GitHub לעריכה', signOut: 'יציאה', noEdit: 'בלי הרשאת עריכה', cast: 'שידור לטלוויזיה', casting: 'משדר · עצירה', castHow: 'פתחו {url} בדפדפן של הטלוויזיה או שקפו את המסך מהטלפון או מהמחשב.', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
       inGmaps: 'פתיחה ב-Google Maps', openUrl: 'פתיחת האתר', addPic: 'הוספת תמונה…', pickHint: 'הקישו על תמונה כדי להציב אותה במקום הסמן; המסומנות כבר בטקסט.', addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', cover: 'שימוש כתמונת השער', uncover: 'הסרה מתמונת השער', captionEdit: 'עריכת כיתוב', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
@@ -761,16 +761,20 @@
   document.addEventListener('trek:scope', function () { setTimeout(function () { trackNow(true); }, 0); });  /* the day changed under the reader: the map has not moved yet */
   document.addEventListener('trek:track', function (e) { if (e.detail.on) trackNow(true); else trackKey = null; });
   window.addEventListener('resize', function () { clearTimeout(trackTimer); trackTimer = setTimeout(function () { trackNow(false); }, 200); });
-  /* a way in and out of TV mode at the foot of the page, and the cast */
+  /* the foot of the page: the cast link */
   document.querySelectorAll('.wrap > .main').forEach(function (main) {
-    var lang = langOf(main), tv = document.documentElement.classList.contains('tv'), p = document.createElement('p'); p.className = 'foot';
-    p.innerHTML = '<a href="?tv=' + (tv ? '0' : '1') + '">' + esc(T[lang][tv ? 'tvOff' : 'tvOn']) + '</a>' + (tv ? '' : ' · <a href="#" class="castlink">' + esc(T[lang].cast) + '</a><span class="casthow" hidden></span>'); main.appendChild(p);
+    var lang = langOf(main), p = document.createElement('p'); p.className = 'foot';
+    p.innerHTML = '<a href="#" class="castlink">' + esc(T[lang].cast) + '</a><span class="casthow" hidden></span>'; main.appendChild(p);
   });
-  /* ---- cast to a TV, from the link at the foot of the page. With the Presentation API (Chrome, Edge: a Chromecast
-     or a cast-capable TV) the phone opens this page on the TV in TV mode and keeps it on the same spot: the block under the eye, the language,
-     the picture open in the lightbox. Anywhere else, the address to type into the TV's browser. ---- */
-  var CAST = new URL(location.href).searchParams.get('cast') === '1', castConn = null, castReq = null, castTimer = null, castLast = '';
-  function castUrl() { return location.origin + location.pathname + '?tv=1&cast=1'; }
+  /* ---- cast to a TV, from the link at the foot of the page. Three ways, the first that the browser has:
+     1. Google Cast (Chrome and Edge on a phone or computer, a Chromecast or a cast-capable TV on the same network),
+        when trek.json names a receiver app (castAppId) registered for https://<host>/?cast=1: the TV opens this page
+        and the phone keeps it on its own spot: the block under the eye, the language, the picture open in the lightbox.
+     2. The Presentation API (desktop Chrome): the same page, the same messages, through the browser's own cast dialog.
+     3. Nothing of the kind: the address to open in the TV's browser. ---- */
+  var CAST = new URL(location.href).searchParams.get('cast') === '1', CAST_APP = TREK.castAppId || null, CAST_NS = 'urn:x-cast:com.trek.story';
+  var castConn = null, castReq = null, castCtx = null, castSession = null, castTimer = null, castLast = '';
+  function castUrl() { return location.origin + location.pathname + '?cast=1'; }
   function isBlock(el) { return el.nodeType === 1 && !el.matches('.editor, .editbtn, script, style'); }
   function blockAddr(el) {  /* a stable address for a block: the day and pane (or the section) and its place in it */
     if (el.matches('.stage[data-day]')) return 'd' + el.getAttribute('data-day');
@@ -797,21 +801,40 @@
     return best;
   }
   function castState() { var b = readingBlock(); return { lang: visibleLang(), at: b ? blockAddr(b) : null, open: lb.hidden ? null : (cur.list[cur.i] || {}).id || null }; }
+  function castOn() { return !!(castSession || castConn); }
+  function castSend(m) { try { if (castSession) castSession.sendMessage(CAST_NS, m); else if (castConn) castConn.send(JSON.stringify(m)); } catch (e) { } }
   function castSync() {
-    if (!castConn) return; clearTimeout(castTimer);
-    castTimer = setTimeout(function () { if (!castConn) return; var m = JSON.stringify(castState()); if (m === castLast) return; castLast = m; try { castConn.send(m); } catch (e) { } }, 120);
+    if (!castOn()) return; clearTimeout(castTimer);
+    castTimer = setTimeout(function () { if (!castOn()) return; var st = castState(), m = JSON.stringify(st); if (m === castLast) return; castLast = m; castSend(st); }, 120);
   }
   function castMark(on) { document.body.classList.toggle('casting', on); document.querySelectorAll('.castlink').forEach(function (a) { a.textContent = T[langOf(a)][on ? 'casting' : 'cast']; }); }
-  function castTake(c) {
+  function castTake(c) {  /* a Presentation API connection */
     castConn = c; castLast = ''; castMark(true); try { sessionStorage.setItem('trek.cast', c.id); } catch (e) { }
     c.onclose = c.onterminate = function () { if (castConn === c) { castConn = null; castMark(false); try { sessionStorage.removeItem('trek.cast'); } catch (e) { } } };
     if (c.state === 'connected') castSync(); else c.onconnect = castSync;
   }
   function castStart() {
+    if (castSession) { try { castSession.endSession(true); } catch (e) { } return; }
     if (castConn) { try { castConn.terminate(); } catch (e) { castConn.close(); } return; }
-    castReq.start().then(castTake).catch(function () { });
+    if (castCtx) { castCtx.requestSession().catch(function () { }); return; }
+    if (castReq) castReq.start().then(castTake).catch(function () { });
   }
-  if (!CAST && window.PresentationRequest) {
+  if (!CAST && CAST_APP && /Chrome\/|Edg\//.test(navigator.userAgent)) {
+    /* Google Cast: the browser's own device picker; the sender library calls back once it is in */
+    window.__onGCastApiAvailable = function (ok) {
+      if (!ok || !window.cast || !cast.framework) return;
+      castCtx = cast.framework.CastContext.getInstance();
+      castCtx.setOptions({ receiverApplicationId: CAST_APP, autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED });
+      castCtx.addEventListener(cast.framework.CastContextEventType.SESSION_STATE_CHANGED, function (e) {
+        var st = e.sessionState;
+        if (st === 'SESSION_STARTED' || st === 'SESSION_RESUMED') { castSession = castCtx.getCurrentSession(); castLast = ''; castMark(true); castSync(); }
+        else if (st === 'SESSION_ENDED' || st === 'SESSION_START_FAILED') { castSession = null; castMark(false); }
+      });
+      document.querySelectorAll('.foot .castlink').forEach(function (a) { var l = document.createElement('google-cast-launcher'); l.setAttribute('aria-hidden', 'true'); a.appendChild(l); });  /* the native cast icon, lit when a device is near */
+      window.addEventListener('scroll', castSync, { passive: true }); document.addEventListener('trek:lang', function () { setTimeout(castSync, 50); });
+    };
+    var sc = document.createElement('script'); sc.src = 'https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1'; sc.async = true; document.head.appendChild(sc);
+  } else if (!CAST && window.PresentationRequest) {
     try { castReq = new PresentationRequest([castUrl()]); navigator.presentation.defaultRequest = castReq; } catch (e) { castReq = null; }
     if (castReq) {
       try { var old = sessionStorage.getItem('trek.cast'); if (old) castReq.reconnect(old).then(castTake).catch(function () { }); } catch (e) { }
@@ -820,12 +843,14 @@
   }
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('.castlink'); if (!a) return; e.preventDefault();
-    if (castReq) return castStart();
-    var how = a.parentNode.querySelector('.casthow'); how.textContent = T[langOf(a)].castHow.replace('{url}', location.host + location.pathname + '?tv=1'); how.hidden = !how.hidden;  /* no Presentation API here: the address for the TV's browser */
+    if (castCtx || castReq || castOn()) return castStart();
+    var how = a.parentNode.querySelector('.casthow'); how.textContent = T[langOf(a)].castHow.replace('{url}', location.host + location.pathname); how.hidden = !how.hidden;  /* no way to cast from here: the address for the TV's browser */
   });
-  if (CAST && navigator.presentation && navigator.presentation.receiver) (function () {  /* this page is on the TV: follow the phone */
+  if (CAST) (function () {  /* this page is on the TV: follow the phone */
     var pending = null;
     function follow(m) {
+      if (typeof m === 'string') { try { m = JSON.parse(m); } catch (e) { return; } }
+      if (!m) return;
       if (m.lang && m.lang !== visibleLang()) { var lb0 = document.getElementById('langbtn'); if (lb0) { lb0.click(); pending = m; setTimeout(function () { if (pending === m) { pending = null; follow(m); } }, 200); return; } }
       var el = m.at ? blockAt(m.at) : null;
       if (el) {
@@ -837,18 +862,23 @@
       if (p) { if (lb.hidden || (cur.list[cur.i] || {}).id !== p.id) { var n = dayOf(p), list = photos.filter(function (x) { return dayOf(x) === n; }); open(list.length ? list : [p], Math.max(0, list.indexOf(p)), true); } }
       else if (!lb.hidden) { lb.hidden = true; document.body.classList.remove('lbopen'); }
     }
-    function hook(c) { c.onmessage = function (e) { try { follow(JSON.parse(e.data)); } catch (err) { } }; }
-    navigator.presentation.receiver.connectionList.then(function (list) { list.connections.forEach(hook); list.onconnectionavailable = function (e) { hook(e.connection); }; });
     document.body.classList.add('castee');
+    if (CAST_APP) {  /* launched by a Chromecast: the receiver library must be started within seconds */
+      var rc = document.createElement('script'); rc.src = 'https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js';
+      rc.onload = function () { try { var ctx = cast.framework.CastReceiverContext.getInstance(); ctx.addCustomMessageListener(CAST_NS, function (e) { follow(e.data); }); ctx.start({ disableIdleTimeout: true }); } catch (err) { } };
+      document.head.appendChild(rc);
+    }
+    if (navigator.presentation && navigator.presentation.receiver) {
+      var hook = function (c) { c.onmessage = function (e) { follow(e.data); }; };
+      navigator.presentation.receiver.connectionList.then(function (list) { list.connections.forEach(hook); list.onconnectionavailable = function (e) { hook(e.connection); }; });
+    }
+    window.gr52CastFollow = follow;
   })();
-  /* ---- a remote control (html.tv): the arrows walk the story block by block and the map tracks along, left and
-     right jump between days, OK opens the picture under the frame, Back closes it ---- */
+  /* ---- a remote control (or the arrow keys): left and right jump between days, OK opens the picture under the frame,
+     Back closes it, anywhere; on a television (html.tv) up and down also walk the story block by block and the map
+     tracks along. Elsewhere up and down stay the browser's own scrolling. ---- */
   (function () {
-    if (!document.documentElement.classList.contains('tv')) return;
-    var hint = document.createElement('div'); hint.className = 'tvhint'; document.body.appendChild(hint);
-    function label() { var l = visibleLang(); hint.textContent = T[l][CAST ? 'castHint' : 'tvHint']; hint.setAttribute('lang', l); hint.dir = l === 'he' ? 'rtl' : 'ltr'; }
-    label(); document.addEventListener('trek:lang', function () { setTimeout(label, 30); if (cur) { cur.classList.remove('tvcur'); cur = null; } });
-    var cur = null, busy = 0;
+    var cur = null, busy = 0, TVKEYS = document.documentElement.classList.contains('tv');
     function blocks() {
       var w = document.querySelector('.wrap:not([hidden]) .main'); if (!w) return [];
       return Array.prototype.filter.call(w.querySelectorAll('h2[id], .stage[data-day], .pane p, .pane .photoref, .pane .photos, .sectext p, .sectext .photoref, .sectext .photos, .facts'), function (el) {
@@ -875,13 +905,14 @@
       var j = Math.max(0, Math.min(stages.length - 1, i + d)); goTo(list, list.indexOf(stages[j]));
     }
     document.addEventListener('keydown', function (e) {
-      if (!lb.hidden || !sheetWrap.hidden || (e.target.closest && e.target.closest('input,textarea,select,[contenteditable]'))) return;
+      if (!lb.hidden || !sheetWrap.hidden || e.altKey || e.ctrlKey || e.metaKey || (e.target.closest && e.target.closest('input,textarea,select,[contenteditable],.leaflet-container'))) return;
       var k = e.key;
-      if (k === 'ArrowDown' || k === 'ArrowUp') { e.preventDefault(); if (Date.now() < busy) return; busy = Date.now() + 240; step(k === 'ArrowDown' ? 1 : -1); return; }
+      if ((k === 'ArrowDown' || k === 'ArrowUp') && TVKEYS) { e.preventDefault(); if (Date.now() < busy) return; busy = Date.now() + 240; step(k === 'ArrowDown' ? 1 : -1); return; }
       if (k === 'ArrowRight' || k === 'ArrowLeft') { e.preventDefault(); if (Date.now() < busy) return; busy = Date.now() + 300; day(k === 'ArrowRight' ? 1 : -1); return; }
       if (k === 'Enter' && cur && !(e.target.closest && e.target.closest('button,a'))) { var a = cur.querySelector('a.inpic[data-photo]'); if (a) { e.preventDefault(); a.click(); } return; }
       if (isBack(e) && cur && !e.lbClosed) { e.preventDefault(); set(null); }  /* the same press already closed the lightbox: the frame stays */
     });
+    document.addEventListener('trek:lang', function () { set(null); });
   })();
 
   /* ---- boot ---- */

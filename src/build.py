@@ -151,6 +151,7 @@ def config_script() -> str:
         "heatLimit": TREK.get("heatLimit"),
         "exposed": TREK.get("exposed", []),
         "accent": TREK.get("accent"),
+        "castAppId": TREK.get("castAppId"),  # a Google Cast receiver app registered for https://<hostname>/?cast=1
         "elevation": {"eudem25m": "EU-DEM 25 m", "srtm30m": "SRTM 30 m", "aster30m": "ASTER 30 m"}.get(TREK.get("elevationDataset", "srtm30m"), TREK.get("elevationDataset")),
     }
     return "<script>window.TREK=" + json.dumps(cfg, ensure_ascii=False) + ";</script>\n"

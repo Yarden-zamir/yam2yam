@@ -7,18 +7,11 @@
 (function () {
   'use strict';
   var TREK = window.TREK || {}; var GPX = TREK.gpx || '/route.gpx';
-  /* TV mode: ?tv=1 (remembered; ?tv=0 leaves) or a television's browser. Bigger type, the map beside the
-     story, the remote's arrows walk the text. log.js does the keys; the CSS reads body.tv */
+  /* a television: its own browser, or the page a phone casts to (?cast=1). Bigger type through html.tv, the map
+     beside the story, and the remote's arrows walk the text (log.js). Nothing to switch on, nothing remembered. */
   var TV = (function () {
-    var on = null;
-    try {
-      var u = new URL(location.href), q = u.searchParams.get('tv');
-      if (u.searchParams.get('cast') === '1') return true;  /* the page a phone casts to a TV: TV mode for this page only, nothing remembered */
-      if (q != null) { on = q !== '0' && q !== 'off'; localStorage.setItem('trek.tv', on ? '1' : '0'); u.searchParams.delete('tv'); history.replaceState(history.state, '', u); }
-      else { var s = localStorage.getItem('trek.tv'); if (s != null) on = s === '1'; }
-    } catch (e) { }
-    if (on == null) on = /SMART-TV|SmartTV|Tizen|Web0S|WebOS|NetCast|Viera|BRAVIA|AFT[A-Z]|CrKey|Roku|HbbTV|Android TV|AppleTV|GoogleTV/i.test(navigator.userAgent);
-    return on;
+    try { if (new URL(location.href).searchParams.get('cast') === '1') return true; } catch (e) { }
+    return /SMART-TV|SmartTV|Tizen|Web0S|WebOS|NetCast|Viera|BRAVIA|AFT[A-Z]|CrKey|Roku|HbbTV|Android TV|AppleTV|GoogleTV/i.test(navigator.userAgent);
   })();
   document.documentElement.classList.toggle('tv', TV);
   /* tracking: with the map beside the story, it glides to the pictures as they pass under the eye (log.js
@@ -179,13 +172,23 @@
     var status = container.querySelector('.mapstatus');
     var canRotate = typeof L.Map.prototype.setBearing === 'function', coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
     /* fingers do the zooming and turning on a phone; the compass appears once the map is turned, to reset north */
-    var opts = { scrollWheelZoom: false, zoomSnap: 0.5, zoomControl: !coarse };
+    var opts = { scrollWheelZoom: false, zoomSnap: 0.5, zoomControl: !coarse, attributionControl: false };  /* the credit is the folded © below */
     if (canRotate) { opts.rotate = true; opts.touchRotate = true; opts.dragRotate = true; opts.shiftKeyRotate = true; opts.rotateControl = { position: 'topleft', behavior: 'reset', closeOnZeroBearing: true }; }
     var map = L.map(mapEl, opts);
     /* points that must sit exactly on a spot are markers in the marker pane: the rotation plugin keeps
        that pane upright and re-places its markers on every turn; a custom pane would be left behind */
     function pin(ll, cls, size, z) { return L.marker(ll, { icon: L.divIcon({ className: cls, iconSize: [size, size], iconAnchor: [size / 2, size / 2], popupAnchor: [0, -size / 2], html: '' }), zIndexOffset: z, keyboard: false }); }
-    L.tileLayer(TILES, { maxZoom: 17, crossOrigin: true, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, SRTM &middot; &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)' }).addTo(map);
+    L.tileLayer(TILES, { maxZoom: 17, crossOrigin: true }).addTo(map);
+    /* the credit the tiles come with, folded into a small © that opens on tap or hover: the OpenStreetMap and
+       OpenTopoMap licences ask for it to be reachable, so it is not simply gone */
+    var Credit = L.Control.extend({ options: { position: 'bottomright' }, onAdd: function () {
+      var d = L.DomUtil.create('div', 'credit'), b = L.DomUtil.create('button', '', d);
+      b.type = 'button'; b.textContent = '©'; b.setAttribute('aria-label', 'Map credits'); b.setAttribute('aria-expanded', 'false');
+      d.insertAdjacentHTML('beforeend', '<span>&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM &middot; &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)</span>');
+      L.DomEvent.disableClickPropagation(d); L.DomEvent.on(b, 'click', function (e) { L.DomEvent.stop(e); var on = d.classList.toggle('open'); b.setAttribute('aria-expanded', on ? 'true' : 'false'); });
+      return d;
+    } });
+    new Credit().addTo(map);
 
     var overlays = {}, routeGroup = L.featureGroup();
     data.tracks.forEach(function (t) {
@@ -314,7 +317,7 @@
       if (hit && hit.m.onClick) hit.m.onClick(hit.m);
     });
     stats(); drawProfile(null);
-    window.addEventListener('resize', function () { drawProfile(null); });
+    var sizeTimer = null; window.addEventListener('resize', function () { clearTimeout(sizeTimer); sizeTimer = setTimeout(function () { map.invalidateSize(); drawProfile(null); }, 120); });  /* the box beside the story grows with the window */
 
     /* the position snapshot: the map dot and the profile dot are both drawn from `me` */
     var meMarker = null, meCircle = null;
@@ -478,7 +481,7 @@
   }
   /* move the language's map box into a host (a day's Map tab or the whole-route section) and scope it */
   /* the spine: on a wide screen the story's map sits beside the text and follows the reader instead of moving into the day cards */
-  var SPINE_MQ = window.matchMedia ? matchMedia('(min-width: 1100px), (orientation: landscape) and (min-width: 640px) and (max-height: 560px)') : null;  /* a desktop, a TV, or a phone on its side */
+  var SPINE_MQ = window.matchMedia ? matchMedia('(min-width: 960px), (orientation: landscape) and (min-width: 640px) and (max-height: 560px)') : null;  /* a tablet on its side and up, a TV, or a phone on its side; the CSS uses the same query */
   function spineOn() { return !!(SPINE_MQ && SPINE_MQ.matches && document.body.classList.contains('logpage')); }
   function spineHost(lang) { return document.querySelector('#' + lang + ' .maphost[data-host="spine"]'); }
   function claimHost(h) {
@@ -765,6 +768,27 @@
       showTab(st, tabs[j].getAttribute('data-tab'));
     }, { passive: true });
   })();
+  /* the facts chips: as many columns as fit, but never a row with holes. Six chips are 6 × 1, 3 × 2 or 2 × 3, not 4 + 2;
+     when no count divides, the last row's chips widen to fill it (five chips at three across: 3 then 2 wide ones) */
+  function factsLayout() {
+    document.querySelectorAll('.facts').forEach(function (g) {
+      var kids = Array.prototype.filter.call(g.children, function (k) { return k.nodeType === 1; }), n = kids.length, w = g.clientWidth;
+      if (!n || !w || g.offsetParent === null) return;
+      var fit = Math.max(1, Math.min(n, Math.floor((w + 1) / 150))), cols = 0, c;
+      for (c = fit; c >= 2; c--) if (n % c === 0) { cols = c; break; }  /* a count that divides: full rows */
+      if (!cols && fit === 1) cols = 1;
+      if (!cols) for (c = fit; c >= 2; c--) if (n % c >= 2) { cols = c; break; }  /* else a last row of at least two, widened */
+      if (!cols) cols = fit;  /* a last row of one, across the whole width */
+      var last = n % cols || cols, base = cols * last / gcd(cols, last);
+      g.style.gridTemplateColumns = 'repeat(' + base + ',minmax(0,1fr))';  /* equal columns whatever the labels' length */
+      kids.forEach(function (k, i) { k.style.gridColumn = 'span ' + (i < n - last ? base / cols : base / last); });
+    });
+  }
+  function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+  var factsTimer = null;
+  window.addEventListener('resize', function () { clearTimeout(factsTimer); factsTimer = setTimeout(factsLayout, 100); });
+  document.addEventListener('trek:lang', function () { setTimeout(factsLayout, 30); });
+  factsLayout();
   window.gr52Nav = { go: go, back: back, noteAt: noteAt };
   document.addEventListener('click', function (e) {
     if (!e.target.closest) return;
