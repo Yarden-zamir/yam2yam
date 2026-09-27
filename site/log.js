@@ -164,7 +164,7 @@
   function show(i) {
     var p = cur.list[i]; if (!p) return; cur.i = i;
     var lang = visibleLang(), c = caption(p, lang), pos = place(p);
-    lb.querySelector('img').src = BASE + p.file;
+    lb.querySelector('img').src = BASE + p.file; if (window.gr52Zoom) window.gr52Zoom.reset();
     var dl = lb.querySelector('.lbdl'); dl.href = p.orig ? ORIG + p.orig : BASE + p.file; dl.setAttribute('download', p.orig ? (p.name || p.orig) : (p.id + '.jpg')); dl.title = T[lang].download;
     lb.querySelector('.lbcap').innerHTML = (c ? esc(c) + ' · ' : '') + (p.taken ? T[lang].taken + ' ' + esc(p.taken.replace('T', ' ').slice(0, 16)) : '')
       + (pos ? ' · <a href="?map=ll:' + pos.lat.toFixed(5) + ',' + pos.lon.toFixed(5) + '" class="focus" data-go="ll:' + pos.lat.toFixed(5) + ',' + pos.lon.toFixed(5) + ':' + esc(c || T[lang].photo) + '" data-day="' + (dayOf(p) == null ? '' : dayOf(p)) + '">' + T[lang].onMap + '</a>' + (pos.est ? ' (' + T[lang].est + ')' : '') : '');
@@ -218,10 +218,59 @@
       }
       if (e.target.closest('[data-lb="close"]') || !e.target.closest('img,button,a,.lbcap,.lbnav')) close();
     });
+    /* zoom: pinch, double-tap or double-click, the mouse wheel; drag to pan once zoomed; a new picture starts at 1 */
+    (function () {
+      var img = lb.querySelector('img'), Z = { s: 1, x: 0, y: 0 }, ptrs = {}, pinch = null, drag = null, lastTap = 0, tapAt = null, c = null, base = null;
+      function measure() { var was = Z; Z = { s: 1, x: 0, y: 0 }; apply(); var r = img.getBoundingClientRect(); c = { x: r.left + r.width / 2, y: r.top + r.height / 2 }; base = { w: r.width, h: r.height }; Z = was; apply(); }
+      function apply() { img.style.transform = Z.s === 1 ? '' : 'translate(' + Z.x.toFixed(1) + 'px,' + Z.y.toFixed(1) + 'px) scale(' + Z.s.toFixed(3) + ')'; lb.classList.toggle('zoomed', Z.s > 1); }
+      function clamp() {  /* the picture may not leave the screen: its scaled edges stay at or beyond the viewport's */
+        if (!base) return; var mx = Math.max(0, (base.w * Z.s - window.innerWidth) / 2), my = Math.max(0, (base.h * Z.s - window.innerHeight) / 2);
+        Z.x = Math.max(-mx, Math.min(mx, Z.x)); Z.y = Math.max(-my, Math.min(my, Z.y));
+      }
+      function zoomAt(s, p) {  /* keep the picture's point under p where it is */
+        if (!c) measure(); s = Math.max(1, Math.min(6, s));
+        Z.x = p.x - c.x - s * (p.x - c.x - Z.x) / Z.s; Z.y = p.y - c.y - s * (p.y - c.y - Z.y) / Z.s; Z.s = s;
+        if (s === 1) { Z.x = 0; Z.y = 0; } clamp(); apply();
+      }
+      function reset() { Z = { s: 1, x: 0, y: 0 }; pinch = null; drag = null; ptrs = {}; apply(); lb.classList.remove('dragging'); }
+      img.addEventListener('load', function () { c = null; base = null; });
+      window.addEventListener('resize', function () { if (!lb.hidden) { reset(); c = null; } });
+      function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+      function mid(a, b) { return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; }
+      img.addEventListener('pointerdown', function (e) {
+        if (e.button > 0) return; ptrs[e.pointerId] = { x: e.clientX, y: e.clientY }; try { img.setPointerCapture(e.pointerId); } catch (err) { }
+        var ids = Object.keys(ptrs);
+        if (ids.length === 2) { var a = ptrs[ids[0]], b = ptrs[ids[1]]; if (!c) measure(); pinch = { d: dist(a, b), s: Z.s, m: mid(a, b), x: Z.x, y: Z.y }; drag = null; tapAt = null; }
+        else if (ids.length === 1) { tapAt = { x: e.clientX, y: e.clientY, t: Date.now() }; if (Z.s > 1) { drag = { x: e.clientX - Z.x, y: e.clientY - Z.y }; lb.classList.add('dragging'); } }
+      });
+      img.addEventListener('pointermove', function (e) {
+        if (!ptrs[e.pointerId]) return; ptrs[e.pointerId] = { x: e.clientX, y: e.clientY }; var ids = Object.keys(ptrs);
+        if (pinch && ids.length >= 2) {
+          var a = ptrs[ids[0]], b = ptrs[ids[1]], m = mid(a, b), s = Math.max(1, Math.min(6, pinch.s * dist(a, b) / Math.max(1, pinch.d)));
+          /* scale about the fingers' first midpoint, then follow the fingers as they move */
+          Z.x = m.x - c.x - s * (pinch.m.x - c.x - pinch.x) / pinch.s; Z.y = m.y - c.y - s * (pinch.m.y - c.y - pinch.y) / pinch.s; Z.s = s; clamp(); apply(); e.preventDefault(); return;
+        }
+        if (drag) { Z.x = e.clientX - drag.x; Z.y = e.clientY - drag.y; clamp(); apply(); e.preventDefault(); }
+      });
+      function up(e) {
+        var was = ptrs[e.pointerId]; delete ptrs[e.pointerId]; var ids = Object.keys(ptrs);
+        if (ids.length < 2) pinch = null; if (!ids.length) { drag = null; lb.classList.remove('dragging'); }
+        if (Z.s < 1.05 && Z.s !== 1) { Z.s = 1; Z.x = 0; Z.y = 0; apply(); }
+        if (was && tapAt && e.type === 'pointerup' && !ids.length && Math.hypot(e.clientX - tapAt.x, e.clientY - tapAt.y) < 10 && Date.now() - tapAt.t < 400) {
+          var now = Date.now(); if (now - lastTap < 320) { lastTap = 0; zoomAt(Z.s > 1 ? 1 : 2.5, { x: e.clientX, y: e.clientY }); } else lastTap = now;  /* a double tap: in at that spot, or back out */
+        }
+        tapAt = null;
+      }
+      img.addEventListener('pointerup', up); img.addEventListener('pointercancel', up);
+      img.addEventListener('dblclick', function (e) { e.preventDefault(); });
+      lb.addEventListener('wheel', function (e) { if (lb.hidden) return; e.preventDefault(); zoomAt(Z.s * (e.deltaY < 0 ? 1.18 : 1 / 1.18), { x: e.clientX, y: e.clientY }); }, { passive: false });
+      window.gr52Zoom = { reset: reset, scale: function () { return Z.s; }, at: function (s, p) { zoomAt(s, p); }, state: function () { return { s: Z.s, x: Z.x, y: Z.y }; } };
+    })();
     document.addEventListener('keydown', function (e) { if (lb.hidden) return; if (e.key === 'Escape' || isBack(e)) { e.preventDefault(); e.lbClosed = true; close(); } if (e.key === 'ArrowRight') show(cur.i + 1); if (e.key === 'ArrowLeft') show(cur.i - 1); if (e.key === 'Enter' || e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault(); });
     var sx = 0, sy = 0, st0 = 0;
-    lb.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; st0 = Date.now(); }, { passive: true });
+    lb.addEventListener('touchstart', function (e) { if (e.touches.length > 1) { st0 = 0; return; } sx = e.touches[0].clientX; sy = e.touches[0].clientY; st0 = Date.now(); }, { passive: true });
     lb.addEventListener('touchend', function (e) {
+      if (e.touches.length || (window.gr52Zoom && window.gr52Zoom.scale() > 1)) return;  /* a pinch, or a zoomed picture being panned: no page turn, no close */
       var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
       if (Math.abs(dx) > 50 && Math.abs(dy) < Math.abs(dx)) show(cur.i + (dx < 0 ? 1 : -1)); /* the next picture is to the right in both languages, like the arrow buttons */
       else if (dy > 90 && Math.abs(dx) < 60 && Date.now() - st0 < 600) close();
