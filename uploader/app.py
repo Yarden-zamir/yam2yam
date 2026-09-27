@@ -15,8 +15,12 @@ import io
 import json
 import os
 import re
+import shutil
+import subprocess
 import threading
 import time
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -31,6 +35,10 @@ except ImportError:  # pragma: no cover
 
 DATA = Path(os.environ.get("LOG_DATA", "/data"))
 MAX_FILE = int(os.environ.get("LOG_MAX_FILE_MB", "40")) * 1024 * 1024
+MAX_VIDEO = int(os.environ.get("LOG_MAX_VIDEO_MB", "150")) * 1024 * 1024
+VIDEO_EXT = {".mp4", ".mov", ".m4v", ".webm", ".3gp", ".mkv"}
+FFMPEG, FFPROBE = shutil.which("ffmpeg"), shutil.which("ffprobe")
+LOG_TZ = os.environ.get("LOG_TZ") or None  # the trek's zone: a video's own clock is UTC, the page shows local time
 MAX_USER = int(os.environ.get("LOG_MAX_USER_GB", "5")) * 1024 * 1024 * 1024
 USER_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,38}$")
 EDIT_KEY = os.environ.get("LOG_EDIT_KEY", "")  # when set, edits need this key (X-Log-Key); uploads stay open
@@ -113,6 +121,74 @@ def save_photo(user: str, name: str, data: bytes, fields: dict | None = None) ->
     th.save(udir / "photos" / (pid + ".t.jpg"), "JPEG", quality=82, optimize=True)
     small_preview(img, udir / "photos" / (pid + ".s.jpg"))
     rec = {"id": pid, "file": pid + ".jpg", "thumb": pid + ".t.jpg", "small": pid + ".s.jpg", "orig": pid + ext, "w": web.width, "h": web.height, "name": Path(name).name[:80], **info}
+    put_record(user, rec)
+    return rec
+
+
+def _iso6709(s: str):
+    """+44.1026+007.3670+1234.5/ as a phone writes it into a video → (lat, lon)."""
+    m = re.match(r"^([+-]\d+(?:\.\d+)?)([+-]\d+(?:\.\d+)?)", s or "")
+    return (round(float(m.group(1)), 6), round(float(m.group(2)), 6)) if m else None
+
+
+def save_video(user: str, name: str, data: bytes, fields: dict | None = None) -> dict:
+    """A clip: kept as uploaded (orig/), remade for the web (photos/<id>.mp4, H.264, 1280 px on the long side,
+    ready to stream), with a poster frame at 1 s that gets the same grid and map sizes as a picture."""
+    if not FFMPEG or not FFPROBE:
+        raise ValueError("videos need ffmpeg in the uploader")
+    udir = DATA / user
+    (udir / "orig").mkdir(parents=True, exist_ok=True)
+    (udir / "photos").mkdir(parents=True, exist_ok=True)
+    pid = hashlib.sha1(data).hexdigest()[:12]
+    ext = (Path(name).suffix or ".mp4").lower()[:6]
+    orig = udir / "orig" / (pid + ext)
+    orig.write_bytes(data)
+    try:
+        probe = json.loads(subprocess.run([FFPROBE, "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", str(orig)], capture_output=True, timeout=120).stdout or b"{}")
+    except (subprocess.TimeoutExpired, ValueError):
+        probe = {}
+    fmt = probe.get("format") or {}
+    tags = {k.lower(): v for k, v in (fmt.get("tags") or {}).items()}
+    info: dict = {"taken": None, "lat": None, "lon": None}
+    stamp = tags.get("com.apple.quicktime.creationdate") or tags.get("creation_time")
+    if stamp:
+        try:
+            t = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+            if t.tzinfo and LOG_TZ:
+                t = t.astimezone(ZoneInfo(LOG_TZ))
+            info["taken"] = t.strftime("%Y-%m-%dT%H:%M:%S")
+        except ValueError:
+            pass
+    loc = _iso6709(tags.get("com.apple.quicktime.location.iso6709") or tags.get("location") or "")
+    if loc:
+        info["lat"], info["lon"] = loc
+    for k in ("taken", "lat", "lon"):  # the sidecar (the page converts its clock to local time) wins over a UTC guess
+        v = (fields or {}).get(k)
+        if v not in (None, "") and (k != "taken" or LOG_TZ is None or info.get(k) is None):
+            try:
+                info[k] = v if k == "taken" else round(float(v), 6)
+            except ValueError:
+                pass
+    if info.get("taken") and not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$", str(info["taken"])):
+        info["taken"] = None
+    web = udir / "photos" / (pid + ".mp4")
+    subprocess.run([FFMPEG, "-y", "-v", "error", "-i", str(orig), "-vf", "scale='min(1280,iw)':-2", "-c:v", "libx264", "-preset", "veryfast", "-crf", "26", "-pix_fmt", "yuv420p",
+                    "-c:a", "aac", "-b:a", "96k", "-movflags", "+faststart", str(web)], check=True, timeout=900, capture_output=True)
+    poster = udir / "photos" / (pid + ".jpg")
+    r = subprocess.run([FFMPEG, "-y", "-v", "error", "-ss", "1", "-i", str(web), "-frames:v", "1", "-q:v", "3", str(poster)], timeout=120, capture_output=True)
+    if r.returncode or not poster.exists():  # shorter than a second: the first frame
+        subprocess.run([FFMPEG, "-y", "-v", "error", "-i", str(web), "-frames:v", "1", "-q:v", "3", str(poster)], check=True, timeout=120, capture_output=True)
+    img = Image.open(poster)
+    th = img.copy()
+    th.thumbnail((800, 800), Image.LANCZOS)
+    th.save(udir / "photos" / (pid + ".t.jpg"), "JPEG", quality=82, optimize=True)
+    small_preview(img, udir / "photos" / (pid + ".s.jpg"))
+    dur = None
+    try:
+        dur = round(float(fmt.get("duration")), 1)
+    except (TypeError, ValueError):
+        pass
+    rec = {"id": pid, "kind": "video", "file": pid + ".mp4", "poster": pid + ".jpg", "thumb": pid + ".t.jpg", "small": pid + ".s.jpg", "orig": pid + ext, "w": img.width, "h": img.height, "dur": dur, "name": Path(name).name[:80], **info}
     put_record(user, rec)
     return rec
 
@@ -338,7 +414,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(400, {"error": str(e)[:120]})
         length = int(self.headers.get("Content-Length") or 0)
         ctype = self.headers.get("Content-Type") or ""
-        if length <= 0 or length > MAX_FILE * 4 or not ctype.startswith("multipart/form-data"):
+        if length <= 0 or length > max(MAX_FILE * 4, MAX_VIDEO + MAX_FILE) or not ctype.startswith("multipart/form-data"):
             return self._json(400, {"error": "send multipart/form-data with picture files, under %d MB each" % (MAX_FILE // 1024 // 1024)})
         if used_bytes(user) > MAX_USER:
             return self._json(507, {"error": "this log's picture space is full"})
@@ -354,11 +430,12 @@ class Handler(BaseHTTPRequestHandler):
             data = part.get_payload(decode=True)
             if not name or not data:
                 continue
-            if len(data) > MAX_FILE:
+            video = Path(name).suffix.lower() in VIDEO_EXT
+            if len(data) > (MAX_VIDEO if video else MAX_FILE):
                 errors.append({"name": name, "error": "too large"})
                 continue
             try:
-                out.append(save_photo(user, name, data, fields))
+                out.append((save_video if video else save_photo)(user, name, data, fields))
             except Exception as e:  # a bad file must not stop the others
                 errors.append({"name": name, "error": str(e)[:120]})
         if not out and errors:

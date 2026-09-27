@@ -31,9 +31,11 @@
   }
   function caption(p, lang) { var o = over[p.id] || {}, c = o.caption; if (c && typeof c === 'object') c = c[lang] || c.en || c.he; return c || p.caption || ''; }
   function when(p) { return p.taken ? p.taken.slice(11, 16) : ''; }
+  function isVideo(p) { return p && p.kind === 'video'; }
+  function still(p) { return BASE + esc(isVideo(p) ? p.poster : p.file); }  /* what stands for the item in the text: the picture, or a clip's poster frame */
   function tile(p, lang) {
     var c = caption(p, lang);
-    return '<a class="tile" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"' + (p.w && p.h ? ' style="aspect-ratio:' + p.w + '/' + p.h + '"' : '') + '><img src="' + BASE + esc(p.thumb) + '" alt="' + esc(c) + '" loading="lazy">' + (c || when(p) ? '<span>' + esc(c || when(p)) + '</span>' : '') + '</a>';
+    return '<a class="tile' + (isVideo(p) ? ' vid' : '') + '" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"' + (p.w && p.h ? ' style="aspect-ratio:' + p.w + '/' + p.h + '"' : '') + '><img src="' + BASE + esc(p.thumb) + '" alt="' + esc(c) + '" loading="lazy">' + (isVideo(p) ? '<i class="play"></i>' : '') + (c || when(p) ? '<span>' + esc(c || when(p)) + '</span>' : '') + '</a>';
   }
 
   /* ---- where a picture was taken: its own coordinates, an override, or the route at that time ---- */
@@ -92,7 +94,7 @@
       if (over[p.id] && over[p.id].hide) { s.innerHTML = ''; s.hidden = true; return; }  /* a hidden picture leaves the text too; its token stays, so unhiding brings it back */
       s.hidden = false;
       var lang = langOf(s), c = caption(p, lang);
-      s.innerHTML = '<a class="inpic ' + (p.w && p.h && p.h > p.w ? 'port' : 'land') + '" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"><img src="' + BASE + esc(p.file) + '" alt="' + esc(c) + '" loading="lazy"' + (p.w && p.h ? ' width="' + p.w + '" height="' + p.h + '" style="--ar:' + (p.w / p.h).toFixed(4) + '"' : '') + '>' + (c ? '<span>' + esc(c) + '</span>' : '') + '</a>';
+      s.innerHTML = '<a class="inpic ' + (p.w && p.h && p.h > p.w ? 'port' : 'land') + (isVideo(p) ? ' vid' : '') + '" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"><img src="' + still(p) + '" alt="' + esc(c) + '" loading="lazy"' + (p.w && p.h ? ' width="' + p.w + '" height="' + p.h + '" style="--ar:' + (p.w / p.h).toFixed(4) + '"' : '') + '>' + (isVideo(p) ? '<i class="play"></i>' : '') + (c ? '<span>' + esc(c) + '</span>' : '') + '</a>';
     });
     Object.keys(layers).forEach(function (lang) { rebuildDots(lang); });
     trackNow(false);
@@ -164,8 +166,13 @@
   function show(i) {
     var p = cur.list[i]; if (!p) return; cur.i = i;
     var lang = visibleLang(), c = caption(p, lang), pos = place(p);
-    lb.querySelector('img').src = BASE + p.file; if (window.gr52Zoom) window.gr52Zoom.reset();
-    var dl = lb.querySelector('.lbdl'); dl.href = p.orig ? ORIG + p.orig : BASE + p.file; dl.setAttribute('download', p.orig ? (p.name || p.orig) : (p.id + '.jpg')); dl.title = T[lang].download;
+    /* a clip plays in a video element in the picture's place; the caption and arrows move to the top, off its controls */
+    var vid = lb.querySelector('video'), im = lb.querySelector('img');
+    if (!vid) { vid = document.createElement('video'); vid.controls = true; vid.playsInline = true; vid.setAttribute('playsinline', ''); vid.preload = 'metadata'; vid.hidden = true; lb.insertBefore(vid, im.nextSibling); }
+    if (isVideo(p)) { im.hidden = true; im.removeAttribute('src'); vid.poster = BASE + p.poster; vid.src = BASE + p.file; vid.hidden = false; lb.classList.add('video'); var pl = vid.play(); if (pl && pl.catch) pl.catch(function () { }); }
+    else { lbStop(); im.hidden = false; im.src = BASE + p.file; }
+    if (window.gr52Zoom) window.gr52Zoom.reset();
+    var dl = lb.querySelector('.lbdl'); dl.href = p.orig ? ORIG + p.orig : BASE + p.file; dl.setAttribute('download', p.orig ? (p.name || p.orig) : (p.id + (isVideo(p) ? '.mp4' : '.jpg'))); dl.title = T[lang].download;
     lb.querySelector('.lbcap').innerHTML = (c ? esc(c) + ' · ' : '') + (p.taken ? T[lang].taken + ' ' + esc(p.taken.replace('T', ' ').slice(0, 16)) : '')
       + (pos ? ' · <a href="?map=ll:' + pos.lat.toFixed(5) + ',' + pos.lon.toFixed(5) + '" class="focus" data-go="ll:' + pos.lat.toFixed(5) + ',' + pos.lon.toFixed(5) + ':' + esc(c || T[lang].photo) + '" data-day="' + (dayOf(p) == null ? '' : dayOf(p)) + '">' + T[lang].onMap + '</a>' + (pos.est ? ' (' + T[lang].est + ')' : '') : '');
     lb.querySelector('.lbn').textContent = (i + 1) + ' / ' + cur.list.length;
@@ -183,7 +190,7 @@
   }
   /* an overlay closes without stepping back in history: for a navigation that pushes its own entry right after */
   function leaveQuietly() {
-    lb.hidden = true; document.body.classList.remove('lbopen'); sheetWrap.setAttribute('hidden', ''); overlay = null;
+    lbStop(); lb.hidden = true; document.body.classList.remove('lbopen'); sheetWrap.setAttribute('hidden', ''); overlay = null;
     var u = new URL(location.href); u.searchParams.delete('photo');
     history.replaceState(Object.assign({}, history.state || {}, { overlay: null }), '', u);
     castSync();
@@ -196,12 +203,13 @@
     /* the address the overlay was pushed over may be stale; note the place again once closed */
     if (window.gr52Nav && window.gr52Nav.noteAt) setTimeout(window.gr52Nav.noteAt, 50);
     if (popPending) { popPending = false; return true; }
-    if (!lb.hidden) { lb.hidden = true; document.body.classList.remove('lbopen'); overlay = null; return true; }
+    if (!lb.hidden) { lbStop(); lb.hidden = true; document.body.classList.remove('lbopen'); overlay = null; return true; }
     if (!sheetWrap.hidden) { sheetWrap.setAttribute('hidden', ''); overlay = null; return true; }
     return false;
   } };
   function open(list, i, quiet) { cur.list = list; lb.hidden = false; document.body.classList.add('lbopen'); if (!quiet && overlay !== 'lb') pushOverlay('lb', list[i] && list[i].id); show(i); }
-  function close() { lb.hidden = true; document.body.classList.remove('lbopen'); popOverlay(); castSync(); }
+  function lbStop() { var v = lb.querySelector('video'); if (v && !v.hidden) { v.pause(); v.removeAttribute('src'); v.load(); v.hidden = true; } lb.classList.remove('video'); }
+  function close() { lbStop(); lb.hidden = true; document.body.classList.remove('lbopen'); popOverlay(); castSync(); }
   function showSheet() { sheetWrap.hidden = false; if (overlay !== 'sheet') pushOverlay('sheet'); }
   function hideSheet() { sheetWrap.setAttribute('hidden', ''); popOverlay(); }
   if (lb) {
@@ -216,7 +224,7 @@
         if (window.gr52Nav) window.gr52Nav.go(g.getAttribute('data-go'), st || g);
         return;
       }
-      if (e.target.closest('[data-lb="close"]') || !e.target.closest('img,button,a,.lbcap,.lbnav')) close();
+      if (e.target.closest('[data-lb="close"]') || !e.target.closest('img,video,button,a,.lbcap,.lbnav')) close();
     });
     /* zoom: pinch, double-tap or double-click, the mouse wheel; drag to pan once zoomed; a new picture starts at 1 */
     (function () {
@@ -263,14 +271,14 @@
       }
       img.addEventListener('pointerup', up); img.addEventListener('pointercancel', up);
       img.addEventListener('dblclick', function (e) { e.preventDefault(); });
-      lb.addEventListener('wheel', function (e) { if (lb.hidden) return; e.preventDefault(); zoomAt(Z.s * (e.deltaY < 0 ? 1.18 : 1 / 1.18), { x: e.clientX, y: e.clientY }); }, { passive: false });
+      lb.addEventListener('wheel', function (e) { if (lb.hidden || lb.classList.contains('video')) return; e.preventDefault(); zoomAt(Z.s * (e.deltaY < 0 ? 1.18 : 1 / 1.18), { x: e.clientX, y: e.clientY }); }, { passive: false });
       window.gr52Zoom = { reset: reset, scale: function () { return Z.s; }, at: function (s, p) { zoomAt(s, p); }, state: function () { return { s: Z.s, x: Z.x, y: Z.y }; } };
     })();
     document.addEventListener('keydown', function (e) { if (lb.hidden) return; if (e.key === 'Escape' || isBack(e)) { e.preventDefault(); e.lbClosed = true; close(); } if (e.key === 'ArrowRight') show(cur.i + 1); if (e.key === 'ArrowLeft') show(cur.i - 1); if (e.key === 'Enter' || e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault(); });
     var sx = 0, sy = 0, st0 = 0;
     lb.addEventListener('touchstart', function (e) { if (e.touches.length > 1) { st0 = 0; return; } sx = e.touches[0].clientX; sy = e.touches[0].clientY; st0 = Date.now(); }, { passive: true });
     lb.addEventListener('touchend', function (e) {
-      if (e.touches.length || (window.gr52Zoom && window.gr52Zoom.scale() > 1)) return;  /* a pinch, or a zoomed picture being panned: no page turn, no close */
+      if (e.touches.length || (window.gr52Zoom && window.gr52Zoom.scale() > 1) || (e.target.closest && e.target.closest('video'))) return;  /* a pinch, a zoomed picture being panned, or a clip's own controls: no page turn, no close */
       var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
       if (Math.abs(dx) > 50 && Math.abs(dy) < Math.abs(dx)) show(cur.i + (dx < 0 ? 1 : -1)); /* the next picture is to the right in both languages, like the arrow buttons */
       else if (dy > 90 && Math.abs(dx) < 60 && Date.now() - st0 < 600) close();
@@ -671,7 +679,7 @@
   /* ---- upload: straight to /log/<user>/upload, one file at a time, then the index is re-read.
      A zip (a Google Photos album download, for one) is unpacked here entry by entry; a picture's
      sidecar JSON, when the zip has one, supplies the place and time the picture itself may lack. ---- */
-  var IMG = /\.(jpe?g|png|heic|heif|webp|avif|tiff?)$/i;
+  var IMG = /\.(jpe?g|png|heic|heif|webp|avif|tiff?)$/i, VID = /\.(mp4|mov|m4v|webm|3gp|mkv)$/i;
   function localStamp(epoch) {
     /* the picture's own time is local; a sidecar epoch becomes local time in the trek's zone */
     try { var parts = new Intl.DateTimeFormat('en-GB', { timeZone: TREK.timezone && TREK.timezone !== 'auto' ? TREK.timezone : undefined, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(new Date(epoch * 1000)), o = {}; parts.forEach(function (p) { o[p.type] = p.value; }); return o.year + '-' + o.month + '-' + o.day + 'T' + (o.hour === '24' ? '00' : o.hour) + ':' + o.minute + ':' + o.second; } catch (e) { return null; }
@@ -687,7 +695,7 @@
     var reader = new zip.ZipReader(new zip.BlobReader(file));
     return reader.getEntries().then(function (entries) {
       var metas = {}, pics = [];
-      entries.forEach(function (e) { if (e.directory || /(^|\/)(__MACOSX|\.)/.test(e.filename)) return; var base = e.filename.split('/').pop(); if (/\.json$/i.test(base)) metas[base.toLowerCase()] = e; else if (IMG.test(base)) pics.push(e); });
+      entries.forEach(function (e) { if (e.directory || /(^|\/)(__MACOSX|\.)/.test(e.filename)) return; var base = e.filename.split('/').pop(); if (/\.json$/i.test(base)) metas[base.toLowerCase()] = e; else if (IMG.test(base) || VID.test(base)) pics.push(e); });
       function metaFor(base) {
         var b = base.toLowerCase(), stem = b.replace(/\.[^.]+$/, ''), keys = Object.keys(metas);
         var k = keys.filter(function (x) { return x === b + '.json' || x === b + '.supplemental-metadata.json' || x === stem + '.json' || (x.indexOf(b + '.') === 0 && /\.json$/.test(x)); })[0];
@@ -924,7 +932,7 @@
       }
       var p = m.open && byId[m.open];
       if (p) { if (lb.hidden || (cur.list[cur.i] || {}).id !== p.id) { var n = dayOf(p), list = photos.filter(function (x) { return dayOf(x) === n; }); open(list.length ? list : [p], Math.max(0, list.indexOf(p)), true); } }
-      else if (!lb.hidden) { lb.hidden = true; document.body.classList.remove('lbopen'); }
+      else if (!lb.hidden) { lbStop(); lb.hidden = true; document.body.classList.remove('lbopen'); }
     }
     document.body.classList.add('castee');
     if (CAST_APP) {  /* launched by a Chromecast: the receiver library must be started within seconds */

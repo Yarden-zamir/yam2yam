@@ -166,7 +166,7 @@ def render_lang(lang: str, log: dict, trek: dict, plan: dict | None, prefix: str
           '  <canvas class="profile" aria-label="Elevation profile"></canvas>', '  <p class="profstats"></p>', "</div></div>",
           f'<p><a href="{gpx}" download>{L["gpx"]}</a></p>']
     o += ["", h2(sec + 1, "upload", M["upload_h"]), f'<p>{M["upload_hint"]}</p>',
-          f'<div class="upload"><label class="upbtn">{M["pick"]}<input type="file" accept="image/*,.heic,.heif,.zip,application/zip" multiple hidden></label><div class="uplist"></div></div>']
+          f'<div class="upload"><label class="upbtn">{M["pick"]}<input type="file" accept="image/*,video/*,.heic,.heif,.mp4,.mov,.m4v,.zip,application/zip" multiple hidden></label><div class="uplist"></div></div>']
     o.append('</div><aside class="spine" aria-label="Map"><div class="maphost empty" data-host="spine"></div></aside></div>')  # the map beside the story on wide screens
     return "\n".join(o)
 

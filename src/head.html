@@ -394,7 +394,13 @@ body.editing .dots{display:none}  /* not while a day's text is being edited */
 .tile span{position:absolute;left:0;right:0;bottom:0;padding:14px 8px 5px;font:12px "IBM Plex Sans",sans-serif;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.6));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .photoref{display:block;margin:12px 0}
 .photos{display:block;margin:12px 0}
-.inpic{display:block;text-decoration:none;color:inherit}
+.inpic{display:block;text-decoration:none;color:inherit;position:relative}
+/* a clip: its poster frame with a play badge; it plays in the lightbox */
+.tile .play,.inpic .play{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(0,0,0,.5);border:1.5px solid rgba(255,255,255,.75);box-shadow:0 2px 8px rgba(0,0,0,.35);pointer-events:none}
+.tile .play::after,.inpic .play::after{content:"";position:absolute;left:18px;top:13px;border-style:solid;border-width:9px 0 9px 15px;border-color:transparent transparent transparent #fff}
+.inpic.vid .play{top:calc(50% - 12px)}
+#lightbox video{max-width:100vw;max-height:100vh;max-height:100dvh;display:block;background:#000;outline:none} #lightbox video[hidden],#lightbox img[hidden]{display:none}
+#lightbox.video .lbfoot{bottom:auto;top:0;padding:calc(58px + env(safe-area-inset-top)) 12px 22px;background:linear-gradient(rgba(0,0,0,.65),transparent)}  /* off the clip's own controls */
 /* --ar (width/height) comes with the picture, so its space is reserved before it loads and the page does not jump; the width is whatever fits under 85vh */
 .inpic img{display:block;height:auto;margin:0 auto;border-radius:3px;background:var(--line);aspect-ratio:var(--ar,auto);max-width:100%;width:min(100%,calc(85vh * var(--ar,1.5)))}
 .inpic span{display:block;font-size:12.5px;color:var(--muted);padding:4px 0;text-align:center;text-decoration:none}
