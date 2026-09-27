@@ -695,7 +695,7 @@
   (function () {
     var rail = document.createElement('nav'); rail.className = 'dots'; rail.hidden = true; rail.setAttribute('aria-label', 'Sections'); document.body.appendChild(rail);
     var items = [], onEl = null, born = Date.now(), scrubbing = false, moved = false, scrubTimer = null, quietUntil = 0, y0 = 0;
-    function buzz() { if (Date.now() - born < 3000 || Date.now() < quietUntil) return;  /* not while the page settles on load, nor during the glide after a tap */ try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) { } }
+    function buzz() { if (Date.now() - born < 3000 || Date.now() < quietUntil) return;  /* not while the page settles on load, nor during the glide after a tap */ try { if (navigator.vibrate) navigator.vibrate(22); } catch (e) { } }
     function build() {
       var lang = visibleLang(), T = I18N[lang], els = Array.prototype.slice.call(document.querySelectorAll('.wrap:not([hidden]) h2[id], .wrap:not([hidden]) .stage[data-day]'));
       items = []; rail.innerHTML = ''; onEl = null;
@@ -746,6 +746,24 @@
     var raf = 0;
     window.addEventListener('scroll', function () { if (scrubbing || raf) return; raf = requestAnimationFrame(function () { raf = 0; mark(true); }); }, { passive: true });
     window.addEventListener('resize', function () { mark(false); });
+    /* a finger lifted with a day's start near the top of the screen: the page glides the rest of the way, so the
+       day begins at the top. Only after a touch (a wheel or the keys are left alone), once the scroll has settled */
+    var touched = 0, fingers = 0, snapTimer = null;
+    document.addEventListener('touchstart', function (e) {
+      fingers = e.touches.length;
+      touched = e.target.closest && e.target.closest('.livemap, #lightbox, #sheetwrap, nav.dots, .editor, input, textarea, canvas, .wxhour') ? 0 : Date.now();
+    }, { passive: true });
+    document.addEventListener('touchend', function (e) { fingers = e.touches.length; if (touched) touched = Date.now(); }, { passive: true });
+    function settle() {
+      if (!touched || Date.now() - touched > 4000 || fingers || scrubbing || Date.now() < quietUntil || document.body.classList.contains('lbopen') || document.querySelector('.editor')) return;
+      var zone = Math.min(window.innerHeight * 0.3, 260), best = null, bd = Infinity;
+      items.forEach(function (it) { if (!it.day || it.el.offsetParent === null) return; var t = it.el.getBoundingClientRect().top - 12, d = Math.abs(t); if (t >= -80 && t <= zone && d < bd) { bd = d; best = it; } });
+      if (!best || bd < 3) return;
+      touched = 0; quietUntil = Date.now() + 900;  /* one glide per lift; no second buzz while the page moves on its own */
+      window.scrollTo({ top: Math.max(0, window.scrollY + best.el.getBoundingClientRect().top - 12), behavior: 'smooth' });
+    }
+    if ('onscrollend' in window) window.addEventListener('scrollend', settle);
+    else window.addEventListener('scroll', function () { clearTimeout(snapTimer); snapTimer = setTimeout(settle, 160); }, { passive: true });
     document.addEventListener('trek:lang', build);
     build();
     window.gr52Dots = { refresh: build };

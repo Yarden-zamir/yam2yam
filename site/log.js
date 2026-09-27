@@ -791,23 +791,37 @@
     var w = document.querySelector('.wrap:not([hidden]) .main'); if (!w) return [];
     return Array.prototype.filter.call(w.querySelectorAll('a.inpic[data-photo], .gallery .tile[data-photo]'), function (a) { return a.offsetParent !== null && !a.classList.contains('hid'); });
   }
-  function trackNow(force) {
-    var G = window.gr52Map;
-    if (!G || !G.tracking() || !document.body.classList.contains('spine-on') || !window.gr52Data) { trackKey = null; return; }
-    var app = G.app(visibleLang()); if (!app || !app.trackTo) return;
+  /* the picture under the reading line (nearest to it on screen), and the last one above the screen */
+  function nearPicture() {
     var y = window.innerHeight * 0.42, best = null, bd = Infinity, above = null;
     trackStops().forEach(function (a) {
       var r = a.getBoundingClientRect();
       if (r.bottom < 0) { above = a; return; } if (r.top > window.innerHeight) return;
       var d = Math.abs((r.top + r.bottom) / 2 - y); if (d < bd) { bd = d; best = a; }
     });
-    var a = best || above, p = a && byId[a.getAttribute('data-photo')], n = app.scope();
+    return { best: best, above: above };
+  }
+  function trackNow(force) {
+    var G = window.gr52Map;
+    if (!G || !G.tracking() || !document.body.classList.contains('spine-on') || !window.gr52Data) { trackKey = null; return; }
+    var app = G.app(visibleLang()); if (!app || !app.trackTo) return;
+    var near = nearPicture(), a = near.best || near.above, p = a && byId[a.getAttribute('data-photo')], n = app.scope();
     if (p && n != null && dayOf(p) !== n) p = null;  /* the last picture above is another day's: this day has not shown one yet */
     var pos = p && place(p), key = pos ? p.id : 'scope:' + n;
     if (!force && key === trackKey && !pos) return;  /* the same overview again: leave the map as the reader left it */
     trackKey = key; app.trackTo(pos || null);  /* a picture: the map itself decides whether it is still in view */
   }
   window.addEventListener('scroll', function () { clearTimeout(trackTimer); trackTimer = setTimeout(function () { trackNow(false); }, 140); }, { passive: true });
+  /* a very light buzz as a picture passes the reading line, on any screen: the same moment the map beside the story moves */
+  var picKey = null, picBorn = Date.now(), picTimer = null;
+  function picPass() {
+    if (Date.now() - picBorn < 3000 || document.body.classList.contains('lbopen')) return;
+    var a = nearPicture().best, key = a ? a.getAttribute('data-photo') : null;
+    if (key === picKey) return;
+    var had = picKey !== null; picKey = key;
+    if (key && had) { try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) { } }
+  }
+  window.addEventListener('scroll', function () { if (picTimer) return; picTimer = setTimeout(function () { picTimer = null; picPass(); }, 90); }, { passive: true });
   document.addEventListener('trek:scope', function () { setTimeout(function () { trackNow(true); }, 0); });  /* the day changed under the reader: the map has not moved yet */
   document.addEventListener('trek:track', function (e) { if (e.detail.on) trackNow(true); else trackKey = null; });
   window.addEventListener('resize', function () { clearTimeout(trackTimer); trackTimer = setTimeout(function () { trackNow(false); }, 200); });
