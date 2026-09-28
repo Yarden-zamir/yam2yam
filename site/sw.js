@@ -30,6 +30,9 @@ self.addEventListener('fetch', function (e) {
     return;
   }
   if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') { e.respondWith(cacheFirst('fonts', e.request).catch(function () { return Response.error(); })); return; }
+  /* the GitHub sign-in (its redirects go to github.com, which a fetch here cannot follow) and "who am I" (per visitor,
+     never cached): straight to the network, the browser handles them as if there were no worker */
+  if (url.origin === location.origin && (url.pathname.startsWith('/auth/') || /^\/log\/[^/]+\/whoami\/?$/.test(url.pathname))) return;
   if (url.origin === location.origin) {
     /* the trip log's index and edits change on the page itself: network first, the cache only offline;
        everything else is served from the cache while the network refreshes it for next time */
