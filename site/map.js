@@ -171,11 +171,22 @@
     var T = I18N[lang];
     var mapEl = container.querySelector('.livemap');
     var status = container.querySelector('.mapstatus');
-    var canRotate = typeof L.Map.prototype.setBearing === 'function', coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+    var canRotate = typeof L.Map.prototype.setBearing === 'function';
     /* fingers do the zooming and turning on a phone; the compass appears once the map is turned, to reset north */
-    var opts = { scrollWheelZoom: false, zoomSnap: 0.5, zoomControl: !coarse, attributionControl: false };  /* the credit is the folded © below */
+    var opts = { scrollWheelZoom: false, zoomSnap: 0.5, zoomControl: false, attributionControl: false };  /* no +/- buttons: pinch, double-click or Ctrl+wheel zoom; the credit is the folded © below */
     if (canRotate) { opts.rotate = true; opts.touchRotate = true; opts.dragRotate = true; opts.shiftKeyRotate = true; opts.rotateControl = { position: 'topleft', behavior: 'reset', closeOnZeroBearing: true }; }
     var map = L.map(mapEl, opts);
+    /* a trackpad pinch arrives as a wheel event with ctrlKey (Ctrl+wheel with a mouse too): zoom the map, not the page;
+       a plain wheel still scrolls the page past the map */
+    var pinch = 0;  /* the map snaps to half zoom steps, so small pinch deltas add up until they reach one */
+    mapEl.addEventListener('wheel', function (e) {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      pinch -= e.deltaY * 0.01;
+      if (Math.abs(pinch) < 0.5) return;
+      var step = pinch > 0 ? 0.5 : -0.5; pinch = 0;
+      map.setZoomAround(map.mouseEventToContainerPoint(e), map.getZoom() + step);
+    }, { passive: false });
     /* points that must sit exactly on a spot are markers in the marker pane: the rotation plugin keeps
        that pane upright and re-places its markers on every turn; a custom pane would be left behind */
     function pin(ll, cls, size, z) { return L.marker(ll, { icon: L.divIcon({ className: cls, iconSize: [size, size], iconAnchor: [size / 2, size / 2], popupAnchor: [0, -size / 2], html: '' }), zIndexOffset: z, keyboard: false }); }
