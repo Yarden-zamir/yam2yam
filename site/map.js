@@ -777,8 +777,8 @@
     document.addEventListener('touchend', function (e) { fingers = e.touches.length; if (touched) touched = Date.now(); }, { passive: true });
     function settle() {
       if (!touched || Date.now() - touched > 4000 || fingers || scrubbing || Date.now() < quietUntil || document.body.classList.contains('lbopen') || document.querySelector('.editor')) return;
-      var zone = Math.min(window.innerHeight * 1.2, 1040), best = null, bd = Infinity;  /* a wide catch: a day's start anywhere on the screen, or a little past its edges */
-      items.forEach(function (it) { if (!it.day || it.el.offsetParent === null) return; var t = it.el.getBoundingClientRect().top - 12, d = Math.abs(t); if (t >= -320 && t <= zone && d < bd) { bd = d; best = it; } });
+      var zone = Math.min(window.innerHeight * 0.75, 650), best = null, bd = Infinity;  /* a wide catch: a day's start in the top three quarters of the screen, or a little above it */
+      items.forEach(function (it) { if (!it.day || it.el.offsetParent === null) return; var t = it.el.getBoundingClientRect().top - 12, d = Math.abs(t); if (t >= -200 && t <= zone && d < bd) { bd = d; best = it; } });
       if (!best || bd < 3) return;
       touched = 0; quietUntil = Date.now() + 900;  /* one glide per lift; no second buzz while the page moves on its own */
       window.scrollTo({ top: Math.max(0, window.scrollY + best.el.getBoundingClientRect().top - 12), behavior: 'smooth' });
