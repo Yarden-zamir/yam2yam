@@ -215,7 +215,7 @@ def render(content_path: Path, trek: dict) -> str:
     for lang in trek["languages"]:
         if lang not in c:
             raise SystemExit(f"content.yaml has no '{lang}' block")
-        parts.append(render_lang(lang, c[lang], trek, "" if lang == first else lang + "-"))
+        parts.append(render_lang(lang, c[lang], trek, "" if lang == trek["languages"][0] else lang + "-"))  # the ids stay keyed on the first language, whatever a visit opens in
         parts.append("")
     return "\n".join(parts)
 

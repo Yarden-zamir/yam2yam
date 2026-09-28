@@ -191,6 +191,7 @@ def render(log_path: Path, trek: dict, plan_path: Path | None) -> tuple[str, dic
     cfg = {"user": log["user"], "days": {int(d["n"]): {"date": d["date"], "anchors": d.get("anchors") or [], "text": {lang: paras(d, lang) for lang in trek["languages"]}, "tips": {lang: tips(d, lang) for lang in trek["languages"]}} for d in log["days"]},
            "sections": {s["key"]: {lang: [str(x) for x in (lambda v: v if isinstance(v, list) else [v] if v else [])(_lang(s.get("text"), lang))] for lang in trek["languages"]} for s in log.get("sections") or []},
            "photos": {str(k): v for k, v in (log.get("photos") or {}).items()}, "cover": render_mod.cover_of(log.get("cover"), log["user"]),
+           "titles": log.get("title"), "blurbs": log.get("description"),  # per language; build.py takes them for the page title and the link preview, then drops them
            "places": trek.get("places", {}),
            "intro": {lang: [str(x) for x in (lambda v: v if isinstance(v, list) else [v] if v else [])(_lang(log.get("intro"), lang))] for lang in trek["languages"]},
            "outro": {lang: [str(x) for x in (lambda v: v if isinstance(v, list) else [v] if v else [])(_lang(log.get("outro"), lang))] for lang in trek["languages"]}}  # the page script links these names when it redraws an edited day, as src/build.py does at build time

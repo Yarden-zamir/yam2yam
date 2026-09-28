@@ -162,6 +162,19 @@ sys.path.insert(0, str(SRC))
 import render as render_mod  # noqa: E402
 
 DEFAULT_LANG = TREK.get("defaultLanguage", TREK.get("languages", ["en"])[0])  # trek.json "defaultLanguage"; the first language otherwise. The ids stay keyed on the first language
+
+
+def pick(v, lang: str | None = None) -> str:
+    """A string, or a {lang: string} map: the default language's entry (else the first). The page title and the
+    link preview (WhatsApp and the like read og:title and og:description) come out in the language a visit opens in."""
+    if isinstance(v, dict):
+        return str(v.get(lang or DEFAULT_LANG) or next(iter(v.values()), ""))
+    return str(v or "")
+
+
+PAGE_NAME = pick(TREK.get("names") or TREK["name"])  # trek.json "names": {lang: …} beside "name", "descriptions" beside "description"
+PAGE_DESC = pick(TREK.get("descriptions") or TREK["description"])
+OG_LOCALE = {"he": "he_IL", "en": "en_US", "fr": "fr_FR", "de": "de_DE"}.get(DEFAULT_LANG, DEFAULT_LANG)
 import yaml  # noqa: E402
 
 
@@ -201,7 +214,7 @@ def og_meta(title: str, description: str, cover: dict | None, path: str = "/") -
     uploader's 1200 x 630 crop of the cover (under 300 KB, which WhatsApp insists on), centred where the cover is."""
     q = lambda s: str(s).replace('"', "&quot;")
     o = [f'<meta property="og:title" content="{q(title)}">', f'<meta property="og:description" content="{q(description)}">', '<meta property="og:type" content="website">',
-         f'<meta property="og:url" content="https://{TREK["hostname"]}{path}">']
+         f'<meta property="og:url" content="https://{TREK["hostname"]}{path}">', f'<meta property="og:locale" content="{OG_LOCALE}">', f'<meta property="og:site_name" content="{q(TREK.get("shortName") or PAGE_NAME)}">']
     if cover and cover.get("src"):
         src = cover["src"]
         if cover.get("photo"):
@@ -215,10 +228,14 @@ def og_meta(title: str, description: str, cover: dict | None, path: str = "/") -
 
 
 body = section_maps(link_places(label_tables((SRC / "body.html").read_text()), "maps"))
-head = bust((SRC / "head.html").read_text().replace("{{NAME}}", TREK["name"]))
+def head_for(name: str) -> str:
+    return bust((SRC / "head.html").read_text().replace("{{NAME}}", name.replace("<", "&lt;")))
+
+
+head = head_for(PAGE_NAME)
 page = (
-    SHELL_HEAD.format(lang=DEFAULT_LANG, dir=render_mod.LANG_META[DEFAULT_LANG]["dir"], description=TREK["description"].replace('"', "&quot;"),
-                      og=og_meta(TREK["name"], TREK["description"], TREK["_cover"], "/plan/" if STORY else "/"))
+    SHELL_HEAD.format(lang=DEFAULT_LANG, dir=render_mod.LANG_META[DEFAULT_LANG]["dir"], description=PAGE_DESC.replace('"', "&quot;"),
+                      og=og_meta(PAGE_NAME, PAGE_DESC, TREK["_cover"], "/plan/" if STORY else "/"))
     + head
     + theme_style()
     + config_script()
@@ -246,11 +263,13 @@ if (ROOT / "log").exists():
     for log_yaml in sorted((ROOT / "log").glob("*/log.yaml")):
         log_body, log_cfg = render_log(log_yaml, TREK, ROOT / "content.yaml")
         log_cover = log_cfg.get("cover")
+        log_name = pick(log_cfg.pop("titles", None)) or PAGE_NAME  # the log's own title and blurb, in the language a visit opens in
+        log_desc = pick(log_cfg.pop("blurbs", None)) or PAGE_DESC
         log_page = (
-            SHELL_HEAD.format(lang=DEFAULT_LANG, dir=render_mod.LANG_META[DEFAULT_LANG]["dir"], description=TREK["description"].replace('"', "&quot;"),
-                              og=og_meta(TREK["name"], TREK["description"], log_cover, "/" if STORY == log_cfg["user"] else f"/log/{log_cfg['user']}/"))
+            SHELL_HEAD.format(lang=DEFAULT_LANG, dir=render_mod.LANG_META[DEFAULT_LANG]["dir"], description=log_desc.replace('"', "&quot;"),
+                              og=og_meta(log_name, log_desc, log_cover, "/" if STORY == log_cfg["user"] else f"/log/{log_cfg['user']}/"))
             + '<meta name="robots" content="noindex, nofollow">\n'
-            + head
+            + head_for(log_name)
             + theme_style()
             + config_script()
             + "<script>window.LOG=" + json.dumps(log_cfg, ensure_ascii=False) + ";</script>\n"
