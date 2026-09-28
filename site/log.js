@@ -825,9 +825,9 @@
   function picPass() {
     if (Date.now() - picBorn < 3000 || document.body.classList.contains('lbopen')) return;
     var a = nearPicture().best, key = a ? a.getAttribute('data-photo') : null;
-    if (key === picKey) return;
-    var had = picKey !== null; picKey = key;
-    if (key && had) { try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) { } }
+    if (!key || key === picKey) return;  /* a stretch of text with no picture on screen keeps the last picture, so the next one still buzzes */
+    var first = picKey === null; picKey = key;
+    if (!first) { try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) { } }  /* the picture already under the eye after load does not buzz */
   }
   window.addEventListener('scroll', function () { if (picTimer) return; picTimer = setTimeout(function () { picTimer = null; picPass(); }, 90); }, { passive: true });
   document.addEventListener('trek:scope', function () { setTimeout(function () { trackNow(true); }, 0); });  /* the day changed under the reader: the map has not moved yet */
