@@ -306,10 +306,26 @@ manifest = {
 (SITE / "manifest.webmanifest").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
 
 host = TREK["hostname"]
-# .env for docker compose: the site host for the sign-in redirect, the editors, and the "auth" profile that runs oauth2-proxy
+# compose.override.yml: the trek's own values for the containers. Compose loads it beside compose.yml by itself; a .env
+# would not do, because KitSHn runs compose with --env-file <its params>, and then compose never reads .env.
 editors = [str(x) for x in TREK.get("editors") or []]
-# the "auth" profile (oauth2-proxy) runs once trek.json says "auth": true, which needs the OAuth app params in the repo
-(ROOT / ".env").write_text("# written by src/build.py from trek.json; docker compose reads it\n" + f"SITE_HOST={host}\n" + f"LOG_EDITORS={','.join(editors)}\n" + f"LOG_TZ={TREK.get('timezone') if TREK.get('timezone') not in (None, 'auto') else ''}\n" + ("COMPOSE_PROFILES=auth\n" if TREK.get("auth") else ""))
+timezone = TREK.get("timezone") if TREK.get("timezone") not in (None, "auto") else ""
+override: dict = {"services": {"uploader": {"environment": {"LOG_EDITORS": ",".join(editors), "LOG_TZ": timezone}}}}
+if TREK.get("auth"):
+    # GitHub sign-in for editing: oauth2-proxy owns /auth/* on the site, and Caddy sends the editing routes through
+    # forward_auth to it. Anyone with a GitHub account may sign in; who may edit is the uploader's LOG_EDITORS.
+    # The three values are KitSHn params of the repo (KITSHN_OAUTH2_PROXY_CLIENT_ID, _CLIENT_SECRET, _COOKIE_SECRET).
+    override["services"]["oauth2-proxy"] = {
+        "image": "quay.io/oauth2-proxy/oauth2-proxy:v7.15.4",
+        "command": ["--http-address=0.0.0.0:4180", "--provider=github", "--proxy-prefix=/auth",
+                    f"--redirect-url=https://{host}/auth/callback", f"--whitelist-domain={host}", "--reverse-proxy=true",
+                    "--email-domain=*", "--set-xauthrequest=true", "--skip-provider-button=true", "--cookie-secure=true",
+                    "--cookie-samesite=lax", "--cookie-expire=720h", "--cookie-refresh=0", "--upstream=static://202"],
+        "environment": {k: "${%s:?%s is a KitSHn param of the repo}" % (k, k) for k in ("OAUTH2_PROXY_CLIENT_ID", "OAUTH2_PROXY_CLIENT_SECRET", "OAUTH2_PROXY_COOKIE_SECRET")},
+        "restart": "unless-stopped",
+    }
+(ROOT / "compose.override.yml").write_text("# written by src/build.py from trek.json; docker compose loads it beside compose.yml\n" + yaml.safe_dump(override, sort_keys=False, allow_unicode=True))
+(ROOT / ".env").unlink(missing_ok=True)  # the old place for these values, never read in a KitSHn deploy
 (ROOT / "Caddyfile.j2").write_text(
     '{% if environment == "prod" -%}\n' + host + "\n{%- else -%}\npr.{{ environment.removeprefix(\"pr-\") }}." + host
     + "\n{%- endif %} {\n    reverse_proxy unix//{{ paths.default_socket }}\n}\n"

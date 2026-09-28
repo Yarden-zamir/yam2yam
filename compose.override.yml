@@ -1,0 +1,6 @@
+# written by src/build.py from trek.json; docker compose loads it beside compose.yml
+services:
+  uploader:
+    environment:
+      LOG_EDITORS: ''
+      LOG_TZ: Asia/Jerusalem
