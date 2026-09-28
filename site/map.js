@@ -36,7 +36,7 @@
       me: 'Your position', back: '← Back to', top: 'the top', track: 'Track the log'
     },
     he: {
-      nights: 'לילות, בקתות, סיום', water: 'מים', passes: 'מעברים ופסגות', side: 'פסגות סטיות צד',
+      nights: 'לילות, בקתות, סיום', water: 'מים', passes: 'פאסים ופסגות', side: 'פסגות סטיות צד',
       ferrata: 'נקודות ויה פראטה', escape: 'יציאות, אוטובוס, חירום', other: 'מחסות, קמפינגים, אגמים',
       save: 'שמור תצוגה זו לאופליין', saveRoute: 'שמור את כל המסלול לאופליין',
       saving: 'שומר אריחים', saved: 'נשמר לאופליין: ', tilesTooMany: 'יותר מדי אריחים לשמירה אחת (מקסימום 1500).',
@@ -161,6 +161,7 @@
     if (from == null) from = 0; if (to == null) to = route.length;
     return { from: from, to: to };
   }
+  function dayCount() { var mx = 0; NIGHTS.forEach(function (x) { var m = /^NIGHT (\d+) /.exec(x.w.name); if (m) mx = Math.max(mx, +m[1]); }); return mx + 1; }  /* the day after the last night ends at the finish */
   function nightOf(n) { var w = null; NIGHTS.forEach(function (x) { if (!w && x.w.name.indexOf('NIGHT ' + n + ' ') === 0) w = x.w; }); return w; }
   function norm(s) { return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
 
@@ -190,7 +191,7 @@
     } });
     new Credit().addTo(map);
 
-    var overlays = {}, routeGroup = L.featureGroup();
+    var overlays = {}, trackGroups = {}, routeGroup = L.featureGroup();
     data.tracks.forEach(function (t) {
       var g = L.layerGroup();
       t.segs.forEach(function (seg) {
@@ -198,9 +199,17 @@
           color: t.color, weight: t.kind === 'route' ? 4 : 3, opacity: t.kind === 'boundary' ? .75 : .95, dashArray: t.kind === 'boundary' ? '6 6' : null
         }).bindPopup(t.name).addTo(g);
       });
-      overlays[shortTrackName(t.name)] = g;
-      if (t.kind === 'route') { g.addTo(map); g.eachLayer(function (l) { routeGroup.addLayer(l); }); }
+      trackGroups[shortTrackName(t.name)] = g;  /* a track by name, for the map links; the walking line itself is drawn per day below */
+      if (t.kind === 'route') g.eachLayer(function (l) { routeGroup.addLayer(l); });  /* the whole route's bounds */
+      else overlays[shortTrackName(t.name)] = g;
     });
+    /* the walking line, one overlay per day: the layer switch lists "Day 3", not the GPX's multi-day sections */
+    for (var dn = 1; dn <= dayCount(); dn++) (function (n) {
+      var r = dayRange(n); if (r.to - r.from < 200) return;  /* an arrival or rest day has no stretch */
+      var pts = route.pts.filter(function (p) { return p.d >= r.from && p.d <= r.to; }).map(function (p) { return [p.lat, p.lon]; });
+      var g = L.layerGroup([L.polyline(pts, { color: n % 2 ? '#C8322B' : '#DC5A50', weight: 4, opacity: .95 }).bindPopup(T.day + ' ' + n)]);  /* two shades, so one day ends where the next begins */
+      overlays[T.day + ' ' + n] = g; g.addTo(map);
+    })(dn);
     var cats = {};
     data.wpts.forEach(function (w) {
       var c = CAT[w.type] || 'other';
@@ -418,7 +427,7 @@
       }
       var t = null; data.tracks.forEach(function (x) { if (!t && norm(x.name).indexOf(nq) >= 0) t = x; });
       if (t) {
-        var g = overlays[shortTrackName(t.name)]; if (g && !map.hasLayer(g)) g.addTo(map);
+        var g = trackGroups[shortTrackName(t.name)]; if (!g) return false;
         var fg = L.featureGroup(); g.eachLayer(function (l) { fg.addLayer(l); });
         map.fitBounds(fg.getBounds(), { padding: [20, 20] });
         highlight = L.polyline(t.segs.map(function (s) { return s.map(function (p) { return [p.lat, p.lon]; }); }), { color: ME, weight: 9, opacity: .35 }).addTo(map);
