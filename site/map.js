@@ -574,6 +574,7 @@
     var box = boxes[lang], sp = spineHost(lang); if (!box || !sp) return;
     if (on) { if (box.parentNode !== sp) claimHost(sp); else { var ap = apps[lang]; if (ap) ap.redraw(); } }
     else if (box.parentNode === sp) claimHost(allHost(lang));
+    factsLayout();  /* the story column just changed width */
   }
   if (SPINE_MQ && SPINE_MQ.addEventListener) SPINE_MQ.addEventListener('change', spineLayout);
   document.addEventListener('trek:gpx', spineLayout);
@@ -802,7 +803,8 @@
     document.querySelectorAll('.facts').forEach(function (g) {
       var kids = Array.prototype.filter.call(g.children, function (k) { return k.nodeType === 1; }), n = kids.length, w = g.clientWidth;
       if (!n || !w || g.offsetParent === null) return;
-      var fit = Math.max(1, Math.min(n, Math.floor((w + 1) / 150))), cols = 0, c;
+      var need = 150; kids.forEach(function (k) { var v = k.querySelector('b'); if (v) need = Math.max(need, v.scrollWidth + 30); });  /* a cell is at least as wide as the widest value, which never wraps */
+      var fit = Math.max(1, Math.min(n, Math.floor((w + 1) / need))), cols = 0, c;
       for (c = fit; c >= 2; c--) if (n % c === 0) { cols = c; break; }  /* a count that divides: full rows */
       if (!cols && fit === 1) cols = 1;
       if (!cols) for (c = fit; c >= 2; c--) if (n % c >= 2) { cols = c; break; }  /* else a last row of at least two, widened */
