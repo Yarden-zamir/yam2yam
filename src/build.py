@@ -246,8 +246,8 @@ page = (
     + "</body>\n</html>\n"
 )
 if STORY:
-    _NOTE = {"en": 'This is the plan as it was before we left, kept for reference. The trek as walked, with pictures and tips, is on the <a href="/">front page</a>.',
-             "he": 'זו התוכנית כפי שהייתה לפני היציאה, שמורה לעיון. המסלול כפי שהלכנו, עם תמונות וטיפים, נמצא ב<a href="/">עמוד הראשי</a>.'}
+    _NOTE = {"en": 'This is the plan as it was before we left, kept for reference. The trail story, with pictures and tips, is on the <a href="/">front page</a>.',
+             "he": 'זו התוכנית כפי שהייתה לפני היציאה, שמורה לעיון. סיפור הדרך, עם תמונות וטיפים, נמצא ב<a href="/">עמוד הראשי</a>.'}
     page = re.sub(r'(<div id="(en|he)"[^>]*class="wrap"[^>]*>)', lambda m: m.group(1) + f'\n<div class="archive">{_NOTE.get(m.group(2), _NOTE["en"])}</div>', page)
     page = page.replace("<head>\n", '<head>\n<meta name="robots" content="noindex, nofollow">\n', 1)
     (SITE / "plan").mkdir(exist_ok=True)
