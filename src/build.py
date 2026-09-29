@@ -226,7 +226,8 @@ def _vhash(f: Path) -> str:
 
 def analytics_tag() -> str:
     """Google Analytics (GA4) when trek.json names a measurement id ("analytics": "G-…"). It reports only on the
-    production hostname, so pull request previews and local builds do not count as visits."""
+    production hostname, so pull request previews and local builds do not count as visits. site/analytics.js
+    sends the page's own events (scroll depth, days reached, pictures, maps)."""
     gid = TREK.get("analytics")
     if not gid:
         return ""
@@ -236,7 +237,9 @@ def analytics_tag() -> str:
     return (f'<script>if (location.hostname === {host}) {{ var s = document.createElement("script"); s.async = true; '
             f's.src = "https://www.googletagmanager.com/gtag/js?id={gid}"; document.head.appendChild(s); '
             f'window.dataLayer = window.dataLayer || []; window.gtag = function () {{ dataLayer.push(arguments); }}; '
-            f'gtag("js", new Date()); gtag("config", "{gid}"); }}</script>\n')
+            f'gtag("js", new Date()); gtag("config", "{gid}"); '
+            f'var e = document.createElement("script"); e.defer = true; e.src = "/analytics.js?v={_vhash(SITE / "analytics.js")}"; '
+            f'document.head.appendChild(e); }}</script>\n')
 
 
 def og_meta(title: str, description: str, cover: dict | None, path: str = "/") -> str:

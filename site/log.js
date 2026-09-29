@@ -188,6 +188,7 @@
     lb.querySelector('[data-lb="prev"]').disabled = i === 0; lb.querySelector('[data-lb="next"]').disabled = i === cur.list.length - 1;
     var pre = cur.list[i + 1]; if (pre) { var img = new Image(); img.src = BASE + pre.file; }
     castSync();
+    document.dispatchEvent(new CustomEvent('trek:photo', { detail: { id: p.id, day: dayOf(p), video: isVideo(p) } }));
   }
   /* the lightbox and the sheet are history entries, so the phone's back button closes them instead of
      leaving the page; the lightbox also keeps ?photo=ID in the address, so the link can be shared */
