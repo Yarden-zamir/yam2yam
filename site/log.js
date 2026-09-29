@@ -569,7 +569,7 @@
       if (e.inputType === 'historyUndo') { e.preventDefault(); go(-1); } else if (e.inputType === 'historyRedo') { e.preventDefault(); go(1); }
     });
     box.addEventListener('input', function (e) { tidy(); record(e.inputType); });
-    box.addEventListener('click', function (e) { var x = e.target.closest('.edx'); if (!x) return; e.preventDefault(); var sp = x.closest('.edpic'); var at = offsetOf(sp, 0); var next = sp.nextSibling; if (next && next.nodeType === 3 && /^ /.test(next.data)) next.data = next.data.slice(1); sp.remove(); caret(at); record('remove'); });
+    box.addEventListener('click', function (e) { var x = e.target.closest('.edx'); if (!x) return; e.preventDefault(); var sp = x.closest('.edpic'); var at = offsetOf(sp, 0); var next = sp.nextSibling; if (next && next.nodeType === 3 && /^ /.test(next.data)) next.data = next.data.slice(1); sp.remove(); select(at, at); record('remove'); });  /* the caret where the picture was, and the view stays put */
     set(value); hist = [{ v: text(box), se: [0, 0], typing: false }]; hi = 0;
     return { el: box, get value() { return text(box); }, set value(v) { set(v); record('set'); }, sel: sel, caret: caret };
   }
