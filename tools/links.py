@@ -94,7 +94,26 @@ DEAD_SIGNS = ("page not found", "page introuvable", "n'existe pas", "n’existe 
               "n'est plus disponible", "this domain is for sale", "buy this domain", "domain has expired", "sedoparking", "parked domain",
               "הדף לא נמצא", "העמוד לא נמצא", "404 not found", "error 404", "erreur 404", "cet article n'existe", "nothing found",
               "this page doesn't exist", "the page you requested", "sorry, we couldn't find", "aucun résultat", "site is not available")
-TREK_WORDS = tuple(w.lower() for w in ["gr52", "gr 52", "gr-52", "mercantour", "merveilles"] + [TREK.get("shortName", ""), TREK.get("name", "")] if w)
+def trek_words() -> tuple[str, ...]:
+    """What a page about this trek is likely to say: its names in trek.json, and the heading and the line above it on
+    each built page, in every language, split at "·" and "+" into phrases of four letters or more."""
+    import html as _html
+    raw = [TREK.get("shortName"), TREK.get("name"), TREK.get("slug"), *(TREK.get("names") or {}).values()]
+    for page in SITE.rglob("*.html"):
+        if "vendor" in page.parts:
+            continue
+        t = page.read_text()
+        raw += re.findall(r"<h1[^>]*>(.*?)</h1>", t, re.S) + re.findall(r'class="eyebrow">(.*?)</div>', t, re.S)
+    words = set()
+    for r in raw:
+        for part in re.split(r"[·+|,]", re.sub(r"<[^>]+>", " ", _html.unescape(str(r or "")))):
+            part = " ".join(part.split()).lower()
+            if len(part) >= 4 and not re.fullmatch(r"[\d\s–-]+(september|october|[a-z]+)?\s*\d*", part):
+                words.add(part)
+    return tuple(sorted(words))
+
+
+TREK_WORDS = trek_words()
 
 
 def fetch(url):
