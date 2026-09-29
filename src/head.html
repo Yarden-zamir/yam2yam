@@ -307,6 +307,7 @@ html.tv nav.dots,html.tv .locbar,html.tv .editbtn,body.castee .foot{display:none
 .foot{margin:10px 0 0;font:13px "IBM Plex Mono",monospace;color:var(--muted);text-align:center} .foot a{color:var(--muted)} .foot a:hover{color:var(--ink)}
 .foot .castlink{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--line);border-radius:16px;text-decoration:none} .foot .castlink:hover{border-color:var(--mark)} .foot .castlink[hidden]{display:none}
 .foot google-cast-launcher{width:20px;height:20px;--connected-color:var(--mark);--disconnected-color:var(--muted);vertical-align:middle;margin-inline-start:8px}
+.foot .repos{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px;margin-top:12px} .foot .repos a{color:var(--muted)} .foot .repos a:hover{color:var(--ink)}
 .foot .casthow{display:block;margin-top:6px;font-family:"IBM Plex Sans",sans-serif;font-size:13px} [lang="he"] .foot .casthow{font-family:"Heebo",sans-serif} .foot .casthow[hidden]{display:none} body.casting .castlink{color:var(--mark)}
 /* editing controls show for signed-in editors only (body.can-edit, set by log.js from /whoami) */
 body:not(.can-edit) .editbtn,body:not(.can-edit) .upload,body:not(.can-edit) h2#upload,body:not(.can-edit) h2#he-upload,body:not(.can-edit) h2#upload + p,body:not(.can-edit) h2#he-upload + p,body:not(.can-edit) .hiddenpics,body:not(.can-edit) nav.toc a[href$="upload"]{display:none}
@@ -407,7 +408,15 @@ body.editing .dots{display:none}  /* not while a day's text is being edited */
 /* tighter around pictures, tighter still without a caption under them */
 .pane p:has(+ .photoref),.pane p:has(+ .photos),.sectext p:has(+ .photoref),.sectext p:has(+ .photos){margin-bottom:6px}
 .photoref + p,.photos + p{margin-top:6px}
-.photoref:not(:has(.inpic > span)),.photos:not(:has(.inpic > span)){margin:4px 0} .photoref:not(:has(.inpic > span)) + p,.photos:not(:has(.inpic > span)) + p{margin-top:4px}
+:not(.photos) > .photoref:not(:has(.inpic > span)),.photos:not(:has(.inpic > span)){margin-block:4px 0}  /* the gap below is the next block's own top margin, so it does not depend on margins collapsing (a row's do not) */ :not(.photos) > .photoref:not(:has(.inpic > span)) + p,.photos:not(:has(.inpic > span)) + p{margin-top:4px}
+/* under a picture (or a row) with no caption, the next picture sits as close as two pictures in a row: 3 px. A row counts as
+   captioned when any picture in it has a caption, so a picture without one keeps the same line as its neighbours */
+:not(.photos) > :is(.photoref,.photos):not(:has(.inpic > span)) + :is(.photoref,.photos){margin-top:3px}  /* blocks in the text only; pictures inside a row keep one line */
+/* a phone: pictures in the text reach both edges of the screen */
+@media (max-width:760px){
+  .pane .photoref,.pane .photos,.sectext .photoref,.sectext .photos{margin-inline:calc(50% - 50vw + var(--sbw,0px) / 2)}
+  .pane .inpic img,.sectext .inpic img{border-radius:0;width:100%} .pane .inpic span,.sectext .inpic span{padding-inline:14px}
+}
 .inpic{display:block;text-decoration:none;color:inherit;position:relative}
 /* a clip: its poster frame with a play badge; it plays in the lightbox */
 .tile .play,.inpic .play{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(0,0,0,.5);border:1.5px solid rgba(255,255,255,.75);box-shadow:0 2px 8px rgba(0,0,0,.35);pointer-events:none}

@@ -152,7 +152,8 @@ def config_script() -> str:
         "exposed": TREK.get("exposed", []),
         "accent": TREK.get("accent"),
         "castAppId": TREK.get("castAppId"),  # a Google Cast receiver app registered for https://<hostname>/?cast=1
-        "defaultLang": DEFAULT_LANG,  # the language a first visit opens in; the reader's own choice is remembered after that
+        "defaultLang": DEFAULT_LANG,
+        "repo": REPO, "templateRepo": TEMPLATE_REPO if REPO != TEMPLATE_REPO else None,  # the links at the foot of the page  # the language a first visit opens in; the reader's own choice is remembered after that
         "elevation": {"eudem25m": "EU-DEM 25 m", "srtm30m": "SRTM 30 m", "aster30m": "ASTER 30 m"}.get(TREK.get("elevationDataset", "srtm30m"), TREK.get("elevationDataset")),
     }
     return "<script>window.TREK=" + json.dumps(cfg, ensure_ascii=False) + ";</script>\n"
@@ -161,6 +162,20 @@ def config_script() -> str:
 sys.path.insert(0, str(SRC))
 import render as render_mod  # noqa: E402
 
+TEMPLATE_REPO = "Yarden-zamir/trek-site-template"
+
+
+def site_repo() -> str | None:
+    """owner/repo of this trek's GitHub repo: trek.json "repo", else the origin remote; for the link at the foot of the page."""
+    if TREK.get("repo"):
+        return str(TREK["repo"])
+    import subprocess
+    url = subprocess.run(["git", "-C", str(ROOT), "remote", "get-url", "origin"], capture_output=True, text=True).stdout.strip()
+    m = re.search(r"github\.com[:/]([^/]+/[^/]+?)(?:\.git)?$", url)
+    return m.group(1) if m else None
+
+
+REPO = site_repo()
 DEFAULT_LANG = TREK.get("defaultLanguage", TREK.get("languages", ["en"])[0])  # trek.json "defaultLanguage"; the first language otherwise. The ids stay keyed on the first language
 
 
