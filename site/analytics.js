@@ -7,7 +7,8 @@
   function send(name, params) { window.gtag('event', name, params || {}); }
   var once = {};
   function sendOnce(key, name, params) { if (once[key]) return; once[key] = true; send(name, params); }
-  var lang = function () { return document.documentElement.lang || ''; };
+  /* the visible language: the page shows one of #en and #he */
+  function lang() { var en = document.getElementById('en'); return en && en.hidden ? 'he' : 'en'; }
 
   /* how far down the page a reader got */
   var marks = [25, 50, 75, 100];
@@ -29,14 +30,14 @@
       else sendOnce('sec' + el.id, 'section_view', { section: el.id.indexOf('he-') === 0 ? el.id.slice(3) : el.id });
     });
   }, { rootMargin: '0px 0px -50% 0px' });
-  document.querySelectorAll('h2[id], .stage[data-day], .wxh[data-day]').forEach(function (el) { io.observe(el); });
+  /* build.py adds this script from a script, so it can run before the body is parsed */
+  function observe() { document.querySelectorAll('h2[id], .stage[data-day]').forEach(function (el) { io.observe(el); }); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observe); else observe();
 
   /* pictures and clips opened in the lightbox (log.js sends trek:photo for each one shown) */
   document.addEventListener('trek:photo', function (e) {
     var p = e.detail; send('photo_view', { photo_id: p.id, day: p.day == null ? '' : p.day, media: p.video ? 'video' : 'photo' });
   });
-
-  document.addEventListener('trek:lang', function (e) { send('language_switch', { language: e.detail }); });
 
   window.addEventListener('click', function (e) {
     var t = e.target.closest ? e.target : null; if (!t) return;
@@ -46,6 +47,8 @@
     if ((a = t.closest('a[data-focus], a[data-go]'))) return send('map_link', { target: (a.getAttribute('data-focus') || a.getAttribute('data-go')).slice(0, 100) });
     if ((a = t.closest('.tabs [data-tab]'))) { var st = a.closest('[data-day]'); return send('tab_view', { tab: a.getAttribute('data-tab'), day: st ? +st.getAttribute('data-day') : '' }); }
     if ((a = t.closest('[data-act="snapshot"]'))) return send('position_snapshot', {});
+    /* on the button, not on trek:lang, which also fires when the page sets its first language */
+    if ((a = t.closest('#langbtn'))) return setTimeout(function () { send('language_switch', { language: lang() }); }, 0);
   }, true);  /* outbound links, site search and the 90% scroll: GA's enhanced measurement counts them */
 
   /* the first time a reader moves, zooms or taps a map on this page view */
