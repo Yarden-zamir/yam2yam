@@ -5,6 +5,7 @@
   "description": "Four-day tent plan for the Sea to Sea trail (Yam el Yam) from Achziv on the Mediterranean to the Sea of Galilee, 10 to 13 September 2026.",
   "gpxDescription": "Sea to Sea (Yam el Yam), Achziv to the Kinneret, 10-13 September 2026. Route from OpenStreetMap contributors (ODbL).",
   "hostname": "yam2yam.yarden-zamir.com",
+  "analytics": "G-P4CCL1P2RB",
   "gpx": "site/route.gpx",
   "timezone": "Asia/Jerusalem",
   "plannedStart": 6,

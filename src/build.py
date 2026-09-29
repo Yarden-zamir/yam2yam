@@ -224,6 +224,21 @@ def _vhash(f: Path) -> str:
     return hashlib.sha256(f.read_bytes()).hexdigest()[:10]
 
 
+def analytics_tag() -> str:
+    """Google Analytics (GA4) when trek.json names a measurement id ("analytics": "G-…"). It reports only on the
+    production hostname, so pull request previews and local builds do not count as visits."""
+    gid = TREK.get("analytics")
+    if not gid:
+        return ""
+    if not re.fullmatch(r"G-[A-Z0-9]{4,20}", str(gid)):
+        raise SystemExit(f'trek.json "analytics" must be a GA4 measurement id like G-XXXXXXXXXX, not {gid!r}')
+    host = json.dumps(TREK["hostname"])
+    return (f'<script>if (location.hostname === {host}) {{ var s = document.createElement("script"); s.async = true; '
+            f's.src = "https://www.googletagmanager.com/gtag/js?id={gid}"; document.head.appendChild(s); '
+            f'window.dataLayer = window.dataLayer || []; window.gtag = function () {{ dataLayer.push(arguments); }}; '
+            f'gtag("js", new Date()); gtag("config", "{gid}"); }}</script>\n')
+
+
 def og_meta(title: str, description: str, cover: dict | None, path: str = "/") -> str:
     """Open Graph tags, so a shared link shows the title, the blurb and the cover picture. The picture is the
     uploader's 1200 x 630 crop of the cover (under 300 KB, which WhatsApp insists on), centred where the cover is."""
@@ -250,7 +265,7 @@ def head_for(name: str) -> str:
 head = head_for(PAGE_NAME)
 page = (
     SHELL_HEAD.format(lang=DEFAULT_LANG, dir=render_mod.LANG_META[DEFAULT_LANG]["dir"], description=PAGE_DESC.replace('"', "&quot;"),
-                      og=og_meta(PAGE_NAME, PAGE_DESC, TREK["_cover"], "/plan/" if STORY else "/"))
+                      og=og_meta(PAGE_NAME, PAGE_DESC, TREK["_cover"], "/plan/" if STORY else "/") + analytics_tag())
     + head
     + theme_style()
     + config_script()
@@ -282,7 +297,7 @@ if (ROOT / "log").exists():
         log_desc = pick(log_cfg.pop("blurbs", None)) or PAGE_DESC
         log_page = (
             SHELL_HEAD.format(lang=DEFAULT_LANG, dir=render_mod.LANG_META[DEFAULT_LANG]["dir"], description=log_desc.replace('"', "&quot;"),
-                              og=og_meta(log_name, log_desc, log_cover, "/" if STORY == log_cfg["user"] else f"/log/{log_cfg['user']}/"))
+                              og=og_meta(log_name, log_desc, log_cover, "/" if STORY == log_cfg["user"] else f"/log/{log_cfg['user']}/") + analytics_tag())
             + '<meta name="robots" content="noindex, nofollow">\n'
             + head_for(log_name)
             + theme_style()
