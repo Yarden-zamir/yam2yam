@@ -9,12 +9,12 @@
   var T = {
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
       source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', layer: 'Pictures', zoomIn: 'zoom in for the pictures', download: 'Download',
-      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', signIn: 'Sign in with GitHub to edit', signOut: 'Sign out', noEdit: 'no editing rights', cast: 'Cast to TV', casting: 'Casting · stop', castHow: 'Open {url} in the TV’s browser, or mirror this screen from your phone or computer.', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. [[photo:ID]] places a picture, [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
+      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', signIn: 'Sign in with GitHub to edit', signOut: 'Sign out', noEdit: 'no editing rights', cast: 'Cast to TV', casting: 'Casting · stop', castHow: 'Open {url} in the TV’s browser, or mirror this screen from your phone or computer.', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. Pictures on one line sit side by side; a picture on a line of its own gets a row of its own. [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
       inGmaps: 'Open in Google Maps', openUrl: 'Open the site', addPic: 'Add a picture…', pickHint: 'Tap a picture to put it at the cursor; the outlined ones are already in the text.', addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', cover: 'Use as the cover', uncover: 'Remove from the cover', captionEdit: 'Edit caption', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
       source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', layer: 'תמונות', zoomIn: 'התקרבו כדי לראות את התמונות', download: 'הורדה',
-      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', signIn: 'כניסה עם GitHub לעריכה', signOut: 'יציאה', noEdit: 'בלי הרשאת עריכה', cast: 'שידור לטלוויזיה', casting: 'משדר · עצירה', castHow: 'פתחו {url} בדפדפן של הטלוויזיה או שקפו את המסך מהטלפון או מהמחשב.', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. [[photo:ID]] מציב תמונה, [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
+      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', signIn: 'כניסה עם GitHub לעריכה', signOut: 'יציאה', noEdit: 'בלי הרשאת עריכה', cast: 'שידור לטלוויזיה', casting: 'משדר · עצירה', castHow: 'פתחו {url} בדפדפן של הטלוויזיה או שקפו את המסך מהטלפון או מהמחשב.', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. תמונות באותה שורה עומדות זו לצד זו, ותמונה בשורה משלה מקבלת שורה משלה. [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
       inGmaps: 'פתיחה ב-Google Maps', openUrl: 'פתיחת האתר', addPic: 'הוספת תמונה…', pickHint: 'הקישו על תמונה כדי להציב אותה במקום הסמן; המסומנות כבר בטקסט.', addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', cover: 'שימוש כתמונת השער', uncover: 'הסרה מתמונת השער', captionEdit: 'עריכת כיתוב', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
@@ -379,7 +379,7 @@
     el._edited = true;
   }
   /* the same rendering as src/render_log.py: tokens to links and picture blocks, a paragraph per block */
-  var KEEP = /<\/?(b|i|a|br|span|em|strong)(\s[^>]*)?>/g, TOKEN = /\[\[(map|photo|photos|gmaps|url):([^\]|]+)(?:\|([^\]]*))?\]\]/g, GMAPS = 'https://www.google.com/maps/search/?api=1&query=', PHOTO_RUN = /(?:\s*\[\[photos?:[^\]]+\]\])+\s*/g;
+  var KEEP = /<\/?(b|i|a|br|span|em|strong)(\s[^>]*)?>/g, TOKEN = /\[\[(map|photo|photos|gmaps|url):([^\]|]+)(?:\|([^\]]*))?\]\]/g, GMAPS = 'https://www.google.com/maps/search/?api=1&query=', PHOTO_RUN = /(?:[ \t]*\[\[photos?:[^\]]+\]\])+[ \t]*/g;  /* pictures on one line side by side; a line break starts a new row, as in markdown */
   function escAll(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function strongOf(chars) { for (var i = 0; i < chars.length; i++) { var ch = chars[i]; if (/[A-Za-zÀ-ɏ]/.test(ch)) return 'L'; if (/[֐-׿؀-ۿ0-9]/.test(ch)) return 'R'; } return null; }
   function arrows(s) { var out = s.split(''); for (var i = 0; i < out.length; i++) if (out[i] === '→' && !(strongOf(s.slice(0, i).split('').reverse()) === 'L' && strongOf(s.slice(i + 1)) === 'L')) out[i] = '←'; return out.join(''); }
@@ -454,7 +454,70 @@
       render();
     });
   }
-  /* the editor: the day's paragraphs in a textarea, blank lines between them; body.editing hides the dot rail meanwhile */
+  /* the editor box: the text as written, with each picture token drawn as its picture. What is saved stays the plain
+     text, and the layout rules are markdown's: pictures on one line sit side by side, a picture on a line of its own is
+     a row of its own, a blank line ends a paragraph. A picture is one unit for the caret; its × takes it out. */
+  var PIC_TOKEN = /\[\[photos?:([^\]|]+)\]\]/g;
+  function editBox(value, lang) {
+    var box = document.createElement('div'); box.className = 'edbox'; box.spellcheck = false;
+    box.setAttribute('contenteditable', 'plaintext-only');
+    if (box.contentEditable !== 'plaintext-only') box.setAttribute('contenteditable', 'true');  /* an older browser: rich mode, normalised on input */
+    function pic(tok, ids) {
+      var sp = document.createElement('span'); sp.className = 'edpic'; sp.contentEditable = 'false'; sp.setAttribute('data-src', tok);
+      sp.innerHTML = ids.map(function (id) { var p = byId[id]; return p ? '<img src="' + BASE + esc(p.thumb) + '" alt="" title="' + esc(caption(p, lang) || when(p)) + '">' : '<i>' + esc(id) + '</i>'; }).join('')
+        + '<button type="button" class="edx" tabindex="-1" aria-label="' + esc(T[lang].removeLog) + '">×</button>';
+      return sp;
+    }
+    function set(v) {
+      box.textContent = ''; var pos = 0, m; PIC_TOKEN.lastIndex = 0;
+      while ((m = PIC_TOKEN.exec(v))) {
+        if (m.index > pos) box.appendChild(document.createTextNode(v.slice(pos, m.index)));
+        box.appendChild(pic(m[0], m[1].split(',').map(function (x) { return x.trim(); }).filter(Boolean))); pos = m.index + m[0].length;
+      }
+      if (pos < v.length) box.appendChild(document.createTextNode(v.slice(pos)));
+      box.appendChild(document.createElement('br'));  /* a last line break shows only with something after it; this one is never saved */
+    }
+    function text(root) {  /* the source text of a box or of a piece of it */
+      var out = '';
+      (function walk(n) {
+        n.childNodes.forEach(function (c) {
+          if (c.nodeType === 3) out += c.data.replace(/\u00a0/g, ' ');
+          else if (c.classList && c.classList.contains('edpic')) out += c.getAttribute('data-src');
+          else if (c.nodeName === 'BR') { if (c !== box.lastChild) out += '\n'; }
+          else { if ((c.nodeName === 'DIV' || c.nodeName === 'P') && out && out.slice(-1) !== '\n') out += '\n'; walk(c); }
+        });
+      })(root);
+      return out;
+    }
+    function offsetOf(node, off) { var r = document.createRange(); r.setStart(box, 0); r.setEnd(node, off); var d = document.createElement('div'); d.appendChild(r.cloneContents()); return text(d).length; }
+    function sel() {
+      var s0 = window.getSelection(); if (!s0.rangeCount || !box.contains(s0.anchorNode)) { var n = text(box).length; return [n, n]; }
+      var r = s0.getRangeAt(0), a = offsetOf(r.startContainer, r.startOffset), b = offsetOf(r.endContainer, r.endOffset); return [Math.min(a, b), Math.max(a, b)];
+    }
+    function caret(at) {
+      var left = Math.max(0, at), r = document.createRange(), done = false;
+      box.childNodes.forEach(function (c) {
+        if (done) return;
+        var len = c.nodeType === 3 ? c.data.length : c.classList && c.classList.contains('edpic') ? c.getAttribute('data-src').length : c.nodeName === 'BR' && c !== box.lastChild ? 1 : 0;
+        if (left <= len && (c.nodeType === 3 || left === 0)) { if (c.nodeType === 3) r.setStart(c, left); else r.setStartBefore(c); done = true; return; }
+        if (left < len) { r.setStartAfter(c); done = true; return; }  /* inside a picture's token: after the picture */
+        left -= len;
+      });
+      if (!done) r.setStartBefore(box.lastChild);
+      r.collapse(true); box.focus({ preventScroll: true }); var s1 = window.getSelection(); s1.removeAllRanges(); s1.addRange(r);
+      var rect = r.getBoundingClientRect(); if (!rect.height && r.startContainer.getBoundingClientRect) rect = (r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentNode).getBoundingClientRect();
+      if (rect.height) window.scrollBy({ top: rect.top - window.innerHeight / 2 });  /* the caret in the middle of the screen */
+    }
+    function tidy() {  /* a pasted or typed token becomes its picture, and rich mode's blocks become plain line breaks */
+      var messy = Array.prototype.some.call(box.childNodes, function (c) { return c.nodeType === 1 && !(c.classList.contains('edpic') || c.nodeName === 'BR') || c.nodeType === 3 && /\[\[photos?:[^\]|]+\]\]/.test(c.data); });
+      if (!messy) return; var at = sel()[0]; set(text(box)); caret(at);
+    }
+    box.addEventListener('input', tidy);
+    box.addEventListener('click', function (e) { var x = e.target.closest('.edx'); if (!x) return; e.preventDefault(); var sp = x.closest('.edpic'); var at = offsetOf(sp, 0); var next = sp.nextSibling; if (next && next.nodeType === 3 && /^ /.test(next.data)) next.data = next.data.slice(1); sp.remove(); caret(at); });
+    set(value);
+    return { el: box, get value() { return text(box); }, set value(v) { set(v); }, sel: sel, caret: caret };
+  }
+  /* the editor: the day's paragraphs, blank lines between them; body.editing hides the dot rail meanwhile */
   function editing() { document.body.classList.toggle('editing', !!document.querySelector('.editor')); }
   document.addEventListener('click', function (e) {
     var b = e.target.closest('.editbtn'); if (!b || !ME.editor) return;
@@ -470,30 +533,26 @@
     if (!b || !pane) return;
     var open = st.querySelector('.editor');
     if (open) {
-      if (open.getAttribute('data-kind') === kind && at != null) { caretTo(open.querySelector('textarea'), at); return; }
+      if (open.getAttribute('data-kind') === kind && at != null) { open._box.caret(at); return; }
       open.remove(); b.classList.remove('on'); st.querySelectorAll('.pane[hidden][data-pane="log"], .pane[hidden][data-pane="tips"]').forEach(function (x) { x.hidden = true; }); editing();
       if (open.getAttribute('data-kind') === kind && at == null) { if (isDay) window.gr52Map.showTab(st, kind); else pane.hidden = false; return; }  /* the same pencil again closes it */
     }
     if (isDay) window.gr52Map.showTab(st, kind);
     var ed = document.createElement('div'); ed.className = 'editor'; ed.setAttribute('data-kind', kind);
-    ed.innerHTML = '<textarea spellcheck="false"></textarea><div class="row"><button type="button" class="primary" data-act="save">' + T[lang].save + '</button><button type="button" data-act="cancel">' + T[lang].cancel + '</button><button type="button" data-act="pick">' + T[lang].addPic + '</button><span class="msg"></span><span class="hint">' + esc(T[lang].editHint) + '</span></div>';
-    ed.querySelector('textarea').value = textOf(n, lang, kind).join('\n\n');
+    ed.innerHTML = '<div class="row"><button type="button" class="primary" data-act="save">' + T[lang].save + '</button><button type="button" data-act="cancel">' + T[lang].cancel + '</button><button type="button" data-act="pick">' + T[lang].addPic + '</button><span class="msg"></span><span class="hint">' + esc(T[lang].editHint) + '</span></div>';
+    ed._orig = textOf(n, lang, kind).join('\n\n');  /* the text as opened: a save without changes only closes */
+    var box = ed._box = editBox(ed._orig, lang); ed.insertBefore(box.el, ed.firstChild);
     pane.hidden = true; pane.parentNode.insertBefore(ed, pane); b.classList.add('on'); editing();
-    if (at != null) caretTo(ed.querySelector('textarea'), at);
+    if (at != null) box.caret(at);
     ed.addEventListener('click', function (ev) {
       var act = ev.target.closest('[data-act]'); if (!act) return;
-      if (act.getAttribute('data-act') === 'cancel') { ed.remove(); b.classList.remove('on'); pane.hidden = false; editing(); return; }
-      if (act.getAttribute('data-act') === 'save' && !ed.querySelector('textarea').value.trim() && !confirm(T[lang].emptyConfirm)) return;
-      if (act.getAttribute('data-act') === 'pick') { pickPicture(isDay ? n : null, lang, ed.querySelector('textarea')); return; }
-      var paras = ed.querySelector('textarea').value.split(/\n\s*\n/).map(function (x) { return x.trim(); }).filter(Boolean), texts = {}; texts[lang] = paras;
+      if (act.getAttribute('data-act') === 'cancel' || act.getAttribute('data-act') === 'save' && box.value === ed._orig) { ed.remove(); b.classList.remove('on'); pane.hidden = false; editing(); return; }
+      if (act.getAttribute('data-act') === 'save' && !box.value.trim() && !confirm(T[lang].emptyConfirm)) return;
+      if (act.getAttribute('data-act') === 'pick') { pickPicture(isDay ? n : null, lang, box); return; }
+      var paras = box.value.split(/\n\s*\n/).map(function (x) { return x.trim(); }).filter(Boolean), texts = {}; texts[lang] = paras;
       var msg = ed.querySelector('.msg'); msg.textContent = '…';
       saveText(n, texts, lang, kind).then(function () { ed.remove(); b.classList.remove('on'); pane.hidden = false; editing(); }, function (err) { msg.textContent = T[lang].saveFail + ' (' + (err && err.message || err) + ')'; });
     });
-  }
-  function caretTo(ta, at) {
-    if (!ta) return; at = Math.max(0, Math.min(ta.value.length, at));
-    var v = ta.value; ta.value = v.slice(0, at); var h = ta.scrollHeight; ta.value = v;  /* the height of the text above the caret, to scroll it into the middle */
-    ta.focus(); ta.setSelectionRange(at, at); ta.scrollTop = Math.max(0, h - ta.clientHeight / 2);
   }
   /* long press on the day's text: the editor opens with the caret where the finger was. The rendered paragraph is found
      in the day's source by its words, and the visible offset is walked back through the tokens to a source offset. */
@@ -523,8 +582,8 @@
     openEditor(st, total + sourceOffset(paras[idx], segStart + inP), kind);
   }
   /* the picker: the day's pictures in a grid; one tap puts its token where the cursor is */
-  function pickPicture(n, lang, ta) {
-    var list = photos.filter(function (p) { return n == null || dayOf(p) === n; }), used = ta.value;  /* the intro and outro may use any picture */
+  function pickPicture(n, lang, box) {
+    var list = photos.filter(function (p) { return n == null || dayOf(p) === n; }), used = box.value;  /* the intro and outro may use any picture */
     var sh = sheetWrap.querySelector('.sheet'); sh.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
     sh.innerHTML = '<div class="who"><span>' + esc(T[lang].pickHint) + '</span></div><div class="pick">' + list.map(function (p) { return '<a href="#" data-pick="' + esc(p.id) + '" class="' + (used.indexOf('[[photo:' + p.id + ']]') >= 0 ? 'used' : '') + '" title="' + esc(caption(p, lang) || when(p)) + '"><img src="' + small(p) + '" alt="" loading="lazy"></a>'; }).join('') + '</div><button type="button" data-k="cancel" class="cancel">' + T[lang].cancel + '</button>';
     showSheet();
@@ -532,10 +591,12 @@
       var a = ev.target.closest('a[data-pick]');
       if (a) {
         ev.preventDefault(); hideSheet();
-        var tok = '[[photo:' + a.getAttribute('data-pick') + ']]', s0 = ta.selectionStart != null ? ta.selectionStart : ta.value.length, s1 = ta.selectionEnd != null ? ta.selectionEnd : s0;
-        var before = ta.value.slice(0, s0), after = ta.value.slice(s1);
-        var ins = (before && !/\s$/.test(before) ? ' ' : '') + tok + (after && !/^\s/.test(after) ? ' ' : '');
-        ta.value = before + ins + after; ta.focus(); ta.selectionStart = ta.selectionEnd = before.length + ins.length;
+        var tok = '[[photo:' + a.getAttribute('data-pick') + ']]', se = box.sel(), v = box.value, before = v.slice(0, se[0]), after = v.slice(se[1]);
+        /* right after a picture: beside it, on the same line; anywhere else: a line of its own */
+        var beside = /\]\][ \t]*$/.test(before), ins;
+        if (beside) ins = (/[ \t]$/.test(before) ? '' : ' ') + tok;
+        else ins = (before && !/\n$/.test(before) ? '\n' : '') + tok + (after && !/^\n/.test(after) ? '\n' : '');
+        box.value = before + ins + after; box.caret(before.length + ins.length);
         return;
       }
       if (ev.target.closest('[data-k="cancel"]')) hideSheet();

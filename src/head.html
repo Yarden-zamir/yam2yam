@@ -314,7 +314,10 @@ body:not(.can-edit) .editbtn,body:not(.can-edit) .upload,body:not(.can-edit) h2#
 /* the intro and the wrap-up carry a pencil of their own */
 .secblock{position:relative;padding-inline-end:34px} .secblock > .editbtn{position:absolute;inset-inline-end:0;top:0;font:16px "IBM Plex Sans",sans-serif;padding:4px 8px;color:var(--muted);background:none;border:0;cursor:pointer} .secblock > .editbtn:hover{color:var(--ink)} .secblock > .editbtn.on{color:var(--mark)}
 [data-section="intro"] .sectext > p:first-child{font-size:19px;max-width:62ch;color:var(--ink)}
-.editor{margin:8px 0 14px} .editor textarea{width:100%;min-height:260px;box-sizing:border-box;font:14px/1.5 "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:10px;resize:vertical}
+.editor{margin:8px 0 14px} .editor .edbox{width:100%;min-height:260px;box-sizing:border-box;font:14px/1.5 "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:10px;resize:vertical;white-space:pre-wrap;overflow-wrap:anywhere;outline:none;cursor:text} .editor .edbox:focus{border-color:var(--mark)}
+/* a picture in the editor: one unit, drawn at a readable size; pictures on one line sit side by side with a small gap */
+.edpic{position:relative;display:inline-flex;gap:2px;margin:2px 1px;vertical-align:bottom;user-select:none;-webkit-user-select:none} .edpic img{display:block;height:120px;width:auto;border-radius:3px;background:var(--line)} .edpic i{display:grid;place-items:center;height:120px;padding:0 10px;border:1px dashed var(--line);border-radius:3px;font:12px "IBM Plex Mono",monospace;color:var(--muted);font-style:normal} .edpic .edx{position:absolute;top:4px;inset-inline-end:4px;width:24px;height:24px;padding:0;border:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font:16px/24px "IBM Plex Sans",sans-serif;cursor:pointer}
+@media (max-width:760px){.edpic img,.edpic i{height:84px}}
 .editor .row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap} .editor .hint{font:12px "IBM Plex Mono",monospace;color:var(--muted);flex:1 1 100%} .editor .msg{font:12px "IBM Plex Mono",monospace;color:var(--muted)}
 .editor button,.sheet button{font:600 13px "IBM Plex Sans",sans-serif;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:8px 14px;cursor:pointer} .editor button.primary{background:var(--mark);border-color:var(--mark);color:#fff}
 #sheetwrap{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;justify-content:center} #sheetwrap[hidden]{display:none}
@@ -330,7 +333,7 @@ a.lk i.ic-url{--ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
 .stats a.lk{padding:0 2px;border:0;background:none;font-size:inherit;text-decoration:underline dotted var(--muted);text-underline-offset:3px;gap:2px} .stats a.lk i{width:11px;height:11px}
 .sheet .pick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:50vh;overflow:auto;padding:2px 0 8px} .sheet .pick a{display:block;aspect-ratio:1;overflow:hidden;border-radius:4px;background:var(--line)} .sheet .pick img{width:100%;height:100%;object-fit:cover;display:block} .sheet .pick a.used{outline:3px solid var(--mark);outline-offset:-3px}
 .sheet .chips{display:flex;gap:8px;flex-wrap:wrap;padding:4px 0 8px} .sheet .chips a.lk{font-size:15px;padding:8px 14px 8px 10px;gap:8px;border-radius:20px} .sheet .chips a.lk i{width:18px;height:18px}
-[lang="he"] .editor textarea,[lang="he"] .editor button,[lang="he"] .sheet button{font-family:"Heebo",sans-serif}
+[lang="he"] .editor .edbox,[lang="he"] .editor button,[lang="he"] .sheet button{font-family:"Heebo",sans-serif}
 .pane{min-width:0} .pane[data-pane="plan"] p:first-child{margin-top:0}
 [lang="he"] .tabs button{font-family:"Heebo",sans-serif}
 /* map hosts: the map box moves into a day's Map tab or back to the Maps section */
@@ -393,7 +396,8 @@ body.editing .dots{display:none}  /* not while a day's text is being edited */
 .tile img{width:100%;height:100%;object-fit:cover;display:block}
 .tile span{position:absolute;left:0;right:0;bottom:0;padding:14px 8px 5px;font:12px "IBM Plex Sans",sans-serif;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.6));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .photoref{display:block;margin:12px 0}
-.photos{display:block;margin:12px 0}
+.photos{display:flex;gap:4px;align-items:flex-start;margin:12px 0}  /* pictures written on one line sit side by side on every screen */
+.photos .photoref{flex:1 1 0;min-width:0;margin:0} .photos .inpic img{width:100%}
 .inpic{display:block;text-decoration:none;color:inherit;position:relative}
 /* a clip: its poster frame with a play badge; it plays in the lightbox */
 .tile .play,.inpic .play{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(0,0,0,.5);border:1.5px solid rgba(255,255,255,.75);box-shadow:0 2px 8px rgba(0,0,0,.35);pointer-events:none}
@@ -408,15 +412,12 @@ body.editing .dots{display:none}  /* not while a day's text is being edited */
 .pane.pressing{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .tile,.inpic{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none} .tile img,.inpic img{-webkit-user-drag:none}
 .tile img{transition:transform .25s ease} .tile:hover img{transform:scale(1.03)} .tile,.inpic,.popthumbs a{cursor:zoom-in}
-/* desktop: a wider log page, the whole grid in three columns, pictures in the text side by side */
+/* desktop: a wider log page, the whole grid in three columns */
 .logpage .wrap{max-width:1240px}
 @media (min-width:900px){
   .logpage .gallery{max-height:none;overflow:visible;gap:8px}
   .logpage .stage .livemap{height:min(70vh,640px)}
   .logpage .stage canvas.profile{height:200px}
-  .photos{display:flex;gap:10px;align-items:flex-start}
-  .photos .photoref{flex:1 1 0;min-width:0;margin:0}
-  .photos .inpic img{width:100%}
   .logpage .inpic img{width:min(100%,calc(100vh * var(--ar,1.5)))}
   .logpage .pane[data-pane="log"],.logpage .pane[data-pane="tips"]{max-width:none}
 }

@@ -73,7 +73,7 @@ def logtxt(s) -> str:
     return re.sub(r'((?:<span class="photoref"[^>]*></span>\s*){2,})', r'<span class="photos">\1</span>', html)
 
 
-_PHOTO_RUN = re.compile(r"(?:\s*\[\[photos?:[^\]]+\]\])+\s*")
+_PHOTO_RUN = re.compile(r"(?:[ \t]*\[\[photos?:[^\]]+\]\])+[ \t]*")  # pictures on one line side by side; a line break starts a new row, as in markdown
 
 
 def blocks(paragraph) -> str:
