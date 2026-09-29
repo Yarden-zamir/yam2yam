@@ -490,27 +490,53 @@
       return out;
     }
     function offsetOf(node, off) { var r = document.createRange(); r.setStart(box, 0); r.setEnd(node, off); var d = document.createElement('div'); d.appendChild(r.cloneContents()); return text(d).length; }
+    var last = null;  /* the selection as last seen inside the box, for a toolbar button that takes the focus away */
     function sel() {
-      var s0 = window.getSelection(); if (!s0.rangeCount || !box.contains(s0.anchorNode)) { var n = text(box).length; return [n, n]; }
+      var s0 = window.getSelection();
+      if (!s0.rangeCount || !box.contains(s0.anchorNode)) { if (last) return last.slice(); var n = text(box).length; return [n, n]; }
       var r = s0.getRangeAt(0), a = offsetOf(r.startContainer, r.startOffset), b = offsetOf(r.endContainer, r.endOffset); return [Math.min(a, b), Math.max(a, b)];
     }
-    function caret(at) {
-      var left = Math.max(0, at), r = document.createRange(), done = false;
-      box.childNodes.forEach(function (c) {
-        if (done) return;
-        var len = c.nodeType === 3 ? c.data.length : c.classList && c.classList.contains('edpic') ? c.getAttribute('data-src').length : c.nodeName === 'BR' && c !== box.lastChild ? 1 : 0;
-        if (left <= len && (c.nodeType === 3 || left === 0)) { if (c.nodeType === 3) r.setStart(c, left); else r.setStartBefore(c); done = true; return; }
-        if (left < len) { r.setStartAfter(c); done = true; return; }  /* inside a picture's token: after the picture */
+    function point(at) {  /* a source offset as a place in the box; inside a picture's token means after the picture */
+      var left = Math.max(0, at), kids = box.childNodes;
+      for (var i = 0; i < kids.length; i++) {
+        var c = kids[i], len = c.nodeType === 3 ? c.data.length : c.classList && c.classList.contains('edpic') ? c.getAttribute('data-src').length : c.nodeName === 'BR' && c !== box.lastChild ? 1 : 0;
+        if (c.nodeType === 3 && left <= len) return [c, left];
+        if (left === 0) return [box, i];
+        if (left < len) return [box, i + 1];
         left -= len;
-      });
-      if (!done) r.setStartBefore(box.lastChild);
-      r.collapse(true); box.focus({ preventScroll: true }); var s1 = window.getSelection(); s1.removeAllRanges(); s1.addRange(r);
-      var rect = r.getBoundingClientRect(); if (!rect.height && r.startContainer.getBoundingClientRect) rect = (r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentNode).getBoundingClientRect();
+      }
+      return [box, Math.max(0, kids.length - 1)];
+    }
+    function select(a, b, scroll) {
+      var r = document.createRange(), p0 = point(a), p1 = point(b == null ? a : b);
+      r.setStart(p0[0], p0[1]); r.setEnd(p1[0], p1[1]);
+      box.focus({ preventScroll: true }); var s1 = window.getSelection(); s1.removeAllRanges(); s1.addRange(r); last = [a, b == null ? a : b];
+      if (!scroll) return;
+      var c = r.cloneRange(); c.collapse(true); var rect = c.getBoundingClientRect(); if (!rect.height) rect = (p0[0].nodeType === 1 ? p0[0] : p0[0].parentNode).getBoundingClientRect();
       if (rect.height) window.scrollBy({ top: rect.top - window.innerHeight / 2 });  /* the caret in the middle of the screen */
     }
+    function caret(at) { select(at, at, true); }
+    /* a finished selection shows the text as written, with each picture as its token, so it can be copied, cut, moved or
+       edited as text; a plain caret again shows the pictures. The switch waits for the selection to be done (the button or
+       key let go), because the layout changes under it. */
+    var raw = false;
+    function toRaw() { var se = sel(), v = text(box); raw = true; box.classList.add('raw'); box.textContent = v; box.appendChild(document.createElement('br')); select(se[0], se[1]); }
+    function toRich() { var se = sel(), v = text(box); raw = false; box.classList.remove('raw'); set(v); select(se[0], se[1]); }
+    function settle() {
+      var s0 = window.getSelection(); if (!s0.rangeCount || !box.contains(s0.anchorNode)) return;
+      last = sel();
+      if (!s0.isCollapsed && !raw && box.querySelector('.edpic')) toRaw();
+      else if (s0.isCollapsed && raw) toRich();
+    }
+    document.addEventListener('selectionchange', function () { var s0 = window.getSelection(); if (s0.rangeCount && box.contains(s0.anchorNode)) last = sel(); });
+    ['mouseup', 'touchend', 'keyup'].forEach(function (t) { box.addEventListener(t, function () { setTimeout(settle, 0); }); });
+    document.addEventListener('mouseup', function (e) { if (!box.contains(e.target)) setTimeout(settle, 0); });  /* a drag that ends outside the box */
+    box.addEventListener('blur', function () { if (raw) { raw = false; box.classList.remove('raw'); set(text(box)); } });
+    box.addEventListener('copy', function (e) { var s0 = window.getSelection(); if (!s0.rangeCount) return; var d = document.createElement('div'); d.appendChild(s0.getRangeAt(0).cloneContents()); e.clipboardData.setData('text/plain', text(d)); e.preventDefault(); });  /* pictures copy as their tokens */
     function tidy() {  /* a pasted or typed token becomes its picture, and rich mode's blocks become plain line breaks */
+      if (raw) return;
       var messy = Array.prototype.some.call(box.childNodes, function (c) { return c.nodeType === 1 && !(c.classList.contains('edpic') || c.nodeName === 'BR') || c.nodeType === 3 && /\[\[photos?:[^\]|]+\]\]/.test(c.data); });
-      if (!messy) return; var at = sel()[0]; set(text(box)); caret(at);
+      if (!messy) return; var at = sel()[0]; set(text(box)); select(at, at);
     }
     box.addEventListener('input', tidy);
     box.addEventListener('click', function (e) { var x = e.target.closest('.edx'); if (!x) return; e.preventDefault(); var sp = x.closest('.edpic'); var at = offsetOf(sp, 0); var next = sp.nextSibling; if (next && next.nodeType === 3 && /^ /.test(next.data)) next.data = next.data.slice(1); sp.remove(); caret(at); });
@@ -539,9 +565,9 @@
     }
     if (isDay) window.gr52Map.showTab(st, kind);
     var ed = document.createElement('div'); ed.className = 'editor'; ed.setAttribute('data-kind', kind);
-    ed.innerHTML = '<div class="row"><button type="button" class="primary" data-act="save">' + T[lang].save + '</button><button type="button" data-act="cancel">' + T[lang].cancel + '</button><button type="button" data-act="pick">' + T[lang].addPic + '</button><span class="msg"></span><span class="hint">' + esc(T[lang].editHint) + '</span></div>';
+    ed.innerHTML = '<div class="row edbar"><button type="button" class="primary" data-act="save">' + T[lang].save + '</button><button type="button" data-act="cancel">' + T[lang].cancel + '</button><button type="button" data-act="pick">' + T[lang].addPic + '</button><span class="msg"></span></div><div class="hint">' + esc(T[lang].editHint) + '</div>';  /* the bar stays in view while the text scrolls */
     ed._orig = textOf(n, lang, kind).join('\n\n');  /* the text as opened: a save without changes only closes */
-    var box = ed._box = editBox(ed._orig, lang); ed.insertBefore(box.el, ed.firstChild);
+    var box = ed._box = editBox(ed._orig, lang); ed.insertBefore(box.el, ed.querySelector('.hint'));
     pane.hidden = true; pane.parentNode.insertBefore(ed, pane); b.classList.add('on'); editing();
     if (at != null) box.caret(at);
     ed.addEventListener('click', function (ev) {
