@@ -10,12 +10,12 @@
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
       source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', layer: 'Pictures', zoomIn: 'zoom in for the pictures', download: 'Download',
       edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', signIn: 'Sign in with GitHub to edit', signOut: 'Sign out', noEdit: 'no editing rights', cast: 'Cast to TV', casting: 'Casting · stop', castHow: 'Open {url} in the TV’s browser, or mirror this screen from your phone or computer.', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. Pictures on one line sit side by side; a picture on a line of its own gets a row of its own. [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
-      inGmaps: 'Open in Google Maps', openUrl: 'Open the site', addPic: 'Add a picture…', pickHint: 'Tap a picture to put it at the cursor; the outlined ones are already in the text.', addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', cover: 'Use as the cover', uncover: 'Remove from the cover', captionEdit: 'Edit caption', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
+      inGmaps: 'Open in Google Maps', openUrl: 'Open the site', addPic: 'Add a picture…', pickHint: 'Tap a picture to put it at the cursor; the outlined ones are already in the text.', addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', cover: 'Use as the cover', uncover: 'Remove from the cover', captionEdit: 'Edit caption', setPlace: 'Set the place on the map', movePlace: 'Move the place on the map', placeHint: 'Tap the map where this picture was taken', captionPrompt: 'Caption', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
       source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', layer: 'תמונות', zoomIn: 'התקרבו כדי לראות את התמונות', download: 'הורדה',
       edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', signIn: 'כניסה עם GitHub לעריכה', signOut: 'יציאה', noEdit: 'בלי הרשאת עריכה', cast: 'שידור לטלוויזיה', casting: 'משדר · עצירה', castHow: 'פתחו {url} בדפדפן של הטלוויזיה או שקפו את המסך מהטלפון או מהמחשב.', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. תמונות באותה שורה עומדות זו לצד זו, ותמונה בשורה משלה מקבלת שורה משלה. [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
-      inGmaps: 'פתיחה ב-Google Maps', openUrl: 'פתיחת האתר', addPic: 'הוספת תמונה…', pickHint: 'הקישו על תמונה כדי להציב אותה במקום הסמן; המסומנות כבר בטקסט.', addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', cover: 'שימוש כתמונת השער', uncover: 'הסרה מתמונת השער', captionEdit: 'עריכת כיתוב', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
+      inGmaps: 'פתיחה ב-Google Maps', openUrl: 'פתיחת האתר', addPic: 'הוספת תמונה…', pickHint: 'הקישו על תמונה כדי להציב אותה במקום הסמן; המסומנות כבר בטקסט.', addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', cover: 'שימוש כתמונת השער', uncover: 'הסרה מתמונת השער', captionEdit: 'עריכת כיתוב', setPlace: 'סימון המקום במפה', movePlace: 'הזזת המקום במפה', placeHint: 'הקישו על המפה במקום שבו צולמה התמונה', captionPrompt: 'כיתוב', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
   var photos = [], hiddenPics = [], byId = {}, over = LOG.photos || {}, DAYS = LOG.days || {}, clusters = {}, layers = {};
@@ -327,6 +327,7 @@
       var e = EDITS.photos[id], o = over[id] = over[id] || {};
       if ('hide' in e) o.hide = !!e.hide;
       if (e.caption) { var c = o.caption; o.caption = Object.assign({}, typeof c === 'object' && c ? c : (c ? { en: c, he: c } : {}), e.caption); }
+      if (e.lat != null && e.lon != null) { o.lat = e.lat; o.lon = e.lon; }  /* a place set on the map */
     });
   }
   /* who is signed in (GitHub, through oauth2-proxy) and whether they may edit: the pencils, the long press and the
@@ -516,32 +517,61 @@
       if (rect.height) window.scrollBy({ top: rect.top - window.innerHeight / 2 });  /* the caret in the middle of the screen */
     }
     function caret(at) { select(at, at, true); }
-    /* a finished selection shows the text as written, with each picture as its token, so it can be copied, cut, moved or
-       edited as text; a plain caret again shows the pictures. The switch waits for the selection to be done (the button or
-       key let go), because the layout changes under it. */
+    /* a finished selection shows the pictures inside it as their tokens, so they can be copied, cut, moved or edited as
+       text; the rest of the box stays as it is. A plain caret again shows the pictures. The switch waits for the
+       selection to be done (the button or key let go), because the layout changes under it. */
     var raw = false;
-    function toRaw() { var se = sel(), v = text(box); raw = true; box.classList.add('raw'); box.textContent = v; box.appendChild(document.createElement('br')); select(se[0], se[1]); }
-    function toRich() { var se = sel(), v = text(box); raw = false; box.classList.remove('raw'); set(v); select(se[0], se[1]); }
+    function toRaw() {
+      var se = sel(), r = window.getSelection().getRangeAt(0), hit = Array.prototype.filter.call(box.querySelectorAll('.edpic'), function (sp) { return r.intersectsNode(sp); });
+      if (!hit.length) return;
+      hit.forEach(function (sp) { sp.replaceWith(document.createTextNode(sp.getAttribute('data-src'))); });
+      box.normalize(); raw = true; select(se[0], se[1]);  /* a token is as long as the picture counted, so the offsets hold */
+    }
+    function toRich() { var se = sel(), v = text(box); raw = false; set(v); select(se[0], se[1]); }
     function settle() {
       var s0 = window.getSelection(); if (!s0.rangeCount || !box.contains(s0.anchorNode)) return;
       last = sel();
-      if (!s0.isCollapsed && !raw && box.querySelector('.edpic')) toRaw();
+      if (!s0.isCollapsed && box.querySelector('.edpic')) toRaw();
       else if (s0.isCollapsed && raw) toRich();
     }
     document.addEventListener('selectionchange', function () { var s0 = window.getSelection(); if (s0.rangeCount && box.contains(s0.anchorNode)) last = sel(); });
     ['mouseup', 'touchend', 'keyup'].forEach(function (t) { box.addEventListener(t, function () { setTimeout(settle, 0); }); });
     document.addEventListener('mouseup', function (e) { if (!box.contains(e.target)) setTimeout(settle, 0); });  /* a drag that ends outside the box */
-    box.addEventListener('blur', function () { if (raw) { raw = false; box.classList.remove('raw'); set(text(box)); } });
+    box.addEventListener('blur', function () { if (raw) { raw = false; set(text(box)); } });
     box.addEventListener('copy', function (e) { var s0 = window.getSelection(); if (!s0.rangeCount) return; var d = document.createElement('div'); d.appendChild(s0.getRangeAt(0).cloneContents()); e.clipboardData.setData('text/plain', text(d)); e.preventDefault(); });  /* pictures copy as their tokens */
     function tidy() {  /* a pasted or typed token becomes its picture, and rich mode's blocks become plain line breaks */
       if (raw) return;
       var messy = Array.prototype.some.call(box.childNodes, function (c) { return c.nodeType === 1 && !(c.classList.contains('edpic') || c.nodeName === 'BR') || c.nodeType === 3 && /\[\[photos?:[^\]|]+\]\]/.test(c.data); });
       if (!messy) return; var at = sel()[0]; set(text(box)); select(at, at);
     }
-    box.addEventListener('input', tidy);
-    box.addEventListener('click', function (e) { var x = e.target.closest('.edx'); if (!x) return; e.preventDefault(); var sp = x.closest('.edpic'); var at = offsetOf(sp, 0); var next = sp.nextSibling; if (next && next.nodeType === 3 && /^ /.test(next.data)) next.data = next.data.slice(1); sp.remove(); caret(at); });
-    set(value);
-    return { el: box, get value() { return text(box); }, set value(v) { set(v); }, sel: sel, caret: caret };
+    /* undo and redo: the box rewrites itself (a picture taken out, a token turned into its picture), which the browser's own
+       history cannot follow, so the box keeps its own: each change is a step, typing within a moment is one step */
+    var hist = [], hi = -1, lastT = 0;
+    function record(kind) {
+      var v = text(box), se = sel(), typing = /^(insertText|deleteContent)/.test(kind || '');
+      if (hi >= 0 && hist[hi].v === v) { hist[hi].se = se; return; }
+      if (typing && hist[hi] && hist[hi].typing && Date.now() - lastT < 800) hist[hi] = { v: v, se: se, typing: true };
+      else { hist.splice(hi + 1); hist.push({ v: v, se: se, typing: typing }); hi = hist.length - 1; }
+      if (hist.length > 200) { hist.shift(); hi--; }
+      lastT = Date.now();
+    }
+    function go(step) {
+      var k = hi + step; if (k < 0 || k >= hist.length) return;
+      hi = k; raw = false; set(hist[k].v); select(hist[k].se[0], hist[k].se[1], true); lastT = 0;
+    }
+    box.addEventListener('keydown', function (e) {
+      if (!(e.metaKey || e.ctrlKey) || e.altKey) return;
+      var k = e.key.toLowerCase();
+      if (k === 'z') { e.preventDefault(); go(e.shiftKey ? 1 : -1); }
+      else if (k === 'y' && e.ctrlKey && !e.metaKey) { e.preventDefault(); go(1); }
+    });
+    box.addEventListener('beforeinput', function (e) {  /* the Edit menu's Undo and Redo */
+      if (e.inputType === 'historyUndo') { e.preventDefault(); go(-1); } else if (e.inputType === 'historyRedo') { e.preventDefault(); go(1); }
+    });
+    box.addEventListener('input', function (e) { tidy(); record(e.inputType); });
+    box.addEventListener('click', function (e) { var x = e.target.closest('.edx'); if (!x) return; e.preventDefault(); var sp = x.closest('.edpic'); var at = offsetOf(sp, 0); var next = sp.nextSibling; if (next && next.nodeType === 3 && /^ /.test(next.data)) next.data = next.data.slice(1); sp.remove(); caret(at); record('remove'); });
+    set(value); hist = [{ v: text(box), se: [0, 0], typing: false }]; hi = 0;
+    return { el: box, get value() { return text(box); }, set value(v) { set(v); record('set'); }, sel: sel, caret: caret };
   }
   /* the editor: the day's paragraphs, blank lines between them; body.editing hides the dot rail meanwhile */
   function editing() { document.body.classList.toggle('editing', !!document.querySelector('.editor')); }
@@ -649,11 +679,32 @@
   }
   /* long press (or right click) on a picture opens the sheet */
   sheetWrap.addEventListener('click', function (e) { if (e.target === sheetWrap) hideSheet(); });
+  /* a picture's place: the day's map comes up with a bar over it, and a tap on the map is the spot, saved for everyone */
+  function setPlace(id, n, lang) {
+    var G = window.gr52Map, p = byId[id]; if (!G || !p) return;
+    if (n != null) G.openDay(n); else G.ensureVisible();
+    setTimeout(function () {  /* the map box moves and redraws first */
+      var app = G.app(visibleLang()); if (!app) return;
+      var map = app.map, pos = place(p), el = map.getContainer();
+      app.redraw(); if (pos) map.setView([pos.lat, pos.lon], Math.max(map.getZoom(), 14));
+      var bar = document.createElement('div'); bar.className = 'placebar'; bar.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+      bar.innerHTML = '<img src="' + small(p) + '" alt=""><span>' + esc(T[lang].placeHint) + '</span><button type="button">' + esc(T[lang].cancel) + '</button>';
+      document.body.appendChild(bar); el.classList.add('picking');
+      function end() { map.off('click', onTap); bar.remove(); el.classList.remove('picking'); }
+      function onTap(e) {
+        end();
+        postEdit({ photo: id, lat: e.latlng.lat, lon: e.latlng.lng }, lang).then(function () { render(); app.focus('ll:' + e.latlng.lat.toFixed(5) + ',' + e.latlng.lng.toFixed(5)); })
+          .catch(function (err) { alert(T[lang].saveFail + ' (' + (err && err.message || err) + ')'); });
+      }
+      map.on('click', onTap); bar.querySelector('button').onclick = end;
+    }, 450);
+  }
   function openSheet(a) {
     var id = a.getAttribute('data-photo'), p = byId[id]; if (!p) return;
     var st = a.closest('.stage'), lang = langOf(a), n = st ? +st.getAttribute('data-day') : dayOf(p), hidden = !!(over[id] && over[id].hide), inline = !!a.closest('.photoref'), items = [];
     if (n != null && !hidden) items.push({ k: inline || inLog(n, id) ? 'remove' : 'add', t: T[lang][inline || inLog(n, id) ? 'removeLog' : 'addLog'] });
     items.push({ k: 'caption', t: T[lang].captionEdit });
+    var pos = window.gr52Data ? place(p) : null; items.push({ k: 'place', t: T[lang][pos && !pos.est ? 'movePlace' : 'setPlace'] });  /* an estimated place counts as none */
     items.push({ k: coverId() === id ? 'uncover' : 'cover', t: T[lang][coverId() === id ? 'uncover' : 'cover'] });
     items.push({ k: hidden ? 'unhide' : 'hide', t: T[lang][hidden ? 'unhide' : 'hide'], cls: hidden ? '' : 'danger' });
     items.push({ k: 'cancel', t: T[lang].cancel, cls: 'cancel' });
@@ -666,6 +717,7 @@
       if (k === 'add') done = togglePhoto(n, id, true, lang); else if (k === 'remove') done = togglePhoto(n, id, false, lang);
       else if (k === 'hide') done = setHidden(id, true, lang); else if (k === 'unhide') done = setHidden(id, false, lang);
       else if (k === 'caption') editCaption(id, lang);
+      else if (k === 'place') setPlace(id, n, lang);
       else if (k === 'cover') done = postEdit({ cover: id }, lang).then(function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
       else if (k === 'uncover') done = postEdit({ cover: null }, lang);
       if (done) done.catch(function (err) { alert(T[lang].saveFail + ' (' + (err && err.message || err) + ')'); });

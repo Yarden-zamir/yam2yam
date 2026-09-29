@@ -286,6 +286,11 @@ def apply_edit(user: str, body: dict) -> dict:
                 p["hide"] = bool(body["hide"])
             if isinstance(body.get("caption"), dict):
                 p.setdefault("caption", {}).update({str(k): str(v)[:500] for k, v in body["caption"].items() if re.match(r"^[a-z]{2}$", str(k))})
+            if "lat" in body or "lon" in body:  # where the picture was taken, set on the map for one that has no place of its own
+                lat, lon = float(body["lat"]), float(body["lon"])
+                if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+                    raise ValueError("place out of range")
+                p["lat"], p["lon"] = round(lat, 6), round(lon, 6)
         if "cover" in body:
             c = body["cover"]
             if c in (None, ""):

@@ -105,5 +105,8 @@ for pid, e in (edits.get("photos") or {}).items():
         cap.update(e["caption"])
         rec["caption"] = cap
         changed += 1
+    if e.get("lat") is not None and e.get("lon") is not None:  # a place set on the map
+        rec["lat"], rec["lon"] = e["lat"], e["lon"]
+        changed += 1
 yaml.dump(doc, path.open("w", encoding="utf-8"))
 print(f"{changed} values from {url} folded into {path.relative_to(ROOT)}; run src/build.py", file=sys.stderr)
