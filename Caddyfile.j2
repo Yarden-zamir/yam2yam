@@ -4,7 +4,7 @@ yam2yam.yarden-zamir.com
 pr.{{ environment.removeprefix("pr-") }}.yam2yam.yarden-zamir.com
 {%- endif %} {
     reverse_proxy unix//{{ paths.default_socket }}
-    log {
+{% if environment == "prod" %}    log {
         output file /var/log/caddy/{{ deployment | replace("/", "-") }}.access.log {
             roll_size 20MiB
             roll_keep 100
@@ -12,4 +12,4 @@ pr.{{ environment.removeprefix("pr-") }}.yam2yam.yarden-zamir.com
         }
         format json
     }
-}
+{% endif %}}

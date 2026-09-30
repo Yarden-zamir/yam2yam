@@ -364,9 +364,11 @@ if TREK.get("auth"):
     + "\n{%- endif %} {\n    reverse_proxy unix//{{ paths.default_socket }}\n"
     # the host Caddy sees every request with the visitor's address, also the ones an ad blocker keeps from GA.
     # /var/log/caddy, not KitSHn's paths.logs: that folder is root's and the host Caddy runs as the caddy user.
-    # Revisit when KitSHn makes paths.logs writable for Caddy. 90 days, then the files go.
-    + '    log {\n        output file /var/log/caddy/{{ deployment | replace("/", "-") }}.access.log {\n'
-    + "            roll_size 20MiB\n            roll_keep 100\n            roll_keep_for 2160h\n        }\n        format json\n    }\n"
+    # prod only: KitSHn runs `caddy validate` as root, which creates a missing log file owned by root, and the
+    # caddy user then cannot open it, so the reload fails. The prod files were given to caddy once by hand.
+    # Revisit when KitSHn validates as the caddy user. 90 days, then the files go.
+    + '{% if environment == "prod" %}    log {\n        output file /var/log/caddy/{{ deployment | replace("/", "-") }}.access.log {\n'
+    + "            roll_size 20MiB\n            roll_keep 100\n            roll_keep_for 2160h\n        }\n        format json\n    }\n{% endif %}"
     + "}\n"
 )
 
