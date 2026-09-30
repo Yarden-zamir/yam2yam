@@ -361,7 +361,13 @@ if TREK.get("auth"):
 (ROOT / ".env").unlink(missing_ok=True)  # the old place for these values, never read in a KitSHn deploy
 (ROOT / "Caddyfile.j2").write_text(
     '{% if environment == "prod" -%}\n' + host + "\n{%- else -%}\npr.{{ environment.removeprefix(\"pr-\") }}." + host
-    + "\n{%- endif %} {\n    reverse_proxy unix//{{ paths.default_socket }}\n}\n"
+    + "\n{%- endif %} {\n    reverse_proxy unix//{{ paths.default_socket }}\n"
+    # the host Caddy sees every request with the visitor's address, also the ones an ad blocker keeps from GA.
+    # /var/log/caddy, not KitSHn's paths.logs: that folder is root's and the host Caddy runs as the caddy user.
+    # Revisit when KitSHn makes paths.logs writable for Caddy. 90 days, then the files go.
+    + '    log {\n        output file /var/log/caddy/{{ deployment | replace("/", "-") }}.access.log {\n'
+    + "            roll_size 20MiB\n            roll_keep 100\n            roll_keep_for 2160h\n        }\n        format json\n    }\n"
+    + "}\n"
 )
 
 precache = ["/", "/" + Path(TREK["gpx"]).name] + [f"{u}?v={_vhash(SITE / u.lstrip('/'))}" for u in (("/log.js", "/vendor/zip.min.js") if STORY else ()) + ("/map.js", "/trip.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css", "/vendor/leaflet-rotate.umd.min.js", "/vendor/leaflet-rotate.css")] + [
