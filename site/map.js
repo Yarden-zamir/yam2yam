@@ -731,7 +731,7 @@
         var day = el.hasAttribute('data-day');
         if (!day && els[i + 1] && els[i + 1].hasAttribute('data-day')) return;  /* the heading over the day cards: the days stand for it */
         var a = document.createElement('a'), label = day ? T.day + ' ' + el.getAttribute('data-day') : el.textContent.replace(/^§\d+/, '').trim().replace(/^(.{34}[^\s]*)\s.+$/, '$1');  /* long section names end at a word */
-        var kind = day ? 'day' : /(^|-)outro$/.test(el.id) ? 'end' : /(^|-)map$/.test(el.id) ? 'map' : /(^|-)upload$/.test(el.id) ? 'up' : 'sec';  /* dot, dash, triangle, ring, plus */
+        var kind = day ? 'day' : /(^|-)outro$/.test(el.id) ? 'end' : /(^|-)map$/.test(el.id) ? 'ring' : /(^|-)upload$/.test(el.id) ? 'up' : 'sec';  /* dot, dash, triangle, ring, plus; not 'map', which the page styles as a map picture */
         a.href = '#' + (day ? 'd' + el.getAttribute('data-day') : el.id); a.className = kind; a.innerHTML = '<i></i><span></span>'; a.querySelector('span').textContent = label; a.setAttribute('aria-label', label);
         rail.appendChild(a); items.push({ el: el, a: a, day: day });
       });
