@@ -151,7 +151,8 @@ def config_script() -> str:
         "heatLimit": TREK.get("heatLimit"),
         "exposed": TREK.get("exposed", []),
         "accent": TREK.get("accent"),
-        "castAppId": TREK.get("castAppId"),  # a Google Cast receiver app registered for https://<hostname>/?cast=1
+        "castAppId": TREK.get("castAppId"),
+        "comments": comments_config(),  # giscus under the story  # a Google Cast receiver app registered for https://<hostname>/?cast=1
         "defaultLang": DEFAULT_LANG,
         "repo": REPO, "templateRepo": TEMPLATE_REPO if REPO != TEMPLATE_REPO else None,  # the links at the foot of the page  # the language a first visit opens in; the reader's own choice is remembered after that
         "elevation": {"eudem25m": "EU-DEM 25 m", "srtm30m": "SRTM 30 m", "aster30m": "ASTER 30 m"}.get(TREK.get("elevationDataset", "srtm30m"), TREK.get("elevationDataset")),
@@ -222,6 +223,18 @@ def bust(html: str) -> str:
 
 def _vhash(f: Path) -> str:
     return hashlib.sha256(f.read_bytes()).hexdigest()[:10]
+
+
+def comments_config() -> dict | None:
+    """giscus comments under the story, when trek.json has "comments": {repo, repoId, category, categoryId}. The ids
+    come from https://giscus.app (or the GitHub GraphQL API); the repo needs Discussions and the giscus app."""
+    c = TREK.get("comments")
+    if not c:
+        return None
+    missing = [k for k in ("repo", "repoId", "category", "categoryId") if not isinstance(c.get(k), str) or not c[k]]
+    if missing:
+        raise SystemExit(f'trek.json "comments" needs {", ".join(missing)}')
+    return {**c, "term": c.get("term") or "story"}  # one thread for the story, whatever the address says
 
 
 def analytics_tag() -> str:

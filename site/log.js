@@ -9,12 +9,12 @@
   var T = {
     en: { none: 'No pictures for this day yet.', onMap: 'Show on map', est: 'place estimated from the time', night: 'night spot', high: 'high point', rain: 'rain', gusts: 'gusts', sun: 'sun',
       source: 'ERA5 reanalysis via Open-Meteo', hourly: 'hour by hour at the high point: temperature, bars rain mm', uploading: 'Uploading', done: 'done', failed: 'failed', retry: 'again…', skipped: 'already here', taken: 'taken', photo: 'picture', photos: 'pictures', layer: 'Pictures', zoomIn: 'zoom in for the pictures', download: 'Download',
-      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', signIn: 'Sign in with GitHub to edit', signOut: 'Sign out', noEdit: 'no editing rights', cast: 'Cast to TV', siteRepo: 'This site on GitHub', templateRepo: 'Built from trek-site-template', casting: 'Casting · stop', castHow: 'Open {url} in the TV’s browser, or mirror this screen from your phone or computer.', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. Pictures on one line sit side by side; a picture on a line of its own gets a row of its own. [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
+      edit: 'Edit', save: 'Save', cancel: 'Cancel', emptyConfirm: 'Save an empty text?', signIn: 'Sign in with GitHub to edit', signOut: 'Sign out', noEdit: 'no editing rights', cast: 'Cast to TV', siteRepo: 'This site on GitHub', templateRepo: 'Built from trek-site-template', comments: 'Comments', casting: 'Casting · stop', castHow: 'Open {url} in the TV’s browser, or mirror this screen from your phone or computer.', saved: 'saved', saveFail: 'could not save', editHint: 'A blank line ends a paragraph. Pictures on one line sit side by side; a picture on a line of its own gets a row of its own. [[map:Name|label]] links the map, [[gmaps:Place|label]] opens Google Maps.', keyPrompt: 'This log asks for an edit key:',
       inGmaps: 'Open in Google Maps', openUrl: 'Open the site', addPic: 'Add a picture…', pickHint: 'Tap a picture to put it at the cursor; the outlined ones are already in the text.', addLog: 'Add to the log', removeLog: 'Remove from the log', hide: 'Hide picture', unhide: 'Show picture', cover: 'Use as the cover', uncover: 'Remove from the cover', captionEdit: 'Edit caption', setPlace: 'Set the place on the map', movePlace: 'Move the place on the map', placeHint: 'Tap the map where this picture was taken', captionPrompt: 'Caption (leave empty for none)', hidden: 'hidden', noText: 'This day has no text yet; the picture goes into a new paragraph.',
       codes: { 0: 'clear', 1: 'mostly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'freezing fog', 51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 56: 'freezing drizzle', 57: 'freezing drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain', 66: 'freezing rain', 67: 'freezing rain', 71: 'light snow', 73: 'snow', 75: 'heavy snow', 77: 'snow grains', 80: 'showers', 81: 'showers', 82: 'heavy showers', 85: 'snow showers', 86: 'snow showers', 95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'thunderstorm with hail' } },
     he: { none: 'עדיין אין תמונות ליום הזה.', onMap: 'הצג במפה', est: 'המיקום משוער לפי השעה', night: 'לינה', high: 'נקודה גבוהה', rain: 'גשם', gusts: 'משבים', sun: 'שמש',
       source: 'ריאנליזה ERA5 דרך Open-Meteo', hourly: 'שעה אחר שעה בנקודה הגבוהה: טמפרטורה, עמודות גשם מ"מ', uploading: 'מעלה', done: 'הועלה', failed: 'נכשל', retry: 'מנסה שוב…', skipped: 'כבר כאן', taken: 'צולם', photo: 'תמונה', photos: 'תמונות', layer: 'תמונות', zoomIn: 'התקרבו כדי לראות את התמונות', download: 'הורדה',
-      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', signIn: 'כניסה עם GitHub לעריכה', signOut: 'יציאה', noEdit: 'בלי הרשאת עריכה', cast: 'שידור לטלוויזיה', siteRepo: 'האתר ב-GitHub', templateRepo: 'נבנה מ-trek-site-template', casting: 'משדר · עצירה', castHow: 'פתחו {url} בדפדפן של הטלוויזיה או שקפו את המסך מהטלפון או מהמחשב.', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. תמונות באותה שורה עומדות זו לצד זו, ותמונה בשורה משלה מקבלת שורה משלה. [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
+      edit: 'עריכה', save: 'שמירה', cancel: 'ביטול', emptyConfirm: 'לשמור טקסט ריק?', signIn: 'כניסה עם GitHub לעריכה', signOut: 'יציאה', noEdit: 'בלי הרשאת עריכה', cast: 'שידור לטלוויזיה', siteRepo: 'האתר ב-GitHub', templateRepo: 'נבנה מ-trek-site-template', comments: 'תגובות', casting: 'משדר · עצירה', castHow: 'פתחו {url} בדפדפן של הטלוויזיה או שקפו את המסך מהטלפון או מהמחשב.', saved: 'נשמר', saveFail: 'השמירה נכשלה', editHint: 'שורה ריקה מסיימת פסקה. תמונות באותה שורה עומדות זו לצד זו, ותמונה בשורה משלה מקבלת שורה משלה. [[map:שם|כיתוב]] מקשר למפה, [[gmaps:מקום|כיתוב]] פותח ב-Google Maps.', keyPrompt: 'היומן הזה מבקש מפתח עריכה:',
       inGmaps: 'פתיחה ב-Google Maps', openUrl: 'פתיחת האתר', addPic: 'הוספת תמונה…', pickHint: 'הקישו על תמונה כדי להציב אותה במקום הסמן; המסומנות כבר בטקסט.', addLog: 'הוספה ליומן', removeLog: 'הסרה מהיומן', hide: 'הסתרת התמונה', unhide: 'הצגת התמונה', cover: 'שימוש כתמונת השער', uncover: 'הסרה מתמונת השער', captionEdit: 'עריכת כיתוב', setPlace: 'סימון המקום במפה', movePlace: 'הזזת המקום במפה', placeHint: 'הקישו על המפה במקום שבו צולמה התמונה', captionPrompt: 'כיתוב (ריק בלי כיתוב)', hidden: 'מוסתרות', noText: 'ליום הזה עוד אין טקסט; התמונה תיכנס לפסקה חדשה.',
       codes: { 0: 'בהיר', 1: 'בהיר ברובו', 2: 'מעונן חלקית', 3: 'מעונן', 45: 'ערפל', 48: 'ערפל קפוא', 51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף כבד', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא', 61: 'גשם קל', 63: 'גשם', 65: 'גשם כבד', 66: 'גשם קפוא', 67: 'גשם קפוא', 71: 'שלג קל', 73: 'שלג', 75: 'שלג כבד', 77: 'גרגרי שלג', 80: 'ממטרים', 81: 'ממטרים', 82: 'ממטרים כבדים', 85: 'ממטרי שלג', 86: 'ממטרי שלג', 95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד' } }
   };
@@ -994,6 +994,28 @@
         + (TREK.templateRepo ? '<a href="https://github.com/' + esc(TREK.templateRepo) + '" rel="noopener">' + esc(T[lang].templateRepo) + '</a>' : '') + '</span>' : '');
     main.appendChild(p);
   });
+  /* comments: giscus, one GitHub Discussion for the story (trek.json "comments"). One iframe, above the foot of the
+     visible language, made again in the other language on a switch; it loads only when the reader nears it */
+  if (TREK.comments) (function () {
+    var C = TREK.comments, box = document.createElement('section'), near = false;
+    box.className = 'comments';
+    function mount() {
+      var main = document.querySelector('.wrap:not([hidden]) > .main'); if (!main) return;
+      var lang = langOf(main);
+      main.insertBefore(box, main.querySelector('.foot'));
+      box.innerHTML = '<h2>' + esc(T[lang].comments) + '</h2>';
+      if (!near) return;
+      var s = document.createElement('script'), a = { repo: C.repo, 'repo-id': C.repoId, category: C.category, 'category-id': C.categoryId,
+        mapping: 'specific', term: C.term, strict: '1', 'reactions-enabled': '1', 'emit-metadata': '0', 'input-position': 'top',
+        theme: 'preferred_color_scheme', lang: lang, loading: 'lazy' };
+      s.src = 'https://giscus.app/client.js'; s.async = true; s.crossOrigin = 'anonymous';
+      Object.keys(a).forEach(function (k) { s.setAttribute('data-' + k, a[k]); });
+      box.appendChild(s);
+    }
+    mount();
+    new IntersectionObserver(function (es, io) { if (es.some(function (e) { return e.isIntersecting; })) { io.disconnect(); near = true; mount(); } }, { rootMargin: '800px 0px' }).observe(box);
+    document.addEventListener('trek:lang', function () { setTimeout(mount, 0); });
+  })();
   /* ---- cast to a TV, from the link at the foot of the page. Three ways, the first that the browser has:
      1. Google Cast (Chrome and Edge on a phone or computer, a Chromecast or a cast-capable TV on the same network),
         when trek.json names a receiver app (castAppId) registered for https://<host>/?cast=1: the TV opens this page
