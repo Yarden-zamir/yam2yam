@@ -723,7 +723,7 @@
       var top = document.querySelector('.wrap:not([hidden]) header');
       if (top) {  /* the heading is the first stop: the top of the page */
         var ta = document.createElement('a'), tl = (window.TREK && (TREK.short || TREK.slug) || '').toUpperCase();
-        ta.href = '#'; ta.className = 'top'; ta.innerHTML = '<i></i><span></span>'; ta.querySelector('span').textContent = tl; ta.setAttribute('aria-label', T.top);
+        ta.href = '#'; ta.className = 'top'; ta.innerHTML = '<i></i><span></span>'; ta.querySelector('span').textContent = tl; ta.setAttribute('aria-label', tl ? tl + ', ' + T.top : T.top);  /* the name starts with the visible text */
         rail.appendChild(ta); items.push({ el: top, a: ta, day: false, top: true });
       }
       els = els.filter(function (el) { return el.offsetParent !== null; });  /* not the sections hidden from non-editors */

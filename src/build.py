@@ -234,12 +234,14 @@ def analytics_tag() -> str:
     if not re.fullmatch(r"G-[A-Z0-9]{4,20}", str(gid)):
         raise SystemExit(f'trek.json "analytics" must be a GA4 measurement id like G-XXXXXXXXXX, not {gid!r}')
     host = json.dumps(TREK["hostname"])
-    return (f'<script>if (location.hostname === {host}) {{ var s = document.createElement("script"); s.async = true; '
-            f's.src = "https://www.googletagmanager.com/gtag/js?id={gid}"; document.head.appendChild(s); '
+    # gtag queues in dataLayer at once; its 180 KB script and analytics.js load after the page, off the critical path
+    return (f'<script>if (location.hostname === {host}) {{ '
             f'window.dataLayer = window.dataLayer || []; window.gtag = function () {{ dataLayer.push(arguments); }}; '
             f'gtag("js", new Date()); gtag("config", "{gid}"); '
-            f'var e = document.createElement("script"); e.defer = true; e.src = "/analytics.js?v={_vhash(SITE / "analytics.js")}"; '
-            f'document.head.appendChild(e); }}</script>\n')
+            f'addEventListener("load", function () {{ var s = document.createElement("script"); s.async = true; '
+            f's.src = "https://www.googletagmanager.com/gtag/js?id={gid}"; document.head.appendChild(s); '
+            f'var e = document.createElement("script"); e.async = true; e.src = "/analytics.js?v={_vhash(SITE / "analytics.js")}"; '
+            f'document.head.appendChild(e); }}); }}</script>\n')
 
 
 def og_meta(title: str, description: str, cover: dict | None, path: str = "/") -> str:
@@ -310,7 +312,7 @@ if (ROOT / "log").exists():
             + "</head>\n<body class=\"logpage\">\n"
             + link_places(log_body)
             + "\n"
-            + bust((SRC / "scripts.html").read_text().replace("{{APP}}", '<script src="/vendor/zip.min.js" defer></script>\n<script src="/log.js" defer></script>'))
+            + bust((SRC / "scripts.html").read_text().replace("{{APP}}", '<script src="/log.js" defer></script>'))
             + "</body>\n</html>\n"
         )
         out = SITE / "log" / log_cfg["user"]
@@ -381,7 +383,7 @@ if TREK.get("auth"):
 (SITE / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
                                   f"  <url><loc>https://{TREK['hostname']}/</loc></url>\n</urlset>\n")
 
-precache = ["/", "/" + Path(TREK["gpx"]).name] + [f"{u}?v={_vhash(SITE / u.lstrip('/'))}" for u in (("/log.js", "/vendor/zip.min.js") if STORY else ()) + ("/map.js", "/trip.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css", "/vendor/leaflet-rotate.umd.min.js", "/vendor/leaflet-rotate.css")] + [
+precache = ["/", "/" + Path(TREK["gpx"]).name] + [f"{u}?v={_vhash(SITE / u.lstrip('/'))}" for u in (("/log.js",) if STORY else ()) + ("/map.js", "/trip.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css", "/vendor/leaflet-rotate.umd.min.js", "/vendor/leaflet-rotate.css")] + [
             "/vendor/images/layers.png", "/vendor/images/layers-2x.png", "/manifest.webmanifest", "/icon.svg"]
 precache += sorted("/maps/" + p.name for p in (SITE / "maps").glob("*.webp")) if (SITE / "maps").exists() else []
 files = sorted(p for p in SITE.rglob("*") if p.is_file() and p.name != "sw.js" and "/photos/" not in p.as_posix() and "/orig/" not in p.as_posix())

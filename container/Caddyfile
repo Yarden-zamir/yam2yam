@@ -63,8 +63,25 @@ http:// {
 			header_up X-Forwarded-Uri {uri}
 		}
 	}
-	# editing and "who am I": through the gate; a visitor who is not signed in gets a JSON 401, never a redirect
-	@upload path /log/*/upload /log/*/reindex /log/*/edit /log/*/whoami
+	# "who am I": every visitor asks, so a visitor who is not signed in gets the same JSON with 200, not a 401
+	# that every browser console would show as an error
+	@whoami path /log/*/whoami
+	handle @whoami {
+		forward_auth oauth2-proxy:4180 {
+			uri /auth/auth
+			header_up X-Real-IP {remote_host}
+			copy_headers X-Auth-Request-User X-Auth-Request-Email
+			@error status 401
+			handle_response @error {
+				header Content-Type application/json
+				header Cache-Control no-store
+				respond "{\"login\": null, \"editor\": false, \"auth\": true, \"signin\": true}" 200
+			}
+		}
+		reverse_proxy uploader:8080
+	}
+	# editing: through the gate; a visitor who is not signed in gets a JSON 401, never a redirect
+	@upload path /log/*/upload /log/*/reindex /log/*/edit
 	handle @upload {
 		forward_auth oauth2-proxy:4180 {
 			uri /auth/auth

@@ -98,7 +98,7 @@
       if (over[p.id] && over[p.id].hide) { s.innerHTML = ''; s.hidden = true; return; }  /* a hidden picture leaves the text too; its token stays, so unhiding brings it back */
       s.hidden = false;
       var lang = langOf(s), c = caption(p, lang);
-      s.innerHTML = '<a class="inpic ' + (p.w && p.h && p.h > p.w ? 'port' : 'land') + (isVideo(p) ? ' vid' : '') + '" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"><img src="' + still(p) + '" alt="' + esc(c) + '" loading="lazy"' + (p.w && p.h ? ' width="' + p.w + '" height="' + p.h + '" style="--ar:' + (p.w / p.h).toFixed(4) + '"' : '') + '>' + (isVideo(p) ? '<i class="play"></i>' : '') + (c ? '<span>' + esc(c) + '</span>' : '') + '</a>';
+      s.innerHTML = '<a class="inpic ' + (p.w && p.h && p.h > p.w ? 'port' : 'land') + (isVideo(p) ? ' vid' : '') + '" href="' + BASE + esc(p.file) + '" data-photo="' + esc(p.id) + '"><img src="' + still(p) + '"' + (!isVideo(p) && p.thumb && p.w ? ' srcset="' + BASE + esc(p.thumb) + ' ' + Math.round(p.w * 800 / Math.max(p.w, p.h)) + 'w, ' + still(p) + ' ' + p.w + 'w" sizes="auto, 100vw"' : '') + ' alt="' + esc(c || T[lang].photo) + '" loading="lazy" decoding="async"' + (p.w && p.h ? ' width="' + p.w + '" height="' + p.h + '" style="--ar:' + (p.w / p.h).toFixed(4) + '"' : '') + '>' + (isVideo(p) ? '<i class="play"></i>' : '') + (c ? '<span>' + esc(c) + '</span>' : '') + '</a>';
       s.style.flexGrow = s.parentNode.classList.contains('photos') && p.w && p.h ? (100 * p.w / p.h).toFixed(1) : '';  /* in a row, each picture's share follows its shape, so the row fills at one height */
     });
     document.querySelectorAll('.photos').forEach(function (r) {  /* a row left with one picture (the others hidden) looks like a single picture */
@@ -838,8 +838,13 @@
     var t = meta && meta.photoTakenTime && meta.photoTakenTime.timestamp; if (t) { var s = localStamp(+t); if (s) f.taken = s; }
     return f;
   }
-  function unzip(file, onEntry) {
-    if (!window.zip) return Promise.reject(new Error('zip support did not load'));
+  /* zip.min.js is 73 KB that only an editor's Google Takeout upload needs, so it loads then */
+  function loadZip() {
+    if (window.zip) return Promise.resolve();
+    return new Promise(function (ok, no) { var s = document.createElement('script'); s.src = '/vendor/zip.min.js'; s.onload = ok; s.onerror = function () { no(new Error('zip support did not load')); }; document.head.appendChild(s); });
+  }
+  function unzip(file, onEntry) { return loadZip().then(function () { return unzipNow(file, onEntry); }); }
+  function unzipNow(file, onEntry) {
     var reader = new zip.ZipReader(new zip.BlobReader(file));
     return reader.getEntries().then(function (entries) {
       var metas = {}, pics = [];

@@ -118,7 +118,7 @@ def render_lang(lang: str, c: dict, trek: dict, prefix: str) -> str:
     h2 = lambda i, id_, title: f'<h2 id="{prefix}{id_}">{txt(title)}</h2>'
     gpx = "/" + Path(trek["gpx"]).name
     htag, mast_open, mast_close = cover_html(trek.get("_cover"))
-    o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap"{"" if lang == default_lang(trek) else " hidden"}>', htag,
+    o = [f'<div id="{lang}" lang="{lang}" dir="{L["dir"]}" class="wrap" role="main"{"" if lang == default_lang(trek) else " hidden"}>', htag,
          '  <div class="topo" aria-hidden="true"></div>', mast_open,
          f'  <div class="eyebrow"><span class="balise"></span>{txt(c["eyebrow"])}</div>',
          f'  <h1>{txt(c["title"])}</h1>', mast_close, f'  <p class="lede">{txt(c["lede"])}</p>', '  <div class="facts">']

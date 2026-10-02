@@ -11,13 +11,14 @@
 <meta property="og:url" content="https://yam2yam.yarden-zamir.com/">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="Yam el Yam">
-<script>if (location.hostname === "yam2yam.yarden-zamir.com") { var s = document.createElement("script"); s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=G-P4CCL1P2RB"; document.head.appendChild(s); window.dataLayer = window.dataLayer || []; window.gtag = function () { dataLayer.push(arguments); }; gtag("js", new Date()); gtag("config", "G-P4CCL1P2RB"); var e = document.createElement("script"); e.defer = true; e.src = "/analytics.js?v=5b67c200f3"; document.head.appendChild(e); }</script>
+<script>if (location.hostname === "yam2yam.yarden-zamir.com") { window.dataLayer = window.dataLayer || []; window.gtag = function () { dataLayer.push(arguments); }; gtag("js", new Date()); gtag("config", "G-P4CCL1P2RB"); addEventListener("load", function () { var s = document.createElement("script"); s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=G-P4CCL1P2RB"; document.head.appendChild(s); var e = document.createElement("script"); e.async = true; e.src = "/analytics.js?v=5b67c200f3"; document.head.appendChild(e); }); }</script>
 <meta name="color-scheme" content="light dark">
 <style>body{margin:0;font-size:14px;font-family:system-ui,sans-serif}img{max-width:100%;height:auto}[hidden]{display:none!important}</style>
 <title>Sea to Sea Dossier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Heebo:wght@400;500;700&family=Rubik:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Heebo:wght@400;500;700&family=Rubik:wght@600;700&display=swap" media="print" onload="this.media='all'">  <!-- not render-blocking: the text shows in a fallback font until these arrive -->
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Heebo:wght@400;500;700&family=Rubik:wght@600;700&display=swap"></noscript>
 <link rel="stylesheet" href="/vendor/leaflet.min.css?v=b570abbda9">
 <link rel="stylesheet" href="/vendor/leaflet-rotate.css?v=fde9c7ff97">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -241,7 +242,7 @@ a.daylink:hover{color:var(--lake)}
 .wxev{padding:3px 8px;margin:3px 0;border-inline-start:3px solid var(--line);background:var(--panel)}
 .wxev.storm{border-color:var(--mark)} a.wxsrc{font-size:11px;color:var(--muted);margin-inline-start:6px} .wxev.heat{border-color:#E07A2F} .wxev.rain{border-color:var(--lake)} .wxev.wind{border-color:var(--warn)} .wxev.exp{font-weight:600} .wxev.ok{color:var(--muted)}
 .stage.done .d{color:var(--muted)} .stage.done .d::before{opacity:.35}
-.stage.done h3{opacity:.6}
+.stage.done h3{opacity:.68}  /* .6 was under the 4.5:1 text contrast */
 .stage.done:not(.open) .stats,.stage.done:not(.open) .tabs,.stage.done:not(.open) .pane,.stage.done:not(.open) .snapbox{display:none}
 .donebar{display:flex;gap:8px;align-items:center;margin:4px 0 6px;font-size:13px}
 .donechip{color:#2E7D32;font-weight:600}
@@ -497,7 +498,7 @@ body:has(.locbar) #backbubble{left:78px;transform:none;max-width:calc(100vw - 92
 <div class="locbar"><button id="locfab" type="button" data-act="snapshot" aria-label="Where am I" title="Where am I" data-label-en="Where am I" data-label-he="איפה אני"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button><span id="loctoast" role="status" hidden></span></div>
 <button id="backbubble" type="button" hidden></button>
 
-<div id="en" lang="en" dir="ltr" class="wrap">
+<div id="en" lang="en" dir="ltr" class="wrap" role="main">
 <header>
   <div class="topo" aria-hidden="true"></div>
   <div class="eyebrow"><span class="balise"></span>Sea to Sea · Yam el Yam · Upper Galilee · 10 – 13 September 2026</div>
@@ -644,7 +645,7 @@ body:has(.locbar) #backbubble{left:78px;transform:none;max-width:calc(100vw - 92
 <h3>Official</h3><ul><li><a href="https://www.parks.org.il/reserve-park/%D7%A9%D7%9E%D7%95%D7%A8%D7%AA-%D7%98%D7%91%D7%A2-%D7%A0%D7%97%D7%9C-%D7%9B%D7%96%D7%99%D7%91/">INPA Nahal Kziv</a>, <a href="https://www.parks.org.il/reserve-park/%D7%A9%D7%9E%D7%95%D7%A8%D7%AA-%D7%98%D7%91%D7%A2-%D7%94%D7%A8-%D7%9E%D7%99%D7%A8%D7%95%D7%9F/">INPA Har Meron</a>, <a href="https://www.parks.org.il/reserve-park/%D7%A9%D7%9E%D7%95%D7%A8%D7%AA-%D7%98%D7%91%D7%A2-%D7%A0%D7%97%D7%9C-%D7%A2%D7%9E%D7%95%D7%93/">INPA Nahal Amud</a> (hours, fees, 04-6999984), <a href="https://www.parks.org.il/new/amud/">INPA Sechvi pools safety page</a> (the <a href="#maps" class="lk k-map focus" data-focus="NIGHT 3 option B · Pitul Meron"><i class="ic-map"></i>Pitul Meron</a> gate times).</li><li><a href="https://www.parks.org.il/%D7%97%D7%A0%D7%99%D7%95%D7%A0%D7%99-%D7%9C%D7%99%D7%9C%D7%94-%D7%9C%D7%9C%D7%90-%D7%AA%D7%A9%D7%9C%D7%95%D7%9D/">INPA free night camps</a>, <a href="https://www.parks.org.il/%D7%94%D7%96%D7%9E%D7%A0%D7%95%D7%AA-%D7%9C%D7%97%D7%A0%D7%99%D7%95%D7%A0%D7%99-%D7%9C%D7%99%D7%9C%D7%94/">INPA camp booking</a>, <a href="https://www.parks.org.il/new/dogs/">INPA dog policy</a>, <a href="https://www.kkl.org.il/recreation_areas_overnight_2022/">KKL overnight areas</a>.</li><li><a href="https://ims.gov.il/en/IMSwarnings">IMS warnings</a>, <a href="https://ims.gov.il/en/Forecasts">IMS forecast</a>, <a href="https://www.parks.org.il/new/%D7%90%D7%96%D7%94%D7%A8%D7%AA-%D7%A9%D7%98%D7%A4%D7%95%D7%A0%D7%95%D7%AA/">INPA flood rule</a>.</li><li><a href="https://israelhiking.osm.org.il/">Israel Hiking Map</a>, <a href="https://www.openstreetmap.org/relation/2860967">the OpenStreetMap relation this GPX is built from</a>, <a href="https://busnearby.co.il/%D7%A7%D7%95%D7%95%D7%99%D7%9D/%D7%9E%D7%97%D7%A6%D7%95%D7%A8%20%D7%94%D7%92%D7%9C%D7%99%D7%9C%D7%99%D7%AA%20%D7%9C%D7%98%D7%91%D7%A8%D7%99%D7%94/%D7%A1%D7%95%D7%A4%D7%A8%D7%91%D7%95%D7%A1/59/%D7%9C%D7%9B%D7%99%D7%95%D7%95%D7%9F%20%D7%AA%D7%97%D7%A0%D7%94%20%D7%9E%D7%A8%D7%9B%D7%96%D7%99%D7%AA/15615/6059">bus 59 timetable</a>.</li></ul>
 </div>
 
-<div id="he" lang="he" dir="rtl" class="wrap" hidden>
+<div id="he" lang="he" dir="rtl" class="wrap" role="main" hidden>
 <header>
   <div class="topo" aria-hidden="true"></div>
   <div class="eyebrow"><span class="balise"></span>ים אל ים · הגליל העליון · 10–13 בספטמבר 2026</div>
@@ -829,9 +830,9 @@ body:has(.locbar) #backbubble{left:78px;transform:none;max-width:calc(100vw - 92
 if('serviceWorker' in navigator){(function(){var had=!!navigator.serviceWorker.controller,done=false;
   navigator.serviceWorker.addEventListener('controllerchange',function(){if(had&&!done){done=true;location.reload();}});})();}
 </script>
-<script src="/vendor/leaflet.min.js?v=5c9aecfc30"></script>
-<script src="/vendor/leaflet-rotate.umd.min.js?v=543dab62fe"></script>
-<script src="/map.js?v=1d81c586dc" defer></script>
+<script src="/vendor/leaflet.min.js?v=5c9aecfc30" defer></script>
+<script src="/vendor/leaflet-rotate.umd.min.js?v=543dab62fe" defer></script>
+<script src="/map.js?v=4d2ce3bce6" defer></script>
 <script src="/trip.js?v=9a65a731ab" defer></script>
 </body>
 </html>
