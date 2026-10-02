@@ -12,4 +12,5 @@ pr.{{ environment.removeprefix("pr-") }}.yam2yam.yarden-zamir.com
         }
         format json
     }
+{% endif %}{% if environment != "prod" %}    header X-Robots-Tag "noindex, nofollow"
 {% endif %}}

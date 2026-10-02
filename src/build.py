@@ -6,7 +6,7 @@
 
 Inputs: trek.json (see README), src/head.html, src/body.html, src/scripts.html, src/sw.js,
 site/maps/index.json (written by tools/maps.py, optional).
-Outputs: site/index.html, site/sw.js, site/manifest.webmanifest, Caddyfile.j2.
+Outputs: site/index.html, site/sw.js, site/manifest.webmanifest, site/robots.txt, site/sitemap.xml, Caddyfile.j2.
 """
 import hashlib
 import json
@@ -247,6 +247,7 @@ def og_meta(title: str, description: str, cover: dict | None, path: str = "/") -
     uploader's 1200 x 630 crop of the cover (under 300 KB, which WhatsApp insists on), centred where the cover is."""
     q = lambda s: str(s).replace('"', "&quot;")
     o = [f'<meta property="og:title" content="{q(title)}">', f'<meta property="og:description" content="{q(description)}">', '<meta property="og:type" content="website">',
+         f'<link rel="canonical" href="https://{TREK["hostname"]}{path}">',
          f'<meta property="og:url" content="https://{TREK["hostname"]}{path}">', f'<meta property="og:locale" content="{OG_LOCALE}">', f'<meta property="og:site_name" content="{q(TREK.get("shortName") or PAGE_NAME)}">']
     if cover and cover.get("src"):
         src = cover["src"]
@@ -370,8 +371,15 @@ if TREK.get("auth"):
     # logs root is writable for Caddy (https://github.com/Yarden-zamir/kitshn/issues/14). 90 days, then the files go.
     + '{% if environment == "prod" %}    log {\n        output file /var/log/caddy/{{ deployment | replace("/", "-") }}.access.log {\n'
     + "            roll_size 20MiB\n            roll_keep 100\n            roll_keep_for 2160h\n        }\n        format json\n    }\n{% endif %}"
+    # a pull request preview is a copy of the site: keep it out of search results
+    + '{% if environment != "prod" %}    header X-Robots-Tag "noindex, nofollow"\n{% endif %}'
     + "}\n"
 )
+
+# search engines: the front page is the only indexed page (the plan beside a story and the log copies are noindex)
+(SITE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: https://{TREK['hostname']}/sitemap.xml\n")
+(SITE / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+                                  f"  <url><loc>https://{TREK['hostname']}/</loc></url>\n</urlset>\n")
 
 precache = ["/", "/" + Path(TREK["gpx"]).name] + [f"{u}?v={_vhash(SITE / u.lstrip('/'))}" for u in (("/log.js", "/vendor/zip.min.js") if STORY else ()) + ("/map.js", "/trip.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css", "/vendor/leaflet-rotate.umd.min.js", "/vendor/leaflet-rotate.css")] + [
             "/vendor/images/layers.png", "/vendor/images/layers-2x.png", "/manifest.webmanifest", "/icon.svg"]
