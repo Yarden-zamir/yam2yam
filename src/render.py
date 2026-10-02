@@ -49,8 +49,11 @@ def cover_html(cover: dict | None) -> tuple[str, str, str]:
     masthead over the picture, and the rest of the header follows below it; without one, a plain header."""
     if not cover:
         return "<header>", "", ""
+    # a log picture has an 800 px version beside it (<id>.t.jpg): screens up to about 1.9x take it; the rest take the full one
+    srcset = (f' srcset="{esc(cover["src"][:-4])}.t.jpg 800w, {esc(cover["src"])} 1500w" sizes="100vw"'
+              if cover.get("photo") and cover["src"].endswith(f'/{cover["photo"]}.jpg') else "")
     return ('<header class="cover">',
-            f'  <div class="mast" style="--cover-y:{esc(cover["y"])}"><img class="coverimg" src="{esc(cover["src"])}" alt="" fetchpriority="high" decoding="async">',
+            f'  <div class="mast" style="--cover-y:{esc(cover["y"])}"><img class="coverimg" src="{esc(cover["src"])}"{srcset} alt="" fetchpriority="high" decoding="async">',
             "  </div>")
 
 

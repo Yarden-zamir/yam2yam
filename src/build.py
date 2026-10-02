@@ -265,7 +265,12 @@ def og_meta(title: str, description: str, cover: dict | None, path: str = "/") -
 
 body = section_maps(link_places(label_tables((SRC / "body.html").read_text()), "maps"))
 def head_for(name: str) -> str:
-    return bust((SRC / "head.html").read_text().replace("{{NAME}}", name.replace("<", "&lt;")))
+    return bust((SRC / "head.html").read_text().replace("{{NAME}}", name.replace("<", "&lt;")).replace("{{LEAFLET_CSS}}", LEAFLET_CSS))
+
+
+# Leaflet's 3 KB of CSS goes in the page, so the first paint waits for no stylesheet; its image paths become absolute
+LEAFLET_CSS = "<style>" + "".join((SITE / "vendor" / f).read_text().replace("url(images/", "url(/vendor/images/")
+                                  for f in ("leaflet.min.css", "leaflet-rotate.css")) + "</style>"
 
 
 head = head_for(PAGE_NAME)
@@ -383,7 +388,8 @@ if TREK.get("auth"):
 (SITE / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
                                   f"  <url><loc>https://{TREK['hostname']}/</loc></url>\n</urlset>\n")
 
-precache = ["/", "/" + Path(TREK["gpx"]).name] + [f"{u}?v={_vhash(SITE / u.lstrip('/'))}" for u in (("/log.js",) if STORY else ()) + ("/map.js", "/trip.js", "/vendor/leaflet.min.js", "/vendor/leaflet.min.css", "/vendor/leaflet-rotate.umd.min.js", "/vendor/leaflet-rotate.css")] + [
+# no Leaflet CSS here: it is in the page (LEAFLET_CSS)
+precache = ["/", "/" + Path(TREK["gpx"]).name] + [f"{u}?v={_vhash(SITE / u.lstrip('/'))}" for u in (("/log.js",) if STORY else ()) + ("/map.js", "/trip.js", "/vendor/leaflet.min.js", "/vendor/leaflet-rotate.umd.min.js")] + [
             "/vendor/images/layers.png", "/vendor/images/layers-2x.png", "/manifest.webmanifest", "/icon.svg"]
 precache += sorted("/maps/" + p.name for p in (SITE / "maps").glob("*.webp")) if (SITE / "maps").exists() else []
 files = sorted(p for p in SITE.rglob("*") if p.is_file() and p.name != "sw.js" and "/photos/" not in p.as_posix() and "/orig/" not in p.as_posix())

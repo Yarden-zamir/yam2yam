@@ -324,7 +324,7 @@
         var img = document.createElement('img'); img.className = 'coverimg'; img.alt = ''; mast.appendChild(img);
         var eb = h.querySelector('.eyebrow'), h1 = h.querySelector('h1'); h.insertBefore(mast, eb || h1); if (eb) mast.appendChild(eb); if (h1) mast.appendChild(h1);
       }
-      var src = BASE + EDITS.cover + '.jpg', im = mast.querySelector('.coverimg'); if (im.getAttribute('src') !== src) im.src = src;
+      var src = BASE + EDITS.cover + '.jpg', im = mast.querySelector('.coverimg'); if (im.getAttribute('src') !== src) { im.srcset = BASE + EDITS.cover + '.t.jpg 800w, ' + src + ' 1500w'; im.sizes = '100vw'; im.src = src; }  /* as build.py writes it */
       mast.style.setProperty('--cover-y', LOG.cover && LOG.cover.photo === EDITS.cover ? LOG.cover.y : '50%');
       h.classList.add('cover');
     });
