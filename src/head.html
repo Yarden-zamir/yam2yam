@@ -267,8 +267,8 @@ a.daylink:hover{color:var(--lake)}
 /* a wide desktop: the story and the map reach the sides of the window and the text grows with it, as the page looks
    at 200% zoom on a 960 px wide window. Not the TV mode, which has its own sizes */
 @media (min-width:1280px){
-  html:not(.tv) body.spine-on .wrap{max-width:none;padding-inline:clamp(20px,2vw,48px);gap:clamp(24px,2vw,40px)}
-  html:not(.tv) body.spine-on .spine{flex-basis:44vw}
+  html:not(.tv) body.spine-on .wrap{max-width:none;padding-inline:clamp(16px,1.5vw,32px);gap:12px}
+  html:not(.tv) body.spine-on .spine{flex-basis:33.333vw}  /* the map a third, the story the rest */
   html:not(.tv) body.spine-on .main{font-size:clamp(17px,calc(10px + .55vw),21px)}
   html:not(.tv) body.spine-on .main :is(.pane p,.sectext p,.lede,ul,ol){max-width:none}
   html:not(.tv) body.spine-on .main .lede,html:not(.tv) body.spine-on [data-section="intro"] .sectext > p:first-child{font-size:1.15em}
