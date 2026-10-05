@@ -1,5 +1,7 @@
 # Sea to Sea (Yam el Yam)
 
+[![kitshn](https://kitshn.yarden-zamir.com/b/Yarden-zamir/yam2yam.svg)](https://yam2yam.yarden-zamir.com)
+
 The plan for a walk across the Upper Galilee, from Achziv on the Mediterranean to Ginosar on the Sea of Galilee, 10 to 13 September 2026: four days with a tent, about 72 km, 1,550 m up and 1,750 m down, with the high point on Har Meron (1,204 m).
 
 **[yam2yam.yarden-zamir.com](https://yam2yam.yarden-zamir.com)**
