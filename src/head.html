@@ -264,6 +264,19 @@ a.daylink:hover{color:var(--lake)}
 @media (min-width:960px) and (max-width:1199px){  /* a tablet on its side, a small laptop: a narrower map, tighter gaps */
   body.spine-on .wrap{gap:16px} body.spine-on .spine{flex-basis:clamp(280px,36vw,420px)}
 }
+/* a wide desktop: the story and the map reach the sides of the window and the text grows with it, as the page looks
+   at 200% zoom on a 960 px wide window. Not the TV mode, which has its own sizes */
+@media (min-width:1280px){
+  html:not(.tv) body.spine-on .wrap{max-width:none;padding-inline:clamp(20px,2vw,48px);gap:clamp(24px,2vw,40px)}
+  html:not(.tv) body.spine-on .spine{flex-basis:44vw}
+  html:not(.tv) body.spine-on .main{font-size:clamp(17px,calc(10px + .55vw),21px)}
+  html:not(.tv) body.spine-on .main :is(.pane p,.sectext p,.lede,ul,ol){max-width:none}
+  html:not(.tv) body.spine-on .main .lede,html:not(.tv) body.spine-on [data-section="intro"] .sectext > p:first-child{font-size:1.15em}
+  html:not(.tv) body.spine-on .main h2{font-size:1.75em}
+  html:not(.tv) body.spine-on .stage h3{font-size:1.5em} html:not(.tv) body.spine-on [lang="he"] .stage h3{font-size:1.35em}
+  html:not(.tv) body.spine-on .inpic span{font-size:.75em}
+  html:not(.tv) body.spine-on .tabs button{font-size:.85em}
+}
 @media (max-height:640px){ body.spine-on .spine .maptools{display:none} }  /* a short window: the map keeps its height */
 /* a phone on its side: the map takes the far half, full height, the profile and tools give way to it */
 @media (orientation:landscape) and (max-width:959px) and (max-height:560px){
