@@ -244,10 +244,16 @@ a.daylink:hover{color:var(--lake)}
 /* the spine: on a wide log page (960 px and up) or a phone on its side the map sits beside the story, on the far side of
    the reading direction (right in English, left in Hebrew), the full height of the window, and follows the reader */
 .spine{display:none}
+/* the edge between the story and the map: drag to resize them, double click for the default (mouse and trackpad only) */
+.spinegrip{display:none;position:absolute;top:0;bottom:0;inset-inline-start:-13px;width:14px;cursor:col-resize;z-index:5;touch-action:none}
+.spinegrip::after{content:"";position:absolute;top:50%;left:50%;width:4px;height:48px;border-radius:2px;background:var(--line);transform:translate(-50%,-50%);transition:background .15s,height .15s}
+.spinegrip:hover::after,body.spinedrag .spinegrip::after{background:var(--mark);height:96px}
+body.spinedrag{cursor:col-resize;user-select:none;-webkit-user-select:none} body.spinedrag .livemap,body.spinedrag iframe{pointer-events:none}
+@media (hover:hover) and (pointer:fine){ body.spine-on .spinegrip{display:block} }
 @media (min-width:960px),(orientation:landscape) and (min-width:640px) and (max-height:560px){
   body.spine-on .wrap{display:flex;gap:24px;align-items:flex-start;max-width:1320px}
   body.spine-on .main{flex:1 1 0;min-width:0}
-  body.spine-on .spine{display:flex;flex-direction:column;flex:0 0 clamp(300px,38vw,560px);position:sticky;top:0;height:100vh;height:100dvh;box-sizing:border-box;padding:0 0 10px}  /* flush with the top, like the cover beside it; a small gap under the profile */
+  body.spine-on .spine{display:flex;flex-direction:column;flex:0 0 var(--spine-w,clamp(300px,38vw,560px));position:sticky;top:0;height:100vh;height:100dvh;box-sizing:border-box;padding:0 0 10px}  /* flush with the top, like the cover beside it; a small gap under the profile */
   body.spine-on .spine .maphost,body.spine-on .spine .mapbox{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;margin:0}
   body.spine-on .spine .livemap{flex:1 1 auto;min-height:0;height:auto;margin:0 0 6px}
   body.spine-on .spine canvas.profile{height:clamp(90px,16vh,160px);flex:none}
@@ -262,13 +268,13 @@ a.daylink:hover{color:var(--lake)}
   body.spine-on .inpic img{width:min(100%,calc(100vh * var(--ar,1.5)))}  /* pictures fill the column */
 }
 @media (min-width:960px) and (max-width:1199px){  /* a tablet on its side, a small laptop: a narrower map, tighter gaps */
-  body.spine-on .wrap{gap:16px} body.spine-on .spine{flex-basis:clamp(280px,36vw,420px)}
+  body.spine-on .wrap{gap:12px}
 }
+@media (min-width:960px){ body.spine-on .spine{flex-basis:var(--spine-w,max(280px,33.333vw))} }  /* a desktop: the map a third, the story the rest */
 /* a wide desktop: the story and the map reach the sides of the window and the text grows with it, as the page looks
    at 200% zoom on a 960 px wide window. Not the TV mode, which has its own sizes */
 @media (min-width:1280px){
   html:not(.tv) body.spine-on .wrap{max-width:none;padding-inline:clamp(16px,1.5vw,32px);gap:12px}
-  html:not(.tv) body.spine-on .spine{flex-basis:33.333vw}  /* the map a third, the story the rest */
   html:not(.tv) body.spine-on .main{font-size:clamp(17px,calc(10px + .55vw),21px)}
   html:not(.tv) body.spine-on .main :is(.pane p,.sectext p,.lede,ul,ol){max-width:none}
   html:not(.tv) body.spine-on .main .lede,html:not(.tv) body.spine-on [data-section="intro"] .sectext > p:first-child{font-size:1.15em}

@@ -33,7 +33,7 @@
       offRoute: 'off route', toNext: 'to', ascent: 'ascent',
       descent: 'descent', total: 'Route', day: 'Day', km: 'km', m: 'm', offline: 'Offline: page, GPX and saved tiles are available.',
       alt: 'alt', loading: 'Loading GPX…', retry: 'retry in', ready: 'GPX loaded: ', tracks: 'tracks', wpts: 'waypoints',
-      me: 'Your position', back: '← Back to', top: 'the top', track: 'Track the log'
+      me: 'Your position', back: '← Back to', top: 'the top', track: 'Track the log', resize: 'Drag to resize the map; double click for the default'
     },
     he: {
       nights: 'לילות, בקתות, סיום', water: 'מים', passes: 'פאסים ופסגות', side: 'פסגות סטיות צד',
@@ -43,7 +43,7 @@
       offRoute: 'מחוץ למסלול', toNext: 'עד', ascent: 'עלייה',
       descent: 'ירידה', total: 'המסלול', day: 'יום', km: 'ק"מ', m: 'מ\'', offline: 'אופליין: הדף, ה-GPX והאריחים השמורים זמינים.',
       alt: 'גובה', loading: 'טוען GPX…', retry: 'ניסיון נוסף בעוד', ready: 'GPX נטען: ', tracks: 'מסלולים', wpts: 'נקודות',
-      me: 'המיקום שלכם', back: '→ חזרה אל', top: 'ראש הדף', track: 'עקוב אחרי היומן'
+      me: 'המיקום שלכם', back: '→ חזרה אל', top: 'ראש הדף', track: 'עקוב אחרי היומן', resize: 'גררו כדי לשנות את רוחב המפה; לחיצה כפולה מחזירה לברירת המחדל'
     }
   };
   var CAT = { Night: 'nights', Flag: 'nights', Lodging: 'nights', Restaurant: 'nights', Water: 'water', Summit: 'passes',
@@ -589,6 +589,39 @@
   }
   if (SPINE_MQ && SPINE_MQ.addEventListener) SPINE_MQ.addEventListener('change', spineLayout);
   document.addEventListener('trek:gpx', spineLayout);
+  /* desktop: drag the edge of the map to share the width differently. The share of the window is remembered,
+     so a resized window keeps it; a double click goes back to the default third */
+  (function () {
+    var KEY = ((window.TREK && TREK.slug) || 'trek') + '-spine-w', MIN = 0.2, MAX = 0.7;
+    function setShare(f) { if (f) document.body.style.setProperty('--spine-w', (f * 100).toFixed(2) + 'vw'); else document.body.style.removeProperty('--spine-w'); }
+    function relayout() { window.dispatchEvent(new Event('resize')); }  /* the map, the profile and the picture rows follow a window resize */
+    try { var saved = parseFloat(localStorage.getItem(KEY)); if (saved >= MIN && saved <= MAX) setShare(saved); } catch (e) { }
+    document.querySelectorAll('.wrap .spine').forEach(function (sp) {
+      var grip = document.createElement('div'); grip.className = 'spinegrip'; grip.setAttribute('role', 'separator'); grip.setAttribute('aria-orientation', 'vertical');
+      grip.title = (I18N[sp.closest('[lang]').getAttribute('lang')] || I18N.en).resize;
+      sp.appendChild(grip);
+      grip.addEventListener('pointerdown', function (e) {
+        if (e.button > 0) return; e.preventDefault();
+        try { grip.setPointerCapture(e.pointerId); } catch (err) { }
+        document.body.classList.add('spinedrag');
+        var share = null, raf = 0;
+        function move(ev) {
+          var r = sp.getBoundingClientRect(), left = r.left < window.innerWidth / 2;  /* the map is on the left in Hebrew, on the right in English */
+          share = Math.min(MAX, Math.max(MIN, (left ? ev.clientX - r.left : r.right - ev.clientX) / window.innerWidth));
+          setShare(share);
+          if (!raf) raf = requestAnimationFrame(function () { raf = 0; relayout(); });
+        }
+        function up() {
+          grip.removeEventListener('pointermove', move); grip.removeEventListener('pointerup', up); grip.removeEventListener('pointercancel', up);
+          document.body.classList.remove('spinedrag');
+          if (share) { try { localStorage.setItem(KEY, share.toFixed(4)); } catch (err) { } }
+          relayout();
+        }
+        grip.addEventListener('pointermove', move); grip.addEventListener('pointerup', up); grip.addEventListener('pointercancel', up);
+      });
+      grip.addEventListener('dblclick', function () { setShare(null); try { localStorage.removeItem(KEY); } catch (err) { } relayout(); });
+    });
+  })();
   var followTimer = null;
   document.addEventListener('trek:reading', function (e) {  /* the rail says which day is under the eye; the spine follows a moment later */
     if (!spineOn()) return; clearTimeout(followTimer);
