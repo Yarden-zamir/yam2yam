@@ -270,12 +270,12 @@ body.spinedrag{cursor:col-resize;user-select:none;-webkit-user-select:none} body
 @media (min-width:960px) and (max-width:1199px){  /* a tablet on its side, a small laptop: a narrower map, tighter gaps */
   body.spine-on .wrap{gap:12px}
 }
-@media (min-width:960px){ body.spine-on .spine{flex-basis:var(--spine-w,max(280px,33.333vw))} }  /* a desktop: the map a third, the story the rest */
+@media (min-width:960px){ body.spine-on .spine{flex-basis:var(--spine-w,max(280px,33.333vw))} html:not(.tv) body.spine-on .main{font-size:17px} }  /* a desktop: the map a third, the story the rest */
 /* a wide desktop: the story and the map reach the sides of the window and the text grows with it, as the page looks
    at 200% zoom on a 960 px wide window. Not the TV mode, which has its own sizes */
 @media (min-width:1280px){
   html:not(.tv) body.spine-on .wrap{max-width:none;padding-inline:clamp(16px,1.5vw,32px);gap:12px}
-  html:not(.tv) body.spine-on .main{font-size:clamp(17px,calc(10px + .55vw),21px)}
+  html:not(.tv) body.spine-on .main{font-size:clamp(18px,calc(11px + .6vw),23px)}
   html:not(.tv) body.spine-on .main :is(.pane p,.sectext p,.lede,ul,ol){max-width:none}
   html:not(.tv) body.spine-on .main .lede,html:not(.tv) body.spine-on [data-section="intro"] .sectext > p:first-child{font-size:1.15em}
   html:not(.tv) body.spine-on .main h2{font-size:1.75em}
