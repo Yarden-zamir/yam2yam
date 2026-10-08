@@ -381,8 +381,7 @@ if TREK.get("auth"):
 (ROOT / "compose.override.yml").write_text("# written by src/build.py from trek.json; docker compose loads it beside compose.yml\n" + yaml.safe_dump(override, sort_keys=False, allow_unicode=True))
 (ROOT / ".env").unlink(missing_ok=True)  # the old place for these values, never read in a KitSHn deploy
 (ROOT / "Caddyfile.j2").write_text(
-    '{% if environment == "prod" -%}\n' + host + "\n{%- else -%}\npr.{{ environment.removeprefix(\"pr-\") }}." + host
-    + "\n{%- endif %} {\n    reverse_proxy unix//{{ paths.default_socket }}\n"
+    '{{ host("' + host + '") }} {\n    reverse_proxy unix//{{ paths.default_socket }}\n'
     # the host Caddy sees every request with the visitor's address, also the ones an ad blocker keeps from GA.
     # /var/log/caddy, not KitSHn's paths.logs: that folder is root's and the host Caddy runs as the caddy user.
     # prod only: KitSHn runs `caddy validate` as root, which creates a missing log file owned by root, and the
