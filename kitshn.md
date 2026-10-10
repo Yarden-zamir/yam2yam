@@ -1,13 +1,63 @@
 # KitSHn Recipe
 
-This repository deploys the Sea to Sea site to `yam2yam.yarden-zamir.com` with KitSHn. The hostname comes from `trek.json` (`hostname`), and `src/build.py` renders `Caddyfile.j2` from it.
+[![deployed with kitshn](https://raw.githubusercontent.com/Yarden-zamir/kitshn/main/assets/badge-deployed-with-kitshn.svg)](https://github.com/Yarden-zamir/kitshn)
 
-- Pushes to `main` deploy `prod`. Pull requests deploy to `pr-<number>.yam2yam.yarden-zamir.com`.
-- A Caddy container serves `site/` and listens on the KitSHn Unix socket (`container/Caddyfile`). The host Caddy routes the hostname to that socket (`Caddyfile.j2`).
-- The `uploader` container from the template also runs, with its `logdata` volume. It stays empty until the trek has a trip log.
-- There are no secrets beyond `KITSHN_VPS_HOST` and `KITSHN_SSH_KEY`. `trek.json` has no `"editors"`, so the editing routes are closed.
+This repository is a KitSHn recipe repo. KitSHn deploys recipe repos from GitHub Actions onto a VPS by resolving GitHub events to deployment environments, copying deployment params, and running the hosted KitSHn CLI through `uvx` on the VPS.
 
-## Files
+## Contract
 
-- `site/`: the built page, the scripts, the generated `sw.js`, the GPX, `maps/` and `vendor/`.
-- `.kitshn.yaml`, `.github/workflows/kitshn.yml`, `compose.yml`, `compose.override.yml`, `Caddyfile.j2`, `Dockerfile`: the recipe.
+- `.kitshn.yaml` maps GitHub events to deployment environments.
+- `.github/workflows/kitshn.yml` calls the KitSHn reusable deploy workflow and grants it required GitHub token permissions.
+- `kitshn.md` documents the recipe contract and the KitSHn source commit that generated it. Rewrite the prose freely, but keep the Origin section at the end so `kitshn` can tell which template version produced this recipe.
+- Optional `compose.yml` defines container services for Docker Compose deployments.
+- Optional `Caddyfile.j2` defines public routing and is rendered on the VPS into a generated `Caddyfile`.
+- Socket ingress is the default routing pattern. Compose services can bind `${KITSHN_DEFAULT_SOCKET}` and Caddy can route to `{{ paths.default_socket }}`.
+- GitHub vars and secrets starting with `KITSHN_` become deployment params with the prefix stripped, except reserved infrastructure keys.
+- `KITSHN_SSH_KEY` and `KITSHN_VPS_HOST` are required for GitHub Actions to deploy to the VPS.
+- Run `kitshn recipe auth --vps-host <ssh-target>` before the first deploy-triggering push so those infrastructure keys exist.
+- Local users may run KitSHn from Homebrew or `uvx`; CI and VPS commands use hosted `uvx` and do not require a persistent VPS `kitshn` install.
+
+## Operating This Deployment
+
+Run these on the VPS. They take `--environment <env>` and default to `prod`. Pass `--help` to any
+of them for flags. Prefer them over raw `docker` and `docker compose`, which do not know this
+deployment's Compose project name or params file.
+
+- `kitshn diagnose <owner/repo>` — start here; checks Compose, sockets, Caddy routing and config.
+- `kitshn status <owner/repo>` — ref, services, health, route, socket, and last deploy, as JSON.
+- `kitshn logs <owner/repo> [service]` — Docker logs for this deployment.
+- `kitshn compose <owner/repo> -- <args>` — Docker Compose with this deployment's exact context.
+- `kitshn params list <owner/repo>` — param names without values.
+- `kitshn params get <owner/repo> <KEY> --show` — one param value, correctly decoded. Do not
+  hand-parse `params.env`; its values are quoted and escaped for Compose.
+
+Services publish no host ports. Reach them through the public Caddy route, through
+`kitshn compose ... -- exec`, or from the shared `kitshn-edge` Docker network. `127.0.0.1:<port>`
+does not reach them.
+
+This recipe can deploy any environment name on demand through the workflow's `workflow_dispatch`
+input, even if it only maps `main -> prod`. Make `Caddyfile.j2` hostnames environment-aware
+before doing so, or Caddy will reject the duplicate site definition.
+
+## This Recipe
+
+- Services: `site` serves the built `site/` on the KitSHn socket. `uploader` keeps the `logdata` volume, which stays empty until the trek has a trip log.
+- Environments: pushes to `main` deploy `prod`. Each pull request deploys an ephemeral `pr-<number>` environment.
+- Hostnames: `prod` serves `yam2yam.yarden-zamir.com`. Pull requests serve `pr-<number>.yam2yam.yarden-zamir.com`.
+- `src/build.py` writes `Caddyfile.j2` and `compose.override.yml` from `trek.json`. Run it after you change `trek.json`. A `.env` file does nothing under KitSHn.
+- Params: `KITSHN_SSH_KEY` and `KITSHN_VPS_HOST`. No other secrets.
+- `trek.json` has no `"editors"` and no `"auth"`, so the editing routes stay closed.
+
+## Badge
+
+The badge above shows that this repo deploys with KitSHn. For the state of the latest `prod`
+deploy in the README, use this line.
+
+```markdown
+[![kitshn prod](https://img.shields.io/github/deployments/Yarden-zamir/yam2yam/prod?label=kitshn%20%C2%B7%20prod&labelColor=2F3532&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNCAxNCI+PGcgZmlsbD0iI2ZmZiI+PHJlY3QgeD0iNiIgeT0iMS4yIiB3aWR0aD0iMiIgaGVpZ2h0PSIxLjYiIHJ4PSIwLjUiLz48cmVjdCB4PSIyLjIiIHk9IjMuNCIgd2lkdGg9IjkuNiIgaGVpZ2h0PSIxLjUiIHJ4PSIwLjc1Ii8+PHJlY3QgeD0iMyIgeT0iNS42IiB3aWR0aD0iOCIgaGVpZ2h0PSI2LjYiIHJ4PSIxLjYiLz48cmVjdCB4PSIwLjgiIHk9IjYuOCIgd2lkdGg9IjIuNCIgaGVpZ2h0PSIxLjQiIHJ4PSIwLjciLz48cmVjdCB4PSIxMC44IiB5PSI2LjgiIHdpZHRoPSIyLjQiIGhlaWdodD0iMS40IiByeD0iMC43Ii8+PC9nPjwvc3ZnPgo=)](https://yam2yam.yarden-zamir.com)
+```
+
+## Origin
+
+- Generated from: https://github.com/Yarden-zamir/kitshn/blob/d266328205603dfddffc27c7ac5d42051883d0b0/src/kitshn/repo_init.py
+- KitSHn commit: `d266328205603dfddffc27c7ac5d42051883d0b0`
