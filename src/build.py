@@ -6,7 +6,7 @@
 
 Inputs: trek.json (see README), src/head.html, src/body.html, src/scripts.html, src/sw.js,
 site/maps/index.json (written by tools/maps.py, optional).
-Outputs: site/index.html, site/sw.js, site/manifest.webmanifest, site/robots.txt, site/sitemap.xml, Caddyfile.j2.
+Outputs: site/index.html, site/sw.js, site/manifest.webmanifest, site/robots.txt, site/sitemap.xml.
 """
 import hashlib
 import json
@@ -380,20 +380,6 @@ if TREK.get("auth"):
     }
 (ROOT / "compose.override.yml").write_text("# written by src/build.py from trek.json; docker compose loads it beside compose.yml\n" + yaml.safe_dump(override, sort_keys=False, allow_unicode=True))
 (ROOT / ".env").unlink(missing_ok=True)  # the old place for these values, never read in a KitSHn deploy
-(ROOT / "Caddyfile.j2").write_text(
-    '{{ host("' + host + '") }} {\n    reverse_proxy unix//{{ paths.default_socket }}\n'
-    # the host Caddy sees every request with the visitor's address, also the ones an ad blocker keeps from GA.
-    # /var/log/caddy, not KitSHn's paths.logs: that folder is root's and the host Caddy runs as the caddy user.
-    # prod only: KitSHn runs `caddy validate` as root, which creates a missing log file owned by root, and the
-    # caddy user then cannot open it, so the reload fails. The prod files were given to caddy once by hand.
-    # Revisit when KitSHn validates as the caddy user (https://github.com/Yarden-zamir/kitshn/issues/13) and the
-    # logs root is writable for Caddy (https://github.com/Yarden-zamir/kitshn/issues/14). 90 days, then the files go.
-    + '{% if environment == "prod" %}    log {\n        output file /var/log/caddy/{{ deployment | replace("/", "-") }}.access.log {\n'
-    + "            roll_size 20MiB\n            roll_keep 100\n            roll_keep_for 2160h\n        }\n        format json\n    }\n{% endif %}"
-    # a pull request preview is a copy of the site: keep it out of search results
-    + '{% if environment != "prod" %}    header X-Robots-Tag "noindex, nofollow"\n{% endif %}'
-    + "}\n"
-)
 
 # search engines: the front page is the only indexed page (the plan beside a story and the log copies are noindex)
 (SITE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: https://{TREK['hostname']}/sitemap.xml\n")
@@ -412,4 +398,4 @@ for p in files:
 build_id = digest.hexdigest()[:12]
 sw = (SRC / "sw.js").read_text().replace("{{PRECACHE}}", json.dumps(precache)).replace("{{SLUG}}", TREK["slug"]).replace("__BUILD__", build_id)
 (SITE / "sw.js").write_text(sw)
-print(f"wrote site/index.html ({len(page) // 1024} KB), site/sw.js (build {build_id}), site/manifest.webmanifest, Caddyfile.j2")
+print(f"wrote site/index.html ({len(page) // 1024} KB), site/sw.js (build {build_id}), site/manifest.webmanifest")

@@ -1,6 +1,5 @@
 .git
 .github
 Caddyfile
-Caddyfile.j2
 *.md
 .DS_Store
